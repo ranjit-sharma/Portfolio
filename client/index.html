@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/logo-rs.png" />
+    <link rel="apple-touch-icon" href="/logo-rs.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+
+    <!-- SEO -->
+    <title>Ranjit Sharma | Full-Stack Developer</title>
+    <meta name="description" content="Ranjit Sharma — Full-Stack Developer with B.Tech in Computer Science. Building modern web applications with the MERN stack." />
+    <meta name="keywords" content="Ranjit Sharma, Full-Stack Developer, B.Tech in Computer Science, MERN Stack, React, Node.js, MongoDB, Portfolio" />
+    <meta name="author" content="Ranjit Sharma" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Ranjit Sharma | Full-Stack Developer" />
+    <meta property="og:description" content="Full-Stack Developer building reliable, modern web experiences with the MERN stack." />
+    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:url" content="https://ranjitsharma.dev" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Ranjit Sharma | Full-Stack Developer" />
+    <meta name="twitter:description" content="Full-Stack Developer building reliable, modern web experiences with the MERN stack." />
+    <meta name="twitter:image" content="/og-image.png" />
+
+    <!-- Prevent theme flash: synchronously apply saved theme & accent color -->
+    <script>
+      (function() {
+        var savedTheme = localStorage.getItem('portfolio-theme');
+        document.documentElement.setAttribute('data-theme', savedTheme === 'light' ? 'light' : 'dark');
+        var savedColor = localStorage.getItem('portfolio-color');
+        if (savedColor === 'rose') {
+          savedColor = 'red';
+          localStorage.setItem('portfolio-color', 'red');
+        }
+        if (savedColor === 'violet') {
+          savedColor = 'green';
+          localStorage.setItem('portfolio-color', 'green');
+        }
+        document.documentElement.setAttribute('data-color', savedColor || 'emerald');
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
