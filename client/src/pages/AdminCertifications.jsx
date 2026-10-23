@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState, useRef } from 'react';
 import api from '../services/api';
 import { Spinner } from '../components/ui/index';
 import { Upload, Trash2 } from 'lucide-react';
+import { getAssetUrl } from '../utils/assetUrl';
 
 const EMPTY = { name: '', issuer: '', issueDate: '', credentialUrl: '', image: '', description: '', displayOrder: 0 };
 
@@ -119,12 +120,10 @@ export default function AdminCertifications() {
                       </div>
                     ) : (
                       <img
-                        src={form.image}
+                        src={getAssetUrl(form.image)}
                         alt="Certificate Preview"
                         onError={(e) => {
-                          if (!e.currentTarget.src.includes(':5000')) {
-                            e.currentTarget.src = `http://localhost:5000${form.image}`;
-                          }
+                          e.currentTarget.style.display = 'none';
                         }}
                         style={{ width: 100, height: 65, objectFit: 'contain', background: 'var(--bg-surface)', padding: 2, borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}
                       />
@@ -256,12 +255,10 @@ export default function AdminCertifications() {
                     </div>
                   ) : (
                     <img
-                      src={cert.image}
+                      src={getAssetUrl(cert.image)}
                       alt={cert.name}
                       onError={(e) => {
-                        if (!e.currentTarget.src.includes(':5000')) {
-                          e.currentTarget.src = `http://localhost:5000${cert.image}`;
-                        }
+                        e.currentTarget.style.display = 'none';
                       }}
                       style={{
                         width: 56,

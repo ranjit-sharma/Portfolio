@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import api from '../services/api';
 import { Spinner } from '../components/ui/index';
 import { Upload, FileText, Image, Check, ExternalLink, Trash2 } from 'lucide-react';
+import { getAssetUrl } from '../utils/assetUrl';
 
 export default function AdminSettings() {
   const [profile, setProfile] = useState(null);
@@ -149,7 +150,7 @@ export default function AdminSettings() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 {profile?.avatarUrl ? (
                   <img
-                    src={profile.avatarUrl}
+                    src={getAssetUrl(profile.avatarUrl)}
                     alt="Avatar preview"
                     style={{
                       width: 64,
@@ -284,7 +285,7 @@ export default function AdminSettings() {
                 {profile?.resumeUrl && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '0.25rem' }}>
                     <a
-                      href={profile.resumeUrl}
+                      href={getAssetUrl(profile.resumeUrl)}
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{

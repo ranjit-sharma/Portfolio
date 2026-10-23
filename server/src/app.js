@@ -14,6 +14,10 @@ const adminRoutes = require('./routes/admin.routes');
 
 const app = express();
 
+// Trust reverse proxy (e.g. Render, Railway, Heroku, Nginx, Cloudflare)
+// Required for secure cookies, correct client IP behind proxies, and rate limiting
+app.set('trust proxy', 1);
+
 // Static uploads serving with cross-origin headers
 app.use(
   '/uploads',

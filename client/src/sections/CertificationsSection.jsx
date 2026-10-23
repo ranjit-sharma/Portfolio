@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from '../hooks/useInView';
 import { SectionHeading, SkeletonCard } from '../components/ui/index';
 import api from '../services/api';
+import { getAssetUrl } from '../utils/assetUrl';
 
 const FALLBACK_CERTS = [
   {
@@ -175,12 +176,10 @@ export default function CertificationsSection() {
                       </div>
                     ) : (
                       <img
-                        src={cert.image}
+                        src={getAssetUrl(cert.image)}
                         alt={cert.name}
                         onError={(e) => {
-                          if (!e.currentTarget.src.includes(':5000')) {
-                            e.currentTarget.src = `http://localhost:5000${cert.image}`;
-                          }
+                          e.currentTarget.style.display = 'none';
                         }}
                         style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                       />
@@ -353,12 +352,10 @@ export default function CertificationsSection() {
                       />
                     ) : (
                       <img
-                        src={selectedCert.image}
+                        src={getAssetUrl(selectedCert.image)}
                         alt={selectedCert.name}
                         onError={(e) => {
-                          if (!e.currentTarget.src.includes(':5000')) {
-                            e.currentTarget.src = `http://localhost:5000${selectedCert.image}`;
-                          }
+                          e.currentTarget.style.display = 'none';
                         }}
                         style={{ maxWidth: '100%', maxHeight: '65vh', objectFit: 'contain', borderRadius: 'var(--radius-md)' }}
                       />

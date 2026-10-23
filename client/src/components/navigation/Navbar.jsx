@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import UnifiedThemeToggle from './UnifiedThemeToggle';
 import { RSLogo } from '../ui';
 import api from '../../services/api';
+import { getAssetUrl } from '../../utils/assetUrl';
 
 const NAV_LINKS = [
   { label: 'Home', href: '#hero' },
@@ -27,7 +28,7 @@ export default function Navbar() {
     api
       .get('/profile')
       .then((r) => {
-        if (r.data.data?.resumeUrl) setResumeUrl(r.data.data.resumeUrl);
+        if (r.data.data?.resumeUrl) setResumeUrl(getAssetUrl(r.data.data.resumeUrl));
       })
       .catch(() => {});
   }, []);

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useInView } from '../hooks/useInView';
 import { SectionHeading, SkeletonCard, Badge } from '../components/ui/index';
 import api from '../services/api';
+import { getAssetUrl } from '../utils/assetUrl';
 
 const FALLBACK_PROJECTS = [
   {
@@ -117,7 +118,7 @@ export default function ProjectsSection() {
                   style={{
                     height: 180,
                     background: proj.image
-                      ? `url(${proj.image}) center/cover`
+                      ? `url(${getAssetUrl(proj.image)}) center/cover`
                       : 'linear-gradient(135deg, var(--bg-hover) 0%, var(--bg-elevated) 100%)',
                     display: 'flex',
                     alignItems: 'center',

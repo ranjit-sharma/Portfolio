@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Button } from '../components/ui/index';
 import api from '../services/api';
 import useViews from '../hooks/useViews';
+import { getAssetUrl } from '../utils/assetUrl';
 
 const ROLES = [
   'Full-Stack Developer',
@@ -215,7 +216,7 @@ export default function HeroSection() {
               <Button
                 variant="secondary"
                 size="lg"
-                href={profile?.resumeUrl || '/resume.pdf'}
+                href={getAssetUrl(profile?.resumeUrl) || '/resume.pdf'}
                 target="_blank"
                 rel="noopener noreferrer"
               >

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useInView } from '../hooks/useInView';
 import { SectionHeading, SkillIcon, RSLogo } from '../components/ui/index';
 import api from '../services/api';
+import { getAssetUrl } from '../utils/assetUrl';
 
 const HIGHLIGHTS = [
   {
@@ -87,12 +88,10 @@ export default function AboutSection() {
                 {/* Avatar */}
                 {profile?.avatarUrl ? (
                   <img
-                    src={profile.avatarUrl}
+                    src={getAssetUrl(profile.avatarUrl)}
                     alt={profile.name || 'Ranjit Sharma'}
                     onError={(e) => {
-                      if (!e.currentTarget.src.includes(':5000')) {
-                        e.currentTarget.src = `http://localhost:5000${profile.avatarUrl}`;
-                      }
+                      e.currentTarget.style.display = 'none';
                     }}
                     style={{
                       width: 96,
