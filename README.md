@@ -16,7 +16,7 @@ A production-quality full-stack portfolio website built with the **MERN stack**.
 
 ---
 
-## Project Structure
+## Project Structure.
 
 ```
 Portfolio/
