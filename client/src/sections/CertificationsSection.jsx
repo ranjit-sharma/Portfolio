@@ -80,23 +80,20 @@ function CertificateDocPreview({ cert, isModal = false }) {
 
   let orgName = issuer;
   let subheader = 'CERTIFICATE OF ACHIEVEMENT';
-  let accentColor = '#991b1b'; // deep red/burgundy
+  let accentColor = 'var(--accent, #0284c7)';
   let sealColor = '#b45309'; // gold
 
   if (isSIH) {
     orgName = 'Ministry of Education · Govt of India';
     subheader = 'SMART INDIA HACKATHON';
-    accentColor = '#c2410c';
     sealColor = '#ea580c';
   } else if (isISRO) {
     orgName = 'ISRO · Indian Institute of Remote Sensing';
     subheader = 'CERTIFICATE OF COMPLETION';
-    accentColor = '#0369a1';
     sealColor = '#0284c7';
   } else if (isTCS) {
     orgName = 'TCS iON · Tata Consultancy Services';
     subheader = 'CERTIFICATE OF EXCELLENCE';
-    accentColor = '#1e3a8a';
     sealColor = '#d97706';
   }
 
@@ -140,7 +137,7 @@ function CertificateDocPreview({ cert, isModal = false }) {
       <div style={{ textAlign: 'center', width: '100%', marginTop: isModal ? 8 : 2 }}>
         <div
           style={{
-            fontSize: isModal ? '1.1rem' : '0.52rem',
+            fontSize: isModal ? '1.05rem' : '0.52rem',
             fontWeight: 800,
             color: accentColor,
             letterSpacing: '0.08em',
@@ -151,11 +148,11 @@ function CertificateDocPreview({ cert, isModal = false }) {
         </div>
         <div
           style={{
-            fontSize: isModal ? '0.85rem' : '0.45rem',
+            fontSize: isModal ? '0.8rem' : '0.45rem',
             fontWeight: 700,
             color: '#64748b',
-            letterSpacing: '0.14em',
-            marginTop: isModal ? 6 : 1,
+            letterSpacing: '0.12em',
+            marginTop: isModal ? 5 : 1,
             textTransform: 'uppercase',
           }}
         >
@@ -164,24 +161,24 @@ function CertificateDocPreview({ cert, isModal = false }) {
       </div>
 
       {/* Body */}
-      <div style={{ textAlign: 'center', width: '100%', padding: '0 4px', margin: isModal ? '2rem 0' : 0 }}>
-        <div style={{ fontSize: isModal ? '0.9rem' : '0.42rem', color: '#6b7280', fontStyle: 'italic' }}>
+      <div style={{ textAlign: 'center', width: '100%', padding: '0 4px', margin: isModal ? '1.5rem 0' : 0 }}>
+        <div style={{ fontSize: isModal ? '0.85rem' : '0.42rem', color: '#6b7280', fontStyle: 'italic' }}>
           This is awarded to
         </div>
         <div
           style={{
-            fontSize: isModal ? '1.75rem' : '0.68rem',
+            fontSize: isModal ? '1.6rem' : '0.68rem',
             fontWeight: 800,
             color: '#0f172a',
             letterSpacing: '-0.02em',
-            margin: isModal ? '0.4rem 0' : '1px 0',
+            margin: isModal ? '0.35rem 0' : '1px 0',
           }}
         >
           {name}
         </div>
         <div
           style={{
-            fontSize: isModal ? '1.05rem' : '0.48rem',
+            fontSize: isModal ? '1rem' : '0.48rem',
             fontWeight: 700,
             color: accentColor,
             lineHeight: 1.25,
@@ -207,15 +204,15 @@ function CertificateDocPreview({ cert, isModal = false }) {
         }}
       >
         <div style={{ textAlign: 'center' }}>
-          <div style={{ width: isModal ? 80 : 28, height: 1, background: '#94a3b8', margin: '0 auto 2px' }} />
-          <div style={{ fontSize: isModal ? '0.72rem' : '0.38rem', color: '#64748b' }}>Verified</div>
+          <div style={{ width: isModal ? 75 : 28, height: 1, background: '#94a3b8', margin: '0 auto 2px' }} />
+          <div style={{ fontSize: isModal ? '0.7rem' : '0.38rem', color: '#64748b' }}>Verified</div>
         </div>
 
         {/* Gold Seal */}
         <div
           style={{
-            width: isModal ? 44 : 18,
-            height: isModal ? 44 : 18,
+            width: isModal ? 40 : 18,
+            height: isModal ? 40 : 18,
             borderRadius: '50%',
             background: sealColor,
             border: `${isModal ? 2.5 : 1.5}px solid #ffffff`,
@@ -224,7 +221,7 @@ function CertificateDocPreview({ cert, isModal = false }) {
             alignItems: 'center',
             justifyContent: 'center',
             color: '#ffffff',
-            fontSize: isModal ? '1.1rem' : '0.45rem',
+            fontSize: isModal ? '1rem' : '0.45rem',
             fontWeight: 800,
           }}
         >
@@ -232,8 +229,8 @@ function CertificateDocPreview({ cert, isModal = false }) {
         </div>
 
         <div style={{ textAlign: 'center' }}>
-          <div style={{ width: isModal ? 80 : 28, height: 1, background: '#94a3b8', margin: '0 auto 2px' }} />
-          <div style={{ fontSize: isModal ? '0.72rem' : '0.38rem', color: '#64748b' }}>Authorized</div>
+          <div style={{ width: isModal ? 75 : 28, height: 1, background: '#94a3b8', margin: '0 auto 2px' }} />
+          <div style={{ fontSize: isModal ? '0.7rem' : '0.38rem', color: '#64748b' }}>Authorized</div>
         </div>
       </div>
     </div>
@@ -309,12 +306,12 @@ export default function CertificationsSection() {
   const getCategoryIcon = (category) => {
     const cat = (category || '').toLowerCase();
     if (cat.includes('intern')) {
-      return <Briefcase size={12} strokeWidth={2.4} style={{ color: 'var(--accent, #EF4444)' }} />;
+      return <Briefcase size={12} strokeWidth={2.4} style={{ color: 'var(--accent)' }} />;
     }
     if (cat.includes('compet') || cat.includes('hackathon')) {
-      return <Trophy size={12} strokeWidth={2.4} style={{ color: 'var(--accent, #EF4444)' }} />;
+      return <Trophy size={12} strokeWidth={2.4} style={{ color: 'var(--accent)' }} />;
     }
-    return <CheckCircle2 size={12} strokeWidth={2.4} style={{ color: 'var(--accent, #EF4444)' }} />;
+    return <CheckCircle2 size={12} strokeWidth={2.4} style={{ color: 'var(--accent)' }} />;
   };
 
   const getCategoryLabel = (category) => {
@@ -325,7 +322,7 @@ export default function CertificationsSection() {
   };
 
   return (
-    <section id="certifications" className="section-padding" style={{ background: 'var(--bg-base, #09090b)' }}>
+    <section id="certifications" className="section-padding" style={{ background: 'var(--bg-base)' }}>
       <style>{`
         .cert-grid {
           display: grid;
@@ -353,15 +350,15 @@ export default function CertificationsSection() {
 
         .cert-card-interactive:hover {
           transform: translateY(-3px) !important;
-          border-color: var(--accent-border, rgba(239, 68, 68, 0.38)) !important;
-          box-shadow: 0 10px 28px -6px var(--accent-glow, rgba(239, 68, 68, 0.2)) !important;
+          border-color: var(--accent-border) !important;
+          box-shadow: 0 10px 28px -6px var(--accent-glow) !important;
         }
 
         /* Hover animation: Corner arrow button illuminates with accent container */
         .cert-card-interactive:hover .cert-arrow-box {
-          background: var(--accent-dim, rgba(220, 38, 38, 0.35)) !important;
-          border-color: var(--accent-border, rgba(239, 68, 68, 0.5)) !important;
-          color: var(--accent, #EF4444) !important;
+          background: var(--accent-dim) !important;
+          border-color: var(--accent-border) !important;
+          color: var(--accent) !important;
         }
 
         /* Subtle tactile micro-scale on preview image */
@@ -371,19 +368,18 @@ export default function CertificationsSection() {
 
         /* Title color shift */
         .cert-card-interactive:hover .cert-card-title {
-          color: var(--accent, #EF4444) !important;
+          color: var(--accent) !important;
         }
       `}</style>
 
       <div className="container" ref={ref}>
         {/* Section Header */}
         <div style={{ marginBottom: '1.75rem' }}>
-          {/* Eyebrow */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.65rem' }}>
-            <span style={{ fontSize: '0.9rem', lineHeight: 1 }}>🏆</span>
+          {/* Eyebrow — Trophy icon removed per user request */}
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.65rem' }}>
             <span
               style={{
-                color: 'var(--accent, #EF4444)',
+                color: 'var(--accent)',
                 fontSize: '0.72rem',
                 fontWeight: 800,
                 letterSpacing: '0.14em',
@@ -400,7 +396,7 @@ export default function CertificationsSection() {
               fontSize: 'clamp(2.1rem, 3.8vw, 3rem)',
               fontWeight: 800,
               letterSpacing: '-0.03em',
-              color: 'var(--text-primary, #ffffff)',
+              color: 'var(--text-primary)',
               lineHeight: 1.15,
               marginBottom: '0.75rem',
             }}
@@ -411,7 +407,7 @@ export default function CertificationsSection() {
           {/* Subtitle */}
           <p
             style={{
-              color: 'var(--text-secondary, #a1a1aa)',
+              color: 'var(--text-secondary)',
               fontSize: '0.96rem',
               margin: 0,
             }}
@@ -439,39 +435,39 @@ export default function CertificationsSection() {
                   type="button"
                   onClick={() => setActiveTab(tab.id)}
                   style={{
-                    background: isActive ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.02)',
+                    background: isActive ? 'var(--accent-dim)' : 'var(--bg-card)',
                     border: isActive
-                      ? '1px solid rgba(255, 255, 255, 0.16)'
-                      : '1px solid rgba(255, 255, 255, 0.05)',
+                      ? '1px solid var(--accent-border)'
+                      : '1px solid var(--border)',
                     borderRadius: '9999px',
                     padding: '0.45rem 1rem',
                     fontSize: '0.85rem',
                     fontWeight: isActive ? 600 : 500,
-                    color: isActive ? 'var(--text-primary, #ffffff)' : 'var(--text-secondary, #a1a1aa)',
+                    color: isActive ? 'var(--accent)' : 'var(--text-secondary)',
                     cursor: 'pointer',
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '0.4rem',
                     transition: 'all 0.22s ease',
-                    boxShadow: isActive ? '0 2px 8px rgba(0, 0, 0, 0.3)' : 'none',
+                    boxShadow: isActive ? '0 2px 8px var(--accent-glow)' : 'var(--shadow-sm)',
                   }}
                   onMouseEnter={(e) => {
                     if (!isActive) {
-                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
-                      e.currentTarget.style.color = 'var(--text-primary, #ffffff)';
+                      e.currentTarget.style.background = 'var(--bg-hover)';
+                      e.currentTarget.style.color = 'var(--text-primary)';
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (!isActive) {
-                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)';
-                      e.currentTarget.style.color = 'var(--text-secondary, #a1a1aa)';
+                      e.currentTarget.style.background = 'var(--bg-card)';
+                      e.currentTarget.style.color = 'var(--text-secondary)';
                     }
                   }}
                 >
                   <span>{tab.label}</span>
                   <span
                     style={{
-                      color: isActive ? 'var(--accent, #EF4444)' : '#71717a',
+                      color: isActive ? 'var(--accent)' : 'var(--text-muted)',
                       fontWeight: 700,
                       fontSize: '0.8rem',
                     }}
@@ -493,8 +489,8 @@ export default function CertificationsSection() {
                 style={{
                   height: 310,
                   borderRadius: '16px',
-                  background: 'var(--bg-elevated, #18181b)',
-                  border: '1px solid var(--border, #27272a)',
+                  background: 'var(--bg-elevated)',
+                  border: '1px solid var(--border)',
                   opacity: 0.6,
                 }}
               />
@@ -506,18 +502,18 @@ export default function CertificationsSection() {
             style={{
               padding: '3rem 2rem',
               textAlign: 'center',
-              background: 'var(--bg-card, #121214)',
-              border: '1px solid var(--border, rgba(255, 255, 255, 0.08))',
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border)',
               borderRadius: '16px',
               maxWidth: 520,
               margin: '0 auto',
             }}
           >
-            <Award size={42} style={{ color: 'var(--accent, #EF4444)', margin: '0 auto 1rem', opacity: 0.85 }} />
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.4rem' }}>
+            <Award size={42} style={{ color: 'var(--accent)', margin: '0 auto 1rem', opacity: 0.85 }} />
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.4rem' }}>
               No Credentials In This Category
             </h3>
-            <p style={{ fontSize: '0.88rem', color: '#a1a1aa', margin: 0 }}>
+            <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', margin: 0 }}>
               Credentials uploaded in the admin portal will appear right here.
             </p>
           </div>
@@ -536,25 +532,26 @@ export default function CertificationsSection() {
                   className="cert-card-interactive"
                   onClick={() => setSelectedCert(cert)}
                   style={{
-                    background: 'var(--bg-card, #131217)',
-                    border: '1px solid var(--border, rgba(255, 255, 255, 0.08))',
+                    background: 'var(--bg-card)',
+                    border: '1px solid var(--border)',
                     borderRadius: '16px',
                     padding: '0.75rem',
                     cursor: 'pointer',
                     display: 'flex',
                     flexDirection: 'column',
                     position: 'relative',
+                    boxShadow: 'var(--shadow-sm)',
                   }}
                 >
                   {/* macOS Window Mockup Frame */}
                   <div
                     style={{
                       borderRadius: '12px',
-                      border: '1px solid rgba(255, 255, 255, 0.09)',
-                      background: '#1c1b21',
+                      border: '1px solid var(--border)',
+                      background: 'var(--bg-elevated)',
                       overflow: 'hidden',
                       position: 'relative',
-                      boxShadow: '0 4px 14px rgba(0, 0, 0, 0.45)',
+                      boxShadow: 'var(--shadow-sm)',
                     }}
                   >
                     {/* Window Header */}
@@ -565,8 +562,8 @@ export default function CertificationsSection() {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        background: '#18171d',
-                        borderBottom: '1px solid rgba(255, 255, 255, 0.07)',
+                        background: 'var(--bg-hover)',
+                        borderBottom: '1px solid var(--border)',
                       }}
                     >
                       {/* Left: 3 macOS dots + windowTitle */}
@@ -577,7 +574,7 @@ export default function CertificationsSection() {
                         <span
                           style={{
                             fontSize: '0.7rem',
-                            color: '#9ca3af',
+                            color: 'var(--text-secondary)',
                             fontWeight: 500,
                             marginLeft: '0.45rem',
                             whiteSpace: 'nowrap',
@@ -590,19 +587,19 @@ export default function CertificationsSection() {
                         </span>
                       </div>
 
-                      {/* Right: Corner arrow button (turns red on card hover) */}
+                      {/* Right: Corner arrow button (turns accent container on card hover) */}
                       <div
                         className="cert-arrow-box"
                         style={{
                           width: 22,
                           height: 22,
                           borderRadius: '5px',
-                          background: 'rgba(255, 255, 255, 0.05)',
-                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                          background: 'var(--bg-surface)',
+                          border: '1px solid var(--border)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          color: '#71717a',
+                          color: 'var(--text-muted)',
                           transition: 'all 0.22s ease',
                           flexShrink: 0,
                         }}
@@ -616,7 +613,7 @@ export default function CertificationsSection() {
                       style={{
                         height: 140,
                         position: 'relative',
-                        background: '#0d0c10',
+                        background: 'var(--bg-surface)',
                         overflow: 'hidden',
                         display: 'flex',
                         alignItems: 'center',
@@ -651,12 +648,12 @@ export default function CertificationsSection() {
                             gap: '0.35rem',
                             width: '100%',
                             height: '100%',
-                            background: 'radial-gradient(circle at center, rgba(239, 68, 68, 0.12) 0%, rgba(10, 10, 12, 0.95) 75%)',
-                            color: 'var(--accent, #EF4444)',
+                            background: 'var(--accent-dim)',
+                            color: 'var(--accent)',
                           }}
                         >
                           <FileText size={32} strokeWidth={1.7} />
-                          <span style={{ fontSize: '0.67rem', fontWeight: 600, color: '#a1a1aa', letterSpacing: '0.04em' }}>
+                          <span style={{ fontSize: '0.67rem', fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: '0.04em' }}>
                             PDF DOCUMENT
                           </span>
                         </div>
@@ -673,15 +670,15 @@ export default function CertificationsSection() {
                             position: 'absolute',
                             bottom: 8,
                             left: 8,
-                            background: 'rgba(25, 8, 12, 0.88)',
+                            background: 'var(--bg-surface)',
                             backdropFilter: 'blur(8px)',
-                            border: '1px solid rgba(239, 68, 68, 0.35)',
+                            border: '1px solid var(--accent-border)',
                             borderRadius: '6px',
                             padding: '2.5px 8px',
                             fontSize: '0.68rem',
                             fontWeight: 600,
-                            color: '#f87171',
-                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.65)',
+                            color: 'var(--accent)',
+                            boxShadow: 'var(--shadow-sm)',
                             pointerEvents: 'none',
                             lineHeight: 1.25,
                             zIndex: 2,
@@ -708,7 +705,7 @@ export default function CertificationsSection() {
                       {getCategoryIcon(cert.category)}
                       <span
                         style={{
-                          color: 'var(--accent, #EF4444)',
+                          color: 'var(--accent)',
                           fontSize: '0.7rem',
                           fontWeight: 700,
                           letterSpacing: '0.08em',
@@ -719,22 +716,22 @@ export default function CertificationsSection() {
                       </span>
                       {cert.dateTag && (
                         <>
-                          <span style={{ color: '#52525b', fontSize: '0.74rem' }}>·</span>
-                          <span style={{ color: '#71717a', fontSize: '0.74rem', fontWeight: 500 }}>
+                          <span style={{ color: 'var(--text-muted)', fontSize: '0.74rem' }}>·</span>
+                          <span style={{ color: 'var(--text-muted)', fontSize: '0.74rem', fontWeight: 500 }}>
                             {cert.dateTag}
                           </span>
                         </>
                       )}
                     </div>
 
-                    {/* Title */}
+                    {/* Title — Uses var(--text-primary) for perfect legibility in both Light & Dark modes */}
                     <h3
                       className="cert-card-title"
                       title={cert.name}
                       style={{
                         fontSize: '0.92rem',
                         fontWeight: 700,
-                        color: '#ffffff',
+                        color: 'var(--text-primary)',
                         lineHeight: 1.35,
                         margin: '0 0 0.35rem 0',
                         display: '-webkit-box',
@@ -752,7 +749,7 @@ export default function CertificationsSection() {
                       title={cert.issuer}
                       style={{
                         fontSize: '0.78rem',
-                        color: '#8b8b93',
+                        color: 'var(--text-secondary)',
                         lineHeight: 1.35,
                         margin: 0,
                         marginTop: 'auto',
@@ -780,7 +777,7 @@ export default function CertificationsSection() {
                 position: 'fixed',
                 inset: 0,
                 zIndex: 2000,
-                background: 'rgba(0, 0, 0, 0.85)',
+                background: 'rgba(0, 0, 0, 0.75)',
                 backdropFilter: 'blur(8px)',
                 display: 'flex',
                 alignItems: 'center',
@@ -795,8 +792,8 @@ export default function CertificationsSection() {
                 exit={{ opacity: 0, scale: 0.95, y: 12 }}
                 transition={{ duration: 0.22, ease: 'easeOut' }}
                 style={{
-                  background: '#141416',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  background: 'var(--bg-surface)',
+                  border: '1px solid var(--border)',
                   borderRadius: '16px',
                   maxWidth: 820,
                   width: '100%',
@@ -804,7 +801,7 @@ export default function CertificationsSection() {
                   display: 'flex',
                   flexDirection: 'column',
                   overflow: 'hidden',
-                  boxShadow: '0 25px 60px rgba(0, 0, 0, 0.85), 0 0 35px var(--accent-glow, rgba(239, 68, 68, 0.2))',
+                  boxShadow: 'var(--shadow-lg), 0 0 35px var(--accent-glow)',
                 }}
                 onClick={(e) => e.stopPropagation()}
               >
@@ -815,8 +812,8 @@ export default function CertificationsSection() {
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     padding: '0.9rem 1.25rem',
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-                    background: '#1a1a1e',
+                    borderBottom: '1px solid var(--border)',
+                    background: 'var(--bg-elevated)',
                   }}
                 >
                   <div style={{ flex: 1, paddingRight: '1rem' }}>
@@ -824,7 +821,7 @@ export default function CertificationsSection() {
                       {getCategoryIcon(selectedCert.category)}
                       <span
                         style={{
-                          color: 'var(--accent, #EF4444)',
+                          color: 'var(--accent)',
                           fontSize: '0.68rem',
                           fontWeight: 700,
                           letterSpacing: '0.07em',
@@ -834,7 +831,7 @@ export default function CertificationsSection() {
                         {getCategoryLabel(selectedCert.category)}
                       </span>
                       {selectedCert.dateTag && (
-                        <span style={{ color: '#71717a', fontSize: '0.72rem' }}>
+                        <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>
                           · {selectedCert.dateTag}
                         </span>
                       )}
@@ -843,14 +840,14 @@ export default function CertificationsSection() {
                       style={{
                         fontSize: '1rem',
                         fontWeight: 700,
-                        color: '#ffffff',
+                        color: 'var(--text-primary)',
                         margin: 0,
                         lineHeight: 1.3,
                       }}
                     >
                       {selectedCert.name}
                     </h3>
-                    <p style={{ fontSize: '0.78rem', color: '#a1a1aa', margin: '0.2rem 0 0 0' }}>
+                    <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '0.2rem 0 0 0' }}>
                       {selectedCert.issuer}
                     </p>
                   </div>
@@ -858,26 +855,26 @@ export default function CertificationsSection() {
                     type="button"
                     onClick={() => setSelectedCert(null)}
                     style={{
-                      background: 'rgba(255, 255, 255, 0.06)',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      background: 'var(--bg-hover)',
+                      border: '1px solid var(--border)',
                       borderRadius: '50%',
                       width: 32,
                       height: 32,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      color: '#a1a1aa',
+                      color: 'var(--text-secondary)',
                       cursor: 'pointer',
                       fontSize: '0.85rem',
                       transition: 'all 0.2s',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.color = '#ffffff';
-                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)';
+                      e.currentTarget.style.color = 'var(--text-primary)';
+                      e.currentTarget.style.borderColor = 'var(--accent)';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.color = '#a1a1aa';
-                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)';
+                      e.currentTarget.style.color = 'var(--text-secondary)';
+                      e.currentTarget.style.borderColor = 'var(--border)';
                     }}
                   >
                     <X size={16} />
@@ -893,7 +890,7 @@ export default function CertificationsSection() {
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    background: '#0a0a0c',
+                    background: 'var(--bg-base)',
                   }}
                 >
                   {selectedCert.image ? (
@@ -915,12 +912,12 @@ export default function CertificationsSection() {
                           width: '100%',
                           borderRadius: '10px',
                           overflow: 'hidden',
-                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                          border: '1px solid var(--border)',
                           background: '#ffffff',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          boxShadow: '0 8px 30px rgba(0, 0, 0, 0.7)',
+                          boxShadow: 'var(--shadow-md)',
                         }}
                       >
                         <img
@@ -942,7 +939,7 @@ export default function CertificationsSection() {
                         maxWidth: 620,
                         borderRadius: '12px',
                         overflow: 'hidden',
-                        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.7)',
+                        boxShadow: 'var(--shadow-md)',
                       }}
                     >
                       <CertificateDocPreview cert={selectedCert} isModal={true} />
@@ -954,7 +951,7 @@ export default function CertificationsSection() {
                       style={{
                         marginTop: '1rem',
                         fontSize: '0.85rem',
-                        color: '#a1a1aa',
+                        color: 'var(--text-secondary)',
                         lineHeight: 1.6,
                         textAlign: 'center',
                         maxWidth: '650px',
@@ -972,8 +969,8 @@ export default function CertificationsSection() {
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     padding: '0.85rem 1.25rem',
-                    borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-                    background: '#18181b',
+                    borderTop: '1px solid var(--border)',
+                    background: 'var(--bg-elevated)',
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -983,7 +980,7 @@ export default function CertificationsSection() {
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{
-                          color: 'var(--accent, #EF4444)',
+                          color: 'var(--accent)',
                           fontSize: '0.82rem',
                           fontWeight: 600,
                           textDecoration: 'none',
@@ -1001,7 +998,7 @@ export default function CertificationsSection() {
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{
-                          color: '#a1a1aa',
+                          color: 'var(--text-secondary)',
                           fontSize: '0.82rem',
                           fontWeight: 500,
                           textDecoration: 'none',
@@ -1018,15 +1015,15 @@ export default function CertificationsSection() {
                     type="button"
                     onClick={() => setSelectedCert(null)}
                     style={{
-                      background: 'var(--accent, #EF4444)',
-                      color: 'var(--accent-contrast, #ffffff)',
+                      background: 'var(--accent)',
+                      color: 'var(--accent-contrast)',
                       border: 'none',
                       padding: '0.45rem 1.15rem',
                       borderRadius: '8px',
                       fontWeight: 600,
                       fontSize: '0.84rem',
                       cursor: 'pointer',
-                      boxShadow: '0 2px 8px var(--accent-glow, rgba(239, 68, 68, 0.35))',
+                      boxShadow: '0 2px 8px var(--accent-glow)',
                     }}
                   >
                     Close
