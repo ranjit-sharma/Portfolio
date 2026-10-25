@@ -65,9 +65,42 @@ export default function HeroSection() {
         alignItems: 'center',
         position: 'relative',
         overflow: 'hidden',
-        padding: '4rem 0',
+        padding: '5rem 0 4.5rem 0',
       }}
     >
+      <style>{`
+        @media (max-width: 968px) {
+          .hero-grid-layout {
+            grid-template-columns: 1fr !important;
+            gap: 3rem !important;
+          }
+        }
+      `}</style>
+
+      {/* Giant background outline text for breadth and depth */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          bottom: '3%',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          fontSize: 'clamp(5rem, 15vw, 13.5rem)',
+          fontWeight: 900,
+          letterSpacing: '-0.03em',
+          lineHeight: 1,
+          whiteSpace: 'nowrap',
+          color: 'transparent',
+          WebkitTextStroke: '1px var(--border)',
+          opacity: 0.28,
+          pointerEvents: 'none',
+          userSelect: 'none',
+          zIndex: 0,
+        }}
+      >
+        SOFTWARE ENGINEER
+      </div>
+
       {/* Subtle background glow */}
       <div
         aria-hidden
@@ -75,19 +108,21 @@ export default function HeroSection() {
           position: 'absolute',
           top: '15%',
           right: '5%',
-          width: 650,
-          height: 650,
+          width: 700,
+          height: 700,
           background: 'radial-gradient(circle at 60% 40%, var(--accent-glow) 0%, transparent 68%)',
           pointerEvents: 'none',
+          zIndex: 0,
         }}
       />
 
-      <div className="container" style={{ position: 'relative', zIndex: 1 }}>
+      <div className="container" style={{ position: 'relative', zIndex: 1, width: '100%' }}>
         <div
+          className="hero-grid-layout"
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '3rem',
+            gridTemplateColumns: '1.2fr 0.95fr',
+            gap: '3.75rem',
             alignItems: 'center',
           }}
         >
@@ -108,7 +143,7 @@ export default function HeroSection() {
                   background: 'var(--bg-elevated)',
                   border: '1px solid var(--border)',
                   borderRadius: 'var(--radius-pill)',
-                  padding: '0.35rem 0.9rem',
+                  padding: '0.35rem 0.95rem',
                   fontSize: '0.82rem',
                   color: 'var(--text-secondary)',
                 }}
@@ -122,7 +157,7 @@ export default function HeroSection() {
                     animation: 'pulse-glow 2s ease infinite',
                   }}
                 />
-                B.Tech in Computer Science · Open to opportunities
+                Open to internships &amp; full-time roles
               </span>
 
               {views != null && (
@@ -151,32 +186,40 @@ export default function HeroSection() {
             </motion.div>
 
             {/* Main heading */}
-            <motion.h1
+            <motion.div
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              style={{
-                fontSize: 'clamp(2.2rem, 5vw, 4rem)',
-                fontWeight: 900,
-                lineHeight: 1.1,
-                letterSpacing: '-0.02em',
-                marginBottom: '0.75rem',
-              }}
+              style={{ marginBottom: '0.75rem' }}
             >
-              Hi, I'm{' '}
-              <span style={{ color: 'var(--accent)' }}>Ranjit Sharma</span>.
-            </motion.h1>
+              <div style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>
+                Hi, I'm
+              </div>
+              <h1
+                style={{
+                  fontSize: 'clamp(2.6rem, 5.8vw, 4.5rem)',
+                  fontWeight: 900,
+                  lineHeight: 1.08,
+                  letterSpacing: '-0.025em',
+                  margin: 0,
+                  color: 'var(--accent)',
+                }}
+              >
+                Ranjit Sharma
+              </h1>
+            </motion.div>
 
-            {/* Typing effect */}
+            {/* Subtitle / Roles with typing effect */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4, delay: 0.3 }}
               style={{
-                fontSize: 'clamp(1.1rem, 2.5vw, 1.5rem)',
+                fontSize: 'clamp(1.15rem, 2.6vw, 1.6rem)',
                 fontWeight: 700,
                 marginBottom: '1.25rem',
                 minHeight: '2em',
+                color: 'var(--text-primary)',
               }}
             >
               <TypingEffect words={ROLES} />
@@ -191,12 +234,11 @@ export default function HeroSection() {
                 color: 'var(--text-secondary)',
                 fontSize: '1.05rem',
                 lineHeight: 1.75,
-                maxWidth: '52ch',
+                maxWidth: '56ch',
                 marginBottom: '2.25rem',
               }}
             >
-              I enjoy transforming ideas into practical applications through clean code,
-              thoughtful UI/UX, and scalable backend systems.
+              I build backends, full-stack web applications, and interactive user interfaces — focused on clean architecture, scalable APIs, and performance.
             </motion.p>
 
             {/* CTA Pill Buttons (View Projects & Resume) */}
@@ -399,86 +441,208 @@ export default function HeroSection() {
             </motion.div>
           </div>
 
-          {/* Right — Code panel */}
+          {/* Right — Code panel with floating tech badges */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            style={{ display: 'flex', justifyContent: 'center' }}
+            style={{ display: 'flex', justifyContent: 'center', position: 'relative', width: '100%' }}
           >
-            <div
-              style={{
-                background: 'var(--bg-card)',
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--radius-xl)',
-                padding: '1.5rem',
-                fontFamily: "'Fira Code', 'Cascadia Code', 'Consolas', monospace",
-                fontSize: '0.82rem',
-                lineHeight: 1.8,
-                color: 'var(--text-secondary)',
-                maxWidth: 400,
-                width: '100%',
-                overflow: 'hidden',
-                boxShadow: 'var(--shadow-md)',
-              }}
-            >
-              {/* Window controls */}
-              <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '1.25rem' }}>
-                {['#ff5f57', '#ffbd2e', '#28c840'].map((c) => (
-                  <div key={c} style={{ width: 11, height: 11, borderRadius: '50%', background: c }} />
-                ))}
-                <span style={{ marginLeft: '0.5rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                  developer.js
-                </span>
+            <div style={{ position: 'relative', width: '100%', maxWidth: 480 }}>
+              {/* Floating Badge Top Left */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: -14,
+                  left: 20,
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '9999px',
+                  padding: '3px 12px',
+                  fontSize: '0.72rem',
+                  fontWeight: 600,
+                  color: 'var(--text-primary)',
+                  boxShadow: 'var(--shadow-md)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  zIndex: 3,
+                }}
+              >
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)' }} />
+                React.js
               </div>
 
-              {[
-                { indent: 0, text: <><span style={{color:'#a855f7'}}>const</span> <span style={{color:'#38bdf8'}}>developer</span> = {'{'}</> },
-                { indent: 2, text: <><span style={{color:'var(--code-key)', fontWeight: 600}}>name</span>: <span style={{color:'var(--accent)', fontWeight: 500}}>"Ranjit Sharma"</span>,</> },
-                { indent: 2, text: <><span style={{color:'var(--code-key)', fontWeight: 600}}>role</span>: <span style={{color:'var(--accent)', fontWeight: 500}}>"Full-Stack Developer"</span>,</> },
-                { indent: 2, text: <><span style={{color:'var(--code-key)', fontWeight: 600}}>stack</span>: [<span style={{color:'var(--accent)', fontWeight: 500}}>"MongoDB"</span>, <span style={{color:'var(--accent)', fontWeight: 500}}>"Express"</span>,</> },
-                { indent: 5, text: <><span style={{color:'var(--accent)', fontWeight: 500}}>"React"</span>, <span style={{color:'var(--accent)', fontWeight: 500}}>"Node.js"</span>],</> },
-                { indent: 2, text: <><span style={{color:'var(--code-key)', fontWeight: 600}}>education</span>: <span style={{color:'var(--accent)', fontWeight: 500}}>"B.Tech in Computer Science"</span>,</> },
-                { indent: 2, text: <><span style={{color:'var(--code-key)', fontWeight: 600}}>leetcode</span>: <span style={{color:'var(--accent)', fontWeight: 500}}>"Problem Solving & DSA"</span>,</> },
-                { indent: 2, text: <><span style={{color:'var(--code-key)', fontWeight: 600}}>available</span>: <span style={{color:'var(--code-boolean)', fontWeight: 600}}>true</span>,</> },
-                { indent: 0, text: '};' },
-                { indent: 0, text: '' },
-                { indent: 0, text: <><span style={{color:'#a855f7'}}>export default</span> <span style={{color:'#38bdf8'}}>developer</span>;</> },
-              ].map((line, i) => (
-                <div key={i} style={{ paddingLeft: `${line.indent * 0.55}rem` }}>
-                  {line.text}
+              {/* Floating Badge Top Right */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 24,
+                  right: -14,
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '9999px',
+                  padding: '3px 12px',
+                  fontSize: '0.72rem',
+                  fontWeight: 600,
+                  color: 'var(--text-primary)',
+                  boxShadow: 'var(--shadow-md)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  zIndex: 3,
+                }}
+              >
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)' }} />
+                Node.js
+              </div>
+
+              {/* Floating Badge Bottom Left */}
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: -12,
+                  left: 16,
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '9999px',
+                  padding: '3px 12px',
+                  fontSize: '0.72rem',
+                  fontWeight: 600,
+                  color: 'var(--text-primary)',
+                  boxShadow: 'var(--shadow-md)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  zIndex: 3,
+                }}
+              >
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)' }} />
+                Express.js
+              </div>
+
+              {/* Floating Badge Bottom Right */}
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: 12,
+                  right: -12,
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '9999px',
+                  padding: '3px 12px',
+                  fontSize: '0.72rem',
+                  fontWeight: 600,
+                  color: 'var(--text-primary)',
+                  boxShadow: 'var(--shadow-md)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  zIndex: 3,
+                }}
+              >
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)' }} />
+                MongoDB · Atlas
+              </div>
+
+              {/* Code window */}
+              <div
+                style={{
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius-xl)',
+                  padding: '1.6rem 1.75rem',
+                  fontFamily: "'Fira Code', 'Cascadia Code', 'Consolas', monospace",
+                  fontSize: '0.85rem',
+                  lineHeight: 1.85,
+                  color: 'var(--text-secondary)',
+                  width: '100%',
+                  overflow: 'hidden',
+                  boxShadow: 'var(--shadow-md)',
+                }}
+              >
+                {/* Window controls */}
+                <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '1.25rem' }}>
+                  {['#ff5f57', '#ffbd2e', '#28c840'].map((c) => (
+                    <div key={c} style={{ width: 11, height: 11, borderRadius: '50%', background: c }} />
+                  ))}
+                  <span style={{ marginLeft: '0.5rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                    developer.js
+                  </span>
                 </div>
-              ))}
+
+                {[
+                  { indent: 0, text: <><span style={{color:'#a855f7'}}>const</span> <span style={{color:'#38bdf8'}}>developer</span> = {'{'}</> },
+                  { indent: 2, text: <><span style={{color:'var(--code-key)', fontWeight: 600}}>name</span>: <span style={{color:'var(--accent)', fontWeight: 500}}>"Ranjit Sharma"</span>,</> },
+                  { indent: 2, text: <><span style={{color:'var(--code-key)', fontWeight: 600}}>role</span>: <span style={{color:'var(--accent)', fontWeight: 500}}>"Full-Stack Developer"</span>,</> },
+                  { indent: 2, text: <><span style={{color:'var(--code-key)', fontWeight: 600}}>stack</span>: [<span style={{color:'var(--accent)', fontWeight: 500}}>"MongoDB"</span>, <span style={{color:'var(--accent)', fontWeight: 500}}>"Express"</span>,</> },
+                  { indent: 5, text: <><span style={{color:'var(--accent)', fontWeight: 500}}>"React"</span>, <span style={{color:'var(--accent)', fontWeight: 500}}>"Node.js"</span>],</> },
+                  { indent: 2, text: <><span style={{color:'var(--code-key)', fontWeight: 600}}>education</span>: <span style={{color:'var(--accent)', fontWeight: 500}}>"B.Tech in Computer Science"</span>,</> },
+                  { indent: 2, text: <><span style={{color:'var(--code-key)', fontWeight: 600}}>leetcode</span>: <span style={{color:'var(--accent)', fontWeight: 500}}>"Problem Solving &amp; DSA"</span>,</> },
+                  { indent: 2, text: <><span style={{color:'var(--code-key)', fontWeight: 600}}>available</span>: <span style={{color:'var(--code-boolean)', fontWeight: 600}}>true</span>,</> },
+                  { indent: 0, text: '};' },
+                  { indent: 0, text: '' },
+                  { indent: 0, text: <><span style={{color:'#a855f7'}}>export default</span> <span style={{color:'#38bdf8'}}>developer</span>;</> },
+                ].map((line, i) => (
+                  <div key={i} style={{ paddingLeft: `${line.indent * 0.55}rem` }}>
+                    {line.text}
+                  </div>
+                ))}
+              </div>
             </div>
           </motion.div>
         </div>
 
-        {/* Scroll indicator */}
+        {/* Scroll indicator matching reference */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2, duration: 0.6 }}
           style={{
             position: 'absolute',
-            bottom: '-3rem',
+            bottom: '0.5rem',
             left: '50%',
             transform: 'translateX(-50%)',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: '0.3rem',
-            color: 'var(--text-muted)',
-            fontSize: '0.75rem',
+            gap: '0.45rem',
+            zIndex: 2,
           }}
         >
-          <span>scroll</span>
-          <motion.div
-            animate={{ y: [0, 6, 0] }}
-            transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
-            style={{ fontSize: '0.8rem' }}
+          <span
+            style={{
+              fontSize: '0.65rem',
+              fontWeight: 700,
+              letterSpacing: '0.24em',
+              textTransform: 'uppercase',
+              color: 'var(--text-muted)',
+            }}
           >
-            ↓
-          </motion.div>
+            SCROLL
+          </span>
+          <div
+            style={{
+              width: 18,
+              height: 28,
+              borderRadius: 10,
+              border: '1.5px solid var(--border)',
+              display: 'flex',
+              justifyContent: 'center',
+              paddingTop: 4,
+            }}
+          >
+            <motion.div
+              animate={{ y: [0, 8, 0], opacity: [1, 0.2, 1] }}
+              transition={{ repeat: Infinity, duration: 1.8, ease: 'easeInOut' }}
+              style={{
+                width: 3.5,
+                height: 7,
+                borderRadius: 2,
+                background: 'var(--accent)',
+              }}
+            />
+          </div>
         </motion.div>
       </div>
     </section>
