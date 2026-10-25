@@ -1,122 +1,66 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from '../hooks/useInView';
-import { Trophy, Briefcase, CheckCircle2, ArrowUpRight, X, ExternalLink } from 'lucide-react';
+import { Trophy, Briefcase, CheckCircle2, ArrowUpRight, X, ExternalLink, Award, FileText } from 'lucide-react';
 import api from '../services/api';
 import { getAssetUrl } from '../utils/assetUrl';
 
 const FALLBACK_CERTS = [
   {
     _id: '1',
-    name: 'Oracle Cloud Infrastructure 2025 Certified AI Foundations Associate',
-    issuer: 'Oracle University',
-    issueDate: '2025-10-01',
+    name: 'Oracle Cloud Infrastructure 2025 Certified Generative AI Professional',
+    issuer: 'Oracle',
+    issueDate: '2025-01-01',
     credentialUrl: '',
-    image: '/certificates/cert_1_oracle.png',
-    description: 'Certification covering AI concepts, OCI AI services, machine learning foundations, and cloud deployment.',
+    image: '/uploads/Screenshot_2026-10-21_132422-1792570047406-5572.png',
+    description: 'Certification covering generative AI fundamentals, OCI AI services, large language models, and practical AI solution development on Oracle Cloud Infrastructure.',
     category: 'Certifications',
-    windowTitle: 'Oracle University',
-    badge: 'Valid until Oct 2027',
-    dateTag: 'Oct 2025',
+    windowTitle: 'Oracle Cloud Infrastructure',
+    badge: 'Certified Professional',
+    dateTag: 'Jan 2025',
     displayOrder: 1,
   },
   {
     _id: '2',
-    name: 'Programming In Java',
-    issuer: 'NPTEL · IIT Kharagpur',
-    issueDate: '2025-04-01',
+    name: 'Technical Communication',
+    issuer: 'TCS iON',
+    issueDate: '',
     credentialUrl: '',
-    image: '/certificates/cert_2_nptel_java.png',
-    description: '12-week course and proctored examination covering core Java, OOP, collections, multithreading, and JVM internals.',
+    image: '',
+    description: 'Certification in technical writing and communication skills for technology professionals.',
     category: 'Certifications',
-    windowTitle: 'NPTEL',
-    badge: 'Elite - Silver · 77%',
-    dateTag: 'Jan-Apr 2025 · 12 weeks',
+    windowTitle: 'TCS iON',
+    badge: 'Certified',
+    dateTag: '2024',
     displayOrder: 2,
   },
   {
     _id: '3',
-    name: 'Data Base Management System',
-    issuer: 'NPTEL · IIT Kharagpur',
-    issueDate: '2025-09-01',
+    name: 'Geo-data Sharing and Cyber Security',
+    issuer: 'ISRO / IIRS',
+    issueDate: '',
     credentialUrl: '',
-    image: '/certificates/cert_3_nptel_dbms.png',
-    description: '8-week comprehensive course covering relational algebra, SQL, normalization, transactions, indexing, and query optimization.',
+    image: '',
+    description: 'Online course covering geospatial data handling, sharing protocols, and cyber security practices for earth observation data.',
     category: 'Certifications',
-    windowTitle: 'NPTEL',
-    badge: 'Score 57%',
-    dateTag: 'Jul-Sep 2025 · 8 weeks',
+    windowTitle: 'ISRO / IIRS',
+    badge: 'Completed',
+    dateTag: '2024',
     displayOrder: 3,
   },
   {
     _id: '4',
-    name: 'Data Structure and Algorithms using Java',
-    issuer: 'NPTEL · IIT Kharagpur',
-    issueDate: '2024-10-01',
+    name: 'Smart India Hackathon Participant',
+    issuer: 'Ministry of Education, Government of India',
+    issueDate: '',
     credentialUrl: '',
-    image: '/certificates/cert_4_nptel_dsa.png',
-    description: '12-week intensive course on algorithmic paradigms, asymptotic analysis, linear and non-linear data structures, and graph algorithms.',
-    category: 'Certifications',
-    windowTitle: 'NPTEL',
-    badge: 'Score 57%',
-    dateTag: 'Jul-Oct 2024 · 12 weeks',
+    image: '',
+    description: 'Participated in the Smart India Hackathon — a national initiative by the Government of India to encourage innovation and problem-solving among students.',
+    category: 'Competitions',
+    windowTitle: 'Smart India Hackathon',
+    badge: 'Participant',
+    dateTag: '2024',
     displayOrder: 4,
-  },
-  {
-    _id: '5',
-    name: 'Internship Training — Upper Air Sounding Real-Time Monitoring and Visualization Dashboard',
-    issuer: 'Proof & Experimental Establishment (PXE), DRDO',
-    issueDate: '2026-07-17',
-    credentialUrl: '',
-    image: '/certificates/cert_5_drdo.png',
-    description: 'Certificate of Internship Training at Proof & Experimental Establishment (PXE), Ministry of Defence, Government of India.',
-    category: 'Internships',
-    windowTitle: 'DRDO',
-    badge: 'Certificate No. 249/2026',
-    dateTag: '18 Jun – 17 Jul 2026',
-    displayOrder: 5,
-  },
-  {
-    _id: '6',
-    name: 'Certificate of Internship — Software Development Intern',
-    issuer: 'Astro Vedangam Private Limited',
-    issueDate: '2026-01-31',
-    credentialUrl: '',
-    image: '/certificates/cert_6_astro.png',
-    description: 'Software Development Internship certification with Astro Vedangam Private Limited for contributions to web applications.',
-    category: 'Internships',
-    windowTitle: 'Astro Vedangam Private Limited',
-    badge: 'Sep 2025 – Jan 2026',
-    dateTag: 'Sep 2025 – Jan 2026',
-    displayOrder: 6,
-  },
-  {
-    name: "PRAVAAH'25 — Web Hackathon",
-    _id: '7',
-    issuer: 'Certificate of Participation · IIT Bhubaneswar',
-    issueDate: '2025-01-15',
-    credentialUrl: '',
-    image: '/certificates/cert_7_pravaah.png',
-    description: "Participated in the PRAVAAH'25 Annual Cultural and Technology Festival Web Hackathon at Indian Institute of Technology Bhubaneswar.",
-    category: 'Competitions',
-    windowTitle: 'Certificate of Participation',
-    badge: '2025',
-    dateTag: '2025',
-    displayOrder: 7,
-  },
-  {
-    _id: '8',
-    name: 'PixelCraft — The UI Showdown',
-    issuer: 'Certificate of Participation · Brain Logic Club, Trident Academy of Technology',
-    issueDate: '2024-11-20',
-    credentialUrl: '',
-    image: '/certificates/cert_8_pixelcraft.png',
-    description: 'Certificate of Participation in PixelCraft — The UI Showdown organized by the Brain Logic Club at Trident Academy of Technology.',
-    category: 'Competitions',
-    windowTitle: 'Certificate of Participation',
-    badge: 'Score 57%',
-    dateTag: '',
-    displayOrder: 8,
   },
 ];
 
@@ -149,20 +93,7 @@ export default function CertificationsSection() {
       .then((res) => {
         const data = res.data.data;
         if (data && data.length > 0) {
-          // Merge API data with rich fallback fields if missing
-          const merged = data.map((item, idx) => {
-            const fallback = FALLBACK_CERTS[idx] || {};
-            return {
-              ...fallback,
-              ...item,
-              category: item.category || fallback.category || 'Certifications',
-              windowTitle: item.windowTitle || fallback.windowTitle || item.issuer || 'Certificate',
-              badge: item.badge || fallback.badge || '',
-              dateTag: item.dateTag || fallback.dateTag || '',
-              image: item.image || fallback.image || '',
-            };
-          });
-          setCerts(merged);
+          setCerts(data);
         } else {
           setCerts(FALLBACK_CERTS);
         }
@@ -173,29 +104,38 @@ export default function CertificationsSection() {
 
   const items = certs || FALLBACK_CERTS;
 
-  // Counts for tabs
-  const certCount = items.filter((c) => (c.category || '').toLowerCase() === 'certifications').length;
-  const internCount = items.filter((c) => (c.category || '').toLowerCase() === 'internships').length;
-  const compCount = items.filter((c) => (c.category || '').toLowerCase() === 'competitions').length;
+  // Build dynamic filter pills based on categories present in items
+  const tabs = useMemo(() => {
+    const list = [{ id: 'all', label: 'All', count: items.length }];
+    const categoryMap = new Map();
 
-  const tabs = [
-    { id: 'all', label: 'All', count: items.length },
-    { id: 'certifications', label: 'Certifications', count: certCount },
-    { id: 'internships', label: 'Internships', count: internCount },
-    { id: 'competitions', label: 'Competitions', count: compCount },
-  ];
+    items.forEach((item) => {
+      const cat = (item.category || 'Certifications').trim();
+      const key = cat.toLowerCase();
+      categoryMap.set(key, {
+        id: key,
+        label: cat,
+        count: (categoryMap.get(key)?.count || 0) + 1,
+      });
+    });
 
-  const filteredItems = items.filter((c) => {
-    if (activeTab === 'all') return true;
-    return (c.category || '').toLowerCase() === activeTab.toLowerCase();
-  });
+    categoryMap.forEach((val) => list.push(val));
+    return list;
+  }, [items]);
+
+  const filteredItems = useMemo(() => {
+    if (activeTab === 'all') return items;
+    return items.filter(
+      (c) => (c.category || 'Certifications').toLowerCase() === activeTab.toLowerCase()
+    );
+  }, [items, activeTab]);
 
   const getCategoryIcon = (category) => {
     const cat = (category || '').toLowerCase();
     if (cat.includes('intern')) {
       return <Briefcase size={12} strokeWidth={2.4} style={{ color: 'var(--accent, #EF4444)' }} />;
     }
-    if (cat.includes('compet')) {
+    if (cat.includes('compet') || cat.includes('hackathon')) {
       return <Trophy size={12} strokeWidth={2.4} style={{ color: 'var(--accent, #EF4444)' }} />;
     }
     return <CheckCircle2 size={12} strokeWidth={2.4} style={{ color: 'var(--accent, #EF4444)' }} />;
@@ -204,7 +144,7 @@ export default function CertificationsSection() {
   const getCategoryLabel = (category) => {
     const cat = (category || '').toLowerCase();
     if (cat.includes('intern')) return 'INTERNSHIP';
-    if (cat.includes('compet')) return 'COMPETITION';
+    if (cat.includes('compet') || cat.includes('hackathon')) return 'COMPETITION';
     return 'CERTIFICATION';
   };
 
@@ -295,71 +235,73 @@ export default function CertificationsSection() {
         </div>
 
         {/* Filter Pills */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.55rem',
-            flexWrap: 'wrap',
-            marginBottom: '2rem',
-          }}
-        >
-          {tabs.map((tab) => {
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveTab(tab.id)}
-                style={{
-                  background: isActive ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.02)',
-                  border: isActive
-                    ? '1px solid rgba(255, 255, 255, 0.16)'
-                    : '1px solid rgba(255, 255, 255, 0.05)',
-                  borderRadius: '9999px',
-                  padding: '0.45rem 1rem',
-                  fontSize: '0.85rem',
-                  fontWeight: isActive ? 600 : 500,
-                  color: isActive ? 'var(--text-primary, #ffffff)' : 'var(--text-secondary, #a1a1aa)',
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  transition: 'all 0.22s ease',
-                  boxShadow: isActive ? '0 2px 8px rgba(0, 0, 0, 0.3)' : 'none',
-                }}
-                onMouseEnter={(e) => {
-                  if (!isActive) {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
-                    e.currentTarget.style.color = 'var(--text-primary, #ffffff)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isActive) {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)';
-                    e.currentTarget.style.color = 'var(--text-secondary, #a1a1aa)';
-                  }
-                }}
-              >
-                <span>{tab.label}</span>
-                <span
+        {tabs.length > 1 && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.55rem',
+              flexWrap: 'wrap',
+              marginBottom: '2rem',
+            }}
+          >
+            {tabs.map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
                   style={{
-                    color: isActive ? 'var(--accent, #EF4444)' : '#71717a',
-                    fontWeight: 700,
-                    fontSize: '0.8rem',
+                    background: isActive ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.02)',
+                    border: isActive
+                      ? '1px solid rgba(255, 255, 255, 0.16)'
+                      : '1px solid rgba(255, 255, 255, 0.05)',
+                    borderRadius: '9999px',
+                    padding: '0.45rem 1rem',
+                    fontSize: '0.85rem',
+                    fontWeight: isActive ? 600 : 500,
+                    color: isActive ? 'var(--text-primary, #ffffff)' : 'var(--text-secondary, #a1a1aa)',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    transition: 'all 0.22s ease',
+                    boxShadow: isActive ? '0 2px 8px rgba(0, 0, 0, 0.3)' : 'none',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                      e.currentTarget.style.color = 'var(--text-primary, #ffffff)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)';
+                      e.currentTarget.style.color = 'var(--text-secondary, #a1a1aa)';
+                    }
                   }}
                 >
-                  {tab.count}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+                  <span>{tab.label}</span>
+                  <span
+                    style={{
+                      color: isActive ? 'var(--accent, #EF4444)' : '#71717a',
+                      fontWeight: 700,
+                      fontSize: '0.8rem',
+                    }}
+                  >
+                    {tab.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {/* Loading state skeleton */}
         {loading ? (
           <div className="cert-grid">
-            {[...Array(8)].map((_, i) => (
+            {[...Array(4)].map((_, i) => (
               <div
                 key={i}
                 style={{
@@ -371,6 +313,27 @@ export default function CertificationsSection() {
                 }}
               />
             ))}
+          </div>
+        ) : filteredItems.length === 0 ? (
+          /* Empty State */
+          <div
+            style={{
+              padding: '3rem 2rem',
+              textAlign: 'center',
+              background: 'var(--bg-card, #121214)',
+              border: '1px solid var(--border, rgba(255, 255, 255, 0.08))',
+              borderRadius: '16px',
+              maxWidth: 520,
+              margin: '0 auto',
+            }}
+          >
+            <Award size={42} style={{ color: 'var(--accent, #EF4444)', margin: '0 auto 1rem', opacity: 0.85 }} />
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.4rem' }}>
+              No Credentials In This Category
+            </h3>
+            <p style={{ fontSize: '0.88rem', color: '#a1a1aa', margin: 0 }}>
+              Credentials uploaded in the admin portal will appear right here.
+            </p>
           </div>
         ) : (
           /* Cards Grid */
@@ -453,7 +416,7 @@ export default function CertificationsSection() {
                       />
                     </div>
 
-                    {/* Window Image Preview */}
+                    {/* Window Image Preview / Placeholder */}
                     <div
                       style={{
                         height: 132,
@@ -465,22 +428,73 @@ export default function CertificationsSection() {
                         justifyContent: 'center',
                       }}
                     >
-                      <img
-                        src={getAssetUrl(cert.image)}
-                        alt={cert.name}
-                        className="cert-preview-img"
-                        loading="lazy"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                          display: 'block',
-                          transition: 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)',
-                        }}
-                      />
+                      {cert.image && !cert.image.toLowerCase().endsWith('.pdf') ? (
+                        <img
+                          src={getAssetUrl(cert.image)}
+                          alt={cert.name}
+                          className="cert-preview-img"
+                          loading="lazy"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            display: 'block',
+                            transition: 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)',
+                          }}
+                        />
+                      ) : cert.image && cert.image.toLowerCase().endsWith('.pdf') ? (
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '0.35rem',
+                            width: '100%',
+                            height: '100%',
+                            background: 'radial-gradient(circle at center, rgba(239, 68, 68, 0.12) 0%, rgba(10, 10, 12, 0.95) 75%)',
+                            color: 'var(--accent, #EF4444)',
+                          }}
+                        >
+                          <FileText size={32} strokeWidth={1.7} />
+                          <span style={{ fontSize: '0.67rem', fontWeight: 600, color: '#a1a1aa', letterSpacing: '0.04em' }}>
+                            PDF DOCUMENT
+                          </span>
+                        </div>
+                      ) : (
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '0.45rem',
+                            width: '100%',
+                            height: '100%',
+                            background: 'radial-gradient(circle at center, rgba(239, 68, 68, 0.09) 0%, rgba(12, 12, 14, 0.95) 75%)',
+                            padding: '0.75rem',
+                            textAlign: 'center',
+                          }}
+                        >
+                          <Award size={34} strokeWidth={1.6} style={{ color: 'var(--accent, #EF4444)', opacity: 0.9 }} />
+                          <span
+                            style={{
+                              fontSize: '0.7rem',
+                              fontWeight: 600,
+                              color: '#a1a1aa',
+                              maxWidth: 160,
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                            }}
+                          >
+                            {cert.windowTitle || cert.issuer || 'Official Credential'}
+                          </span>
+                        </div>
+                      )}
 
                       {/* Overlay badge (bottom-left) */}
                       {cert.badge && (
@@ -713,33 +727,62 @@ export default function CertificationsSection() {
                   }}
                 >
                   {selectedCert.image ? (
-                    <div
-                      style={{
-                        width: '100%',
-                        borderRadius: '10px',
-                        overflow: 'hidden',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
-                        background: '#121214',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.7)',
-                      }}
-                    >
-                      <img
+                    selectedCert.image.toLowerCase().endsWith('.pdf') ? (
+                      <iframe
                         src={getAssetUrl(selectedCert.image)}
-                        alt={selectedCert.name}
+                        title={selectedCert.name}
                         style={{
                           width: '100%',
-                          maxHeight: '68vh',
-                          objectFit: 'contain',
-                          display: 'block',
+                          height: 480,
+                          border: 'none',
+                          borderRadius: '10px',
+                          background: '#fff',
                         }}
                       />
-                    </div>
+                    ) : (
+                      <div
+                        style={{
+                          width: '100%',
+                          borderRadius: '10px',
+                          overflow: 'hidden',
+                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                          background: '#121214',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          boxShadow: '0 8px 30px rgba(0, 0, 0, 0.7)',
+                        }}
+                      >
+                        <img
+                          src={getAssetUrl(selectedCert.image)}
+                          alt={selectedCert.name}
+                          style={{
+                            width: '100%',
+                            maxHeight: '68vh',
+                            objectFit: 'contain',
+                            display: 'block',
+                          }}
+                        />
+                      </div>
+                    )
                   ) : (
-                    <div style={{ textAlign: 'center', padding: '3rem', color: '#71717a' }}>
-                      No preview image available for this certificate.
+                    <div
+                      style={{
+                        textAlign: 'center',
+                        padding: '3rem 1.5rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '0.75rem',
+                      }}
+                    >
+                      <Award size={48} style={{ color: 'var(--accent, #EF4444)', opacity: 0.8 }} />
+                      <p style={{ color: '#ffffff', fontWeight: 600, margin: 0 }}>
+                        Credential record verified
+                      </p>
+                      <p style={{ color: '#71717a', fontSize: '0.84rem', margin: 0, maxWidth: 420 }}>
+                        Certificate document preview can be uploaded at any time from your admin panel.
+                      </p>
                     </div>
                   )}
 
@@ -787,6 +830,24 @@ export default function CertificationsSection() {
                         }}
                       >
                         <ExternalLink size={14} /> Open Original File
+                      </a>
+                    )}
+                    {selectedCert.credentialUrl && (
+                      <a
+                        href={selectedCert.credentialUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          color: '#a1a1aa',
+                          fontSize: '0.82rem',
+                          fontWeight: 500,
+                          textDecoration: 'none',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.35rem',
+                        }}
+                      >
+                        <ExternalLink size={14} /> Verify Credential
                       </a>
                     )}
                   </div>
