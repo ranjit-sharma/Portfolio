@@ -462,7 +462,7 @@ export default function ExperienceSection() {
 
                         {/* Action buttons: Repo button (ONLY GitHub icon) & Certificate button */}
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-                          {/* GitHub Icon-only button */}
+                          {/* GitHub Icon-only button (round, matching certificate style) */}
                           <a
                             href={repoUrl}
                             target="_blank"
@@ -475,23 +475,27 @@ export default function ExperienceSection() {
                               justifyContent: 'center',
                               width: 38,
                               height: 38,
-                              borderRadius: '9px',
-                              background: '#e11d48',
-                              color: '#ffffff',
+                              borderRadius: '50%',
+                              background: 'transparent',
+                              border: '1px solid rgba(255, 255, 255, 0.16)',
+                              color: 'var(--text-primary)',
                               textDecoration: 'none',
-                              boxShadow: '0 4px 14px rgba(225, 29, 72, 0.35)',
                               transition: 'all 0.2s ease',
                             }}
                             onMouseEnter={(e) => {
+                              e.currentTarget.style.borderColor = 'rgba(225, 29, 72, 0.5)';
+                              e.currentTarget.style.background = 'rgba(225, 29, 72, 0.08)';
+                              e.currentTarget.style.color = '#fb7185';
                               e.currentTarget.style.transform = 'translateY(-2px)';
-                              e.currentTarget.style.boxShadow = '0 6px 18px rgba(225, 29, 72, 0.5)';
                             }}
                             onMouseLeave={(e) => {
+                              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.16)';
+                              e.currentTarget.style.background = 'transparent';
+                              e.currentTarget.style.color = 'var(--text-primary)';
                               e.currentTarget.style.transform = 'translateY(0)';
-                              e.currentTarget.style.boxShadow = '0 4px 14px rgba(225, 29, 72, 0.35)';
                             }}
                           >
-                            <SiGithub size={18} />
+                            <SiGithub size={17} />
                           </a>
 
                           {/* Certificate Button */}
@@ -508,8 +512,8 @@ export default function ExperienceSection() {
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 gap: '0.45rem',
-                                padding: '0.55rem 0.95rem',
-                                borderRadius: '9px',
+                                padding: '0.55rem 1rem',
+                                borderRadius: '9999px',
                                 background: 'transparent',
                                 border: '1px solid rgba(255, 255, 255, 0.16)',
                                 color: 'var(--text-primary)',
@@ -521,11 +525,13 @@ export default function ExperienceSection() {
                               onMouseEnter={(e) => {
                                 e.currentTarget.style.borderColor = 'rgba(225, 29, 72, 0.5)';
                                 e.currentTarget.style.background = 'rgba(225, 29, 72, 0.08)';
+                                e.currentTarget.style.color = '#fb7185';
                                 e.currentTarget.style.transform = 'translateY(-2px)';
                               }}
                               onMouseLeave={(e) => {
                                 e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.16)';
                                 e.currentTarget.style.background = 'transparent';
+                                e.currentTarget.style.color = 'var(--text-primary)';
                                 e.currentTarget.style.transform = 'translateY(0)';
                               }}
                             >
