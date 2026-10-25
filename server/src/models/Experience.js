@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const statSchema = new mongoose.Schema(
+const statItemSchema = new mongoose.Schema(
   {
     value: { type: String, default: '' },
     label: { type: String, default: '' },
@@ -24,12 +24,11 @@ const experienceSchema = new mongoose.Schema(
     endDate: { type: Date },
     current: { type: Boolean, default: false },
     durationText: { type: String, default: '' },
-    description: { type: String, default: '' },
     projectTitle: { type: String, default: '' },
     repoUrl: { type: String, default: '' },
-    repoLabel: { type: String, default: 'Database repo' },
     certificateUrl: { type: String, default: '' },
-    stats: [statSchema],
+    stats: [statItemSchema],
+    description: { type: String, default: '' },
     responsibilities: [{ type: String }],
     technologies: [{ type: String }],
     displayOrder: { type: Number, default: 0 },

@@ -1,6 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import api from '../services/api';
 import { Spinner } from '../components/ui/index';
+import { Upload, Trash2, ExternalLink } from 'lucide-react';
+import { getAssetUrl } from '../utils/assetUrl';
 
 const EMPTY = {
   company: '',
@@ -15,9 +17,12 @@ const EMPTY = {
   durationText: '',
   projectTitle: '',
   repoUrl: '',
-  repoLabel: 'Database repo',
   certificateUrl: '',
-  stats: '',
+  stats: [
+    { value: '', label: '' },
+    { value: '', label: '' },
+    { value: '', label: '' },
+  ],
   description: '',
   responsibilities: '',
   technologies: '',
@@ -38,7 +43,9 @@ export default function AdminExperience() {
   const [editing, setEditing] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [uploadingCert, setUploadingCert] = useState(false);
   const [error, setError] = useState('');
+  const certInputRef = useRef(null);
 
   const fetchItems = useCallback(() => {
     return api
@@ -58,12 +65,24 @@ export default function AdminExperience() {
   }, [fetchItems]);
 
   const openEdit = (exp) => {
+    const rawStats = Array.isArray(exp.stats) && exp.stats.length > 0 ? exp.stats : [];
+    const filledStats = [
+      rawStats[0] || { value: '', label: '' },
+      rawStats[1] || { value: '', label: '' },
+      rawStats[2] || { value: '', label: '' },
+    ];
+
     setForm({
-      ...EMPTY,
       ...exp,
+      companyShort: exp.companyShort || '',
+      companySub: exp.companySub || '',
+      durationText: exp.durationText || '',
+      projectTitle: exp.projectTitle || '',
+      repoUrl: exp.repoUrl || '',
+      certificateUrl: exp.certificateUrl || '',
+      stats: filledStats,
       startDate: fmtDate(exp.startDate),
       endDate: fmtDate(exp.endDate),
-      stats: (exp.stats || []).map((s) => `${s.value}: ${s.label}`).join('\n'),
       responsibilities: (exp.responsibilities || []).join('\n'),
       technologies: (exp.technologies || []).join(', '),
     });
@@ -72,24 +91,38 @@ export default function AdminExperience() {
     setError('');
   };
 
+  const handleCertificateUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    setUploadingCert(true);
+    setError('');
+    try {
+      const res = await api.post('/admin/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setForm((f) => ({ ...f, certificateUrl: res.data.data.url }));
+    } catch (err) {
+      setError(err.message || 'Certificate upload failed');
+    } finally {
+      setUploadingCert(false);
+      e.target.value = '';
+    }
+  };
+
   const handleSave = async (e) => {
     e.preventDefault();
     setSaving(true);
     setError('');
 
-    const statsParsed = (form.stats || '')
-      .split('\n')
-      .map((l) => {
-        const parts = l.split(':');
-        const value = parts[0]?.trim() || '';
-        const label = parts.slice(1).join(':').trim() || '';
-        return { value, label };
-      })
+    const cleanStats = (form.stats || [])
+      .map((s) => ({ value: (s.value || '').trim(), label: (s.label || '').trim() }))
       .filter((s) => s.value || s.label);
 
     const payload = {
       ...form,
-      stats: statsParsed,
+      stats: cleanStats,
       responsibilities: form.responsibilities
         .split('\n')
         .map((s) => s.trim())
@@ -98,7 +131,7 @@ export default function AdminExperience() {
         .split(',')
         .map((s) => s.trim())
         .filter(Boolean),
-      displayOrder: parseInt(form.displayOrder, 10) || 0,
+      displayOrder: parseInt(form.displayOrder) || 0,
     };
 
     try {
@@ -184,30 +217,31 @@ export default function AdminExperience() {
           <form onSubmit={handleSave} style={{ display: 'grid', gap: '0.85rem' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
               <div>
-                <label style={labelSt}>Company *</label>
+                <label style={labelSt}>Company Name *</label>
                 <input
                   style={inputSt}
                   value={form.company}
                   onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))}
+                  placeholder="e.g. DRDO PXE"
                   required
                 />
               </div>
               <div>
-                <label style={labelSt}>Logo Tag / Acronym (e.g. DRDO)</label>
+                <label style={labelSt}>Company Badge / Initials</label>
                 <input
                   style={inputSt}
-                  value={form.companyShort || ''}
+                  value={form.companyShort}
                   onChange={(e) => setForm((f) => ({ ...f, companyShort: e.target.value }))}
-                  placeholder="DRDO"
+                  placeholder="e.g. DRDO"
                 />
               </div>
-              <div style={{ gridColumn: 'span 2' }}>
-                <label style={labelSt}>Company Full Subtitle (e.g. DRDO — PXE Chandipur)</label>
+              <div>
+                <label style={labelSt}>Company Subtitle / Location details</label>
                 <input
                   style={inputSt}
-                  value={form.companySub || ''}
+                  value={form.companySub}
                   onChange={(e) => setForm((f) => ({ ...f, companySub: e.target.value }))}
-                  placeholder="DRDO — PXE Chandipur"
+                  placeholder="e.g. DRDO — PXE Chandipur"
                 />
               </div>
               <div>
@@ -216,6 +250,7 @@ export default function AdminExperience() {
                   style={inputSt}
                   value={form.role}
                   onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))}
+                  placeholder="e.g. Software Engineering Intern"
                   required
                 />
               </div>
@@ -237,15 +272,7 @@ export default function AdminExperience() {
                   style={inputSt}
                   value={form.location}
                   onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
-                />
-              </div>
-              <div>
-                <label style={labelSt}>Duration Tag (optional, e.g. 1 month)</label>
-                <input
-                  style={inputSt}
-                  value={form.durationText || ''}
-                  onChange={(e) => setForm((f) => ({ ...f, durationText: e.target.value }))}
-                  placeholder="1 month"
+                  placeholder="e.g. Chandipur, Odisha"
                 />
               </div>
               <div>
@@ -268,6 +295,42 @@ export default function AdminExperience() {
                   disabled={form.current}
                 />
               </div>
+              <div>
+                <label style={labelSt}>Duration Display Text</label>
+                <input
+                  style={inputSt}
+                  value={form.durationText}
+                  onChange={(e) => setForm((f) => ({ ...f, durationText: e.target.value }))}
+                  placeholder="e.g. 1 month (or auto-calculated if blank)"
+                />
+              </div>
+              <div>
+                <label style={labelSt}>Project Title</label>
+                <input
+                  style={inputSt}
+                  value={form.projectTitle}
+                  onChange={(e) => setForm((f) => ({ ...f, projectTitle: e.target.value }))}
+                  placeholder="e.g. Upper Air Sounding System (UASS)"
+                />
+              </div>
+              <div>
+                <label style={labelSt}>GitHub / Repo URL</label>
+                <input
+                  style={inputSt}
+                  value={form.repoUrl}
+                  onChange={(e) => setForm((f) => ({ ...f, repoUrl: e.target.value }))}
+                  placeholder="e.g. https://github.com/ranjit-sharma"
+                />
+              </div>
+              <div>
+                <label style={labelSt}>Display Order</label>
+                <input
+                  type="number"
+                  style={inputSt}
+                  value={form.displayOrder}
+                  onChange={(e) => setForm((f) => ({ ...f, displayOrder: e.target.value }))}
+                />
+              </div>
             </div>
 
             <label
@@ -288,87 +351,178 @@ export default function AdminExperience() {
               Currently working here
             </label>
 
+            {/* Certificate Upload Field */}
             <div
               style={{
-                border: '1px dashed var(--border)',
+                background: 'var(--bg-elevated)',
+                border: '1px solid var(--border)',
                 borderRadius: 'var(--radius-md)',
                 padding: '1rem',
-                background: 'var(--bg-elevated)',
               }}
             >
-              <h4 style={{ margin: '0 0 0.75rem 0', fontSize: '0.88rem', fontWeight: 700 }}>
-                Project & Metrics Showcase (Optional)
-              </h4>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                <div>
-                  <label style={labelSt}>Project Title</label>
-                  <input
-                    style={inputSt}
-                    value={form.projectTitle || ''}
-                    onChange={(e) => setForm((f) => ({ ...f, projectTitle: e.target.value }))}
-                    placeholder="e.g. UAS-RTMVD"
-                  />
-                </div>
-                <div>
-                  <label style={labelSt}>Repo URL</label>
-                  <input
-                    style={inputSt}
-                    value={form.repoUrl || ''}
-                    onChange={(e) => setForm((f) => ({ ...f, repoUrl: e.target.value }))}
-                    placeholder="https://github.com/..."
-                  />
-                </div>
-                <div>
-                  <label style={labelSt}>Repo Button Label</label>
-                  <input
-                    style={inputSt}
-                    value={form.repoLabel || ''}
-                    onChange={(e) => setForm((f) => ({ ...f, repoLabel: e.target.value }))}
-                    placeholder="Database repo"
-                  />
-                </div>
-                <div>
-                  <label style={labelSt}>Certificate Link / URL</label>
-                  <input
-                    style={inputSt}
-                    value={form.certificateUrl || ''}
-                    onChange={(e) => setForm((f) => ({ ...f, certificateUrl: e.target.value }))}
-                    placeholder="#certifications or https://..."
-                  />
-                </div>
-                <div style={{ gridColumn: 'span 2' }}>
-                  <label style={labelSt}>Stat Counters (one per line, format: "Value: Label")</label>
-                  <textarea
-                    style={{ ...inputSt, resize: 'vertical', minHeight: 65 }}
-                    value={form.stats || ''}
-                    onChange={(e) => setForm((f) => ({ ...f, stats: e.target.value }))}
-                    placeholder="6: TABLES DESIGNED&#10;65: SQL STATEMENTS&#10;H2: FULLY TESTED"
-                  />
-                </div>
+              <label style={{ ...labelSt, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                Internship Certificate (Upload or URL)
+              </label>
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                <input
+                  style={{ ...inputSt, flex: 1, minWidth: '220px' }}
+                  value={form.certificateUrl}
+                  onChange={(e) => setForm((f) => ({ ...f, certificateUrl: e.target.value }))}
+                  placeholder="e.g. /uploads/cert_5_drdo.png or https://..."
+                />
+                <input
+                  type="file"
+                  ref={certInputRef}
+                  accept="image/*,application/pdf"
+                  onChange={handleCertificateUpload}
+                  style={{ display: 'none' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => certInputRef.current?.click()}
+                  disabled={uploadingCert}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    background: 'var(--bg-surface)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '0.6rem 0.9rem',
+                    color: 'var(--text-primary)',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: 600,
+                  }}
+                >
+                  <Upload size={14} />
+                  {uploadingCert ? 'Uploading...' : 'Upload File'}
+                </button>
+                {form.certificateUrl && (
+                  <>
+                    <a
+                      href={getAssetUrl(form.certificateUrl)}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.3rem',
+                        fontSize: '0.82rem',
+                        color: 'var(--accent)',
+                        textDecoration: 'none',
+                        fontWeight: 600,
+                      }}
+                    >
+                      <ExternalLink size={14} /> View
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => setForm((f) => ({ ...f, certificateUrl: '' }))}
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        color: '#ef4444',
+                        cursor: 'pointer',
+                        padding: '0.2rem',
+                      }}
+                      title="Remove certificate"
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Quick Stats Block (3 pairs of value and label) */}
+            <div
+              style={{
+                background: 'var(--bg-elevated)',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--radius-md)',
+                padding: '1rem',
+              }}
+            >
+              <label style={{ ...labelSt, marginBottom: '0.6rem' }}>
+                Highlight Stats (Up to 3 numeric/metric counters)
+              </label>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
+                {[0, 1, 2].map((idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.35rem',
+                      background: 'var(--bg-surface)',
+                      padding: '0.6rem',
+                      borderRadius: 'var(--radius-sm)',
+                      border: '1px solid var(--border)',
+                    }}
+                  >
+                    <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+                      Stat #{idx + 1}
+                    </span>
+                    <input
+                      style={inputSt}
+                      value={form.stats?.[idx]?.value || ''}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setForm((f) => {
+                          const nextStats = [...(f.stats || [])];
+                          nextStats[idx] = { ...(nextStats[idx] || {}), value: val };
+                          return { ...f, stats: nextStats };
+                        });
+                      }}
+                      placeholder="Value (e.g. 5+ or 100%)"
+                    />
+                    <input
+                      style={inputSt}
+                      value={form.stats?.[idx]?.label || ''}
+                      onChange={(e) => {
+                        const lbl = e.target.value;
+                        setForm((f) => {
+                          const nextStats = [...(f.stats || [])];
+                          nextStats[idx] = { ...(nextStats[idx] || {}), label: lbl };
+                          return { ...f, stats: nextStats };
+                        });
+                      }}
+                      placeholder="Label (e.g. TELEMETRY STREAMS)"
+                    />
+                  </div>
+                ))}
               </div>
             </div>
 
             <div>
-              <label style={labelSt}>Responsibilities (one per line, shown with custom checkmarks)</label>
+              <label style={labelSt}>Description / Overview</label>
               <textarea
-                style={{ ...inputSt, resize: 'vertical', minHeight: 100 }}
-                value={form.responsibilities}
-                onChange={(e) => setForm((f) => ({ ...f, responsibilities: e.target.value }))}
+                style={{ ...inputSt, resize: 'vertical', minHeight: 70 }}
+                value={form.description}
+                onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
               />
             </div>
-
+            <div>
+              <label style={labelSt}>Responsibilities / Key Achievements (one per line with checkmark)</label>
+              <textarea
+                style={{ ...inputSt, resize: 'vertical', minHeight: 110 }}
+                value={form.responsibilities}
+                onChange={(e) => setForm((f) => ({ ...f, responsibilities: e.target.value }))}
+                placeholder="Owned real-time telemetry processing...&#10;Built real-time monitoring interfaces...&#10;Implemented TCP/UDP socket communication..."
+              />
+            </div>
             <div>
               <label style={labelSt}>Technologies (comma-separated)</label>
               <input
                 style={inputSt}
                 value={form.technologies}
                 onChange={(e) => setForm((f) => ({ ...f, technologies: e.target.value }))}
+                placeholder="React, Node.js, JavaScript, TCP/UDP, Data Visualization"
               />
             </div>
-
             {error && <p style={{ color: '#ef4444', fontSize: '0.85rem' }}>{error}</p>}
-
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
               <button
                 type="submit"
                 disabled={saving}
@@ -435,7 +589,8 @@ export default function AdminExperience() {
                   {exp.role} @ {exp.company}
                 </div>
                 <div style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>
-                  {exp.employmentType} · {exp.location}
+                  {exp.employmentType} · {exp.location || 'Location not specified'}
+                  {exp.certificateUrl && ' · 📜 Certificate attached'}
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '0.5rem' }}>
