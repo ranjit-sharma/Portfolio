@@ -9,13 +9,13 @@ const FALLBACK_CERTS = [
   {
     _id: '1',
     name: 'Oracle Cloud Infrastructure 2025 Certified Generative AI Professional',
-    issuer: 'Oracle',
+    issuer: 'Oracle University',
     issueDate: '2025-01-01',
     credentialUrl: '',
     image: '/uploads/Screenshot_2026-10-21_132422-1792570047406-5572.png',
     description: 'Certification covering generative AI fundamentals, OCI AI services, large language models, and practical AI solution development on Oracle Cloud Infrastructure.',
     category: 'Certifications',
-    windowTitle: 'Oracle Cloud Infrastructure',
+    windowTitle: 'Oracle University',
     badge: 'Certified Professional',
     dateTag: 'Jan 2025',
     displayOrder: 1,
@@ -27,7 +27,7 @@ const FALLBACK_CERTS = [
     issueDate: '',
     credentialUrl: '',
     image: '',
-    description: 'Certification in technical writing and communication skills for technology professionals.',
+    description: 'Certification in technical writing, workplace communication, and professional documentation for technology specialists.',
     category: 'Certifications',
     windowTitle: 'TCS iON',
     badge: 'Certified',
@@ -41,10 +41,10 @@ const FALLBACK_CERTS = [
     issueDate: '',
     credentialUrl: '',
     image: '',
-    description: 'Online course covering geospatial data handling, sharing protocols, and cyber security practices for earth observation data.',
+    description: 'Specialized course by ISRO / IIRS covering geospatial data infrastructure, secure data sharing protocols, and cyber security practices.',
     category: 'Certifications',
     windowTitle: 'ISRO / IIRS',
-    badge: 'Completed',
+    badge: 'Course Completed',
     dateTag: '2024',
     displayOrder: 3,
   },
@@ -55,14 +55,190 @@ const FALLBACK_CERTS = [
     issueDate: '',
     credentialUrl: '',
     image: '',
-    description: 'Participated in the Smart India Hackathon — a national initiative by the Government of India to encourage innovation and problem-solving among students.',
+    description: 'Participant in the nationwide Smart India Hackathon initiative organized by the Ministry of Education and AICTE, Government of India.',
     category: 'Competitions',
     windowTitle: 'Smart India Hackathon',
-    badge: 'Participant',
+    badge: 'National Finalist',
     dateTag: '2024',
     displayOrder: 4,
   },
 ];
+
+/**
+ * CertificateDocPreview — Aesthetic credential sheet shown when an image is pending upload.
+ * Renders an official certificate canvas with recipient name, institution headers, and seal.
+ */
+function CertificateDocPreview({ cert, isModal = false }) {
+  const name = 'Ranjit Sharma';
+  const title = cert.name || 'Certificate of Recognition';
+  const issuer = cert.issuer || 'Official Credential';
+  const lower = (title + ' ' + issuer).toLowerCase();
+
+  const isSIH = lower.includes('hackathon');
+  const isISRO = lower.includes('isro') || lower.includes('iirs');
+  const isTCS = lower.includes('tcs') || lower.includes('ion');
+
+  let orgName = issuer;
+  let subheader = 'CERTIFICATE OF ACHIEVEMENT';
+  let accentColor = '#991b1b'; // deep red/burgundy
+  let sealColor = '#b45309'; // gold
+
+  if (isSIH) {
+    orgName = 'Ministry of Education · Govt of India';
+    subheader = 'SMART INDIA HACKATHON';
+    accentColor = '#c2410c';
+    sealColor = '#ea580c';
+  } else if (isISRO) {
+    orgName = 'ISRO · Indian Institute of Remote Sensing';
+    subheader = 'CERTIFICATE OF COMPLETION';
+    accentColor = '#0369a1';
+    sealColor = '#0284c7';
+  } else if (isTCS) {
+    orgName = 'TCS iON · Tata Consultancy Services';
+    subheader = 'CERTIFICATE OF EXCELLENCE';
+    accentColor = '#1e3a8a';
+    sealColor = '#d97706';
+  }
+
+  return (
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        background: '#ffffff',
+        padding: isModal ? '2.5rem 2rem' : '8px 10px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        position: 'relative',
+        boxSizing: 'border-box',
+        userSelect: 'none',
+      }}
+    >
+      {/* Outer ornate border */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: isModal ? 8 : 3,
+          border: `${isModal ? 2.5 : 1.5}px solid ${accentColor}`,
+          borderRadius: isModal ? '8px' : '4px',
+          pointerEvents: 'none',
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          inset: isModal ? 13 : 5,
+          border: '0.5px solid rgba(0, 0, 0, 0.12)',
+          borderRadius: isModal ? '6px' : '3px',
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* Header */}
+      <div style={{ textAlign: 'center', width: '100%', marginTop: isModal ? 8 : 2 }}>
+        <div
+          style={{
+            fontSize: isModal ? '1.1rem' : '0.52rem',
+            fontWeight: 800,
+            color: accentColor,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+          }}
+        >
+          {orgName}
+        </div>
+        <div
+          style={{
+            fontSize: isModal ? '0.85rem' : '0.45rem',
+            fontWeight: 700,
+            color: '#64748b',
+            letterSpacing: '0.14em',
+            marginTop: isModal ? 6 : 1,
+            textTransform: 'uppercase',
+          }}
+        >
+          {subheader}
+        </div>
+      </div>
+
+      {/* Body */}
+      <div style={{ textAlign: 'center', width: '100%', padding: '0 4px', margin: isModal ? '2rem 0' : 0 }}>
+        <div style={{ fontSize: isModal ? '0.9rem' : '0.42rem', color: '#6b7280', fontStyle: 'italic' }}>
+          This is awarded to
+        </div>
+        <div
+          style={{
+            fontSize: isModal ? '1.75rem' : '0.68rem',
+            fontWeight: 800,
+            color: '#0f172a',
+            letterSpacing: '-0.02em',
+            margin: isModal ? '0.4rem 0' : '1px 0',
+          }}
+        >
+          {name}
+        </div>
+        <div
+          style={{
+            fontSize: isModal ? '1.05rem' : '0.48rem',
+            fontWeight: 700,
+            color: accentColor,
+            lineHeight: 1.25,
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+          }}
+        >
+          {title}
+        </div>
+      </div>
+
+      {/* Bottom seals / authorization row */}
+      <div
+        style={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: isModal ? '0 2rem' : '0 6px',
+          marginBottom: isModal ? 8 : 2,
+        }}
+      >
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ width: isModal ? 80 : 28, height: 1, background: '#94a3b8', margin: '0 auto 2px' }} />
+          <div style={{ fontSize: isModal ? '0.72rem' : '0.38rem', color: '#64748b' }}>Verified</div>
+        </div>
+
+        {/* Gold Seal */}
+        <div
+          style={{
+            width: isModal ? 44 : 18,
+            height: isModal ? 44 : 18,
+            borderRadius: '50%',
+            background: sealColor,
+            border: `${isModal ? 2.5 : 1.5}px solid #ffffff`,
+            boxShadow: '0 1px 4px rgba(0, 0, 0, 0.25)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#ffffff',
+            fontSize: isModal ? '1.1rem' : '0.45rem',
+            fontWeight: 800,
+          }}
+        >
+          ★
+        </div>
+
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ width: isModal ? 80 : 28, height: 1, background: '#94a3b8', margin: '0 auto 2px' }} />
+          <div style={{ fontSize: isModal ? '0.72rem' : '0.38rem', color: '#64748b' }}>Authorized</div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function CertificationsSection() {
   const { ref, inView } = useInView();
@@ -104,7 +280,7 @@ export default function CertificationsSection() {
 
   const items = certs || FALLBACK_CERTS;
 
-  // Build dynamic filter pills based on categories present in items
+  // Build filter pills based on categories present in items
   const tabs = useMemo(() => {
     const list = [{ id: 'all', label: 'All', count: items.length }];
     const categoryMap = new Map();
@@ -154,7 +330,7 @@ export default function CertificationsSection() {
         .cert-grid {
           display: grid;
           grid-template-columns: repeat(4, minmax(0, 1fr));
-          gap: 1.25rem;
+          gap: 1.15rem;
         }
         @media (max-width: 1080px) {
           .cert-grid {
@@ -166,24 +342,34 @@ export default function CertificationsSection() {
             grid-template-columns: 1fr !important;
           }
         }
+
+        /* Card transition matching site-wide project and experience cards */
         .cert-card-interactive {
-          transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
-                      box-shadow 0.32s cubic-bezier(0.16, 1, 0.3, 1),
-                      border-color 0.32s ease,
-                      background-color 0.32s ease;
+          transition: transform var(--transition-base, 250ms cubic-bezier(0.4, 0, 0.2, 1)),
+                      box-shadow var(--transition-base, 250ms cubic-bezier(0.4, 0, 0.2, 1)),
+                      border-color var(--transition-base, 250ms cubic-bezier(0.4, 0, 0.2, 1)),
+                      background-color var(--transition-base, 250ms cubic-bezier(0.4, 0, 0.2, 1));
         }
+
         .cert-card-interactive:hover {
-          transform: translateY(-7px) !important;
-          border-color: var(--accent, #EF4444) !important;
-          box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.75), 0 0 24px -2px var(--accent-glow, rgba(239, 68, 68, 0.32)) !important;
+          transform: translateY(-3px) !important;
+          border-color: var(--accent-border, rgba(239, 68, 68, 0.38)) !important;
+          box-shadow: 0 10px 28px -6px var(--accent-glow, rgba(239, 68, 68, 0.2)) !important;
         }
-        .cert-card-interactive:hover .cert-preview-img {
-          transform: scale(1.06) !important;
-        }
-        .cert-card-interactive:hover .cert-arrow-icon {
-          transform: translate(2px, -2px) !important;
+
+        /* Hover animation: Corner arrow button illuminates with accent container */
+        .cert-card-interactive:hover .cert-arrow-box {
+          background: var(--accent-dim, rgba(220, 38, 38, 0.35)) !important;
+          border-color: var(--accent-border, rgba(239, 68, 68, 0.5)) !important;
           color: var(--accent, #EF4444) !important;
         }
+
+        /* Subtle tactile micro-scale on preview image */
+        .cert-card-interactive:hover .cert-preview-img {
+          transform: scale(1.025) !important;
+        }
+
+        /* Title color shift */
         .cert-card-interactive:hover .cert-card-title {
           color: var(--accent, #EF4444) !important;
         }
@@ -350,7 +536,7 @@ export default function CertificationsSection() {
                   className="cert-card-interactive"
                   onClick={() => setSelectedCert(cert)}
                   style={{
-                    background: 'var(--bg-card, #121214)',
+                    background: 'var(--bg-card, #131217)',
                     border: '1px solid var(--border, rgba(255, 255, 255, 0.08))',
                     borderRadius: '16px',
                     padding: '0.75rem',
@@ -360,12 +546,12 @@ export default function CertificationsSection() {
                     position: 'relative',
                   }}
                 >
-                  {/* Window Mockup Frame */}
+                  {/* macOS Window Mockup Frame */}
                   <div
                     style={{
-                      borderRadius: '10px',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      background: '#18181b',
+                      borderRadius: '12px',
+                      border: '1px solid rgba(255, 255, 255, 0.09)',
+                      background: '#1c1b21',
                       overflow: 'hidden',
                       position: 'relative',
                       boxShadow: '0 4px 14px rgba(0, 0, 0, 0.45)',
@@ -374,12 +560,12 @@ export default function CertificationsSection() {
                     {/* Window Header */}
                     <div
                       style={{
-                        height: 30,
-                        padding: '0 9px',
+                        height: 32,
+                        padding: '0 10px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        background: '#1a1a1e',
+                        background: '#18171d',
                         borderBottom: '1px solid rgba(255, 255, 255, 0.07)',
                       }}
                     >
@@ -390,38 +576,47 @@ export default function CertificationsSection() {
                         <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#27c93f', display: 'inline-block' }} />
                         <span
                           style={{
-                            fontSize: '0.67rem',
-                            color: '#a1a1aa',
+                            fontSize: '0.7rem',
+                            color: '#9ca3af',
                             fontWeight: 500,
                             marginLeft: '0.45rem',
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
-                            maxWidth: 140,
+                            maxWidth: 135,
                           }}
                         >
                           {cert.windowTitle || cert.issuer}
                         </span>
                       </div>
 
-                      {/* Right: Expand arrow */}
-                      <ArrowUpRight
-                        size={13}
-                        className="cert-arrow-icon"
+                      {/* Right: Corner arrow button (turns red on card hover) */}
+                      <div
+                        className="cert-arrow-box"
                         style={{
+                          width: 22,
+                          height: 22,
+                          borderRadius: '5px',
+                          background: 'rgba(255, 255, 255, 0.05)',
+                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                           color: '#71717a',
-                          transition: 'transform 0.25s ease, color 0.25s ease',
+                          transition: 'all 0.22s ease',
                           flexShrink: 0,
                         }}
-                      />
+                      >
+                        <ArrowUpRight size={12} strokeWidth={2.2} />
+                      </div>
                     </div>
 
-                    {/* Window Image Preview / Placeholder */}
+                    {/* Window Image Preview / Document Viewport */}
                     <div
                       style={{
-                        height: 132,
+                        height: 140,
                         position: 'relative',
-                        background: '#09090b',
+                        background: '#0d0c10',
                         overflow: 'hidden',
                         display: 'flex',
                         alignItems: 'center',
@@ -440,9 +635,10 @@ export default function CertificationsSection() {
                           style={{
                             width: '100%',
                             height: '100%',
-                            objectFit: 'cover',
+                            objectFit: 'contain',
+                            background: '#ffffff',
                             display: 'block',
-                            transition: 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)',
+                            transition: 'transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
                           }}
                         />
                       ) : cert.image && cert.image.toLowerCase().endsWith('.pdf') ? (
@@ -465,34 +661,8 @@ export default function CertificationsSection() {
                           </span>
                         </div>
                       ) : (
-                        <div
-                          style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '0.45rem',
-                            width: '100%',
-                            height: '100%',
-                            background: 'radial-gradient(circle at center, rgba(239, 68, 68, 0.09) 0%, rgba(12, 12, 14, 0.95) 75%)',
-                            padding: '0.75rem',
-                            textAlign: 'center',
-                          }}
-                        >
-                          <Award size={34} strokeWidth={1.6} style={{ color: 'var(--accent, #EF4444)', opacity: 0.9 }} />
-                          <span
-                            style={{
-                              fontSize: '0.7rem',
-                              fontWeight: 600,
-                              color: '#a1a1aa',
-                              maxWidth: 160,
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                            }}
-                          >
-                            {cert.windowTitle || cert.issuer || 'Official Credential'}
-                          </span>
+                        <div style={{ width: '100%', height: '100%' }}>
+                          <CertificateDocPreview cert={cert} isModal={false} />
                         </div>
                       )}
 
@@ -501,17 +671,17 @@ export default function CertificationsSection() {
                         <div
                           style={{
                             position: 'absolute',
-                            bottom: 7,
-                            left: 7,
-                            background: 'rgba(15, 15, 18, 0.88)',
-                            backdropFilter: 'blur(6px)',
-                            border: '1px solid rgba(239, 68, 68, 0.38)',
-                            borderRadius: '4px',
-                            padding: '2px 7px',
-                            fontSize: '0.66rem',
+                            bottom: 8,
+                            left: 8,
+                            background: 'rgba(25, 8, 12, 0.88)',
+                            backdropFilter: 'blur(8px)',
+                            border: '1px solid rgba(239, 68, 68, 0.35)',
+                            borderRadius: '6px',
+                            padding: '2.5px 8px',
+                            fontSize: '0.68rem',
                             fontWeight: 600,
-                            color: 'var(--accent, #EF4444)',
-                            boxShadow: '0 2px 6px rgba(0, 0, 0, 0.65)',
+                            color: '#f87171',
+                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.65)',
                             pointerEvents: 'none',
                             lineHeight: 1.25,
                             zIndex: 2,
@@ -524,14 +694,14 @@ export default function CertificationsSection() {
                   </div>
 
                   {/* Card Content Details (below window) */}
-                  <div style={{ padding: '0.75rem 0.25rem 0.25rem 0.25rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ padding: '0.85rem 0.25rem 0.25rem 0.25rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
                     {/* Category Tag + Date Row */}
                     <div
                       style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '0.35rem',
-                        marginBottom: '0.42rem',
+                        gap: '0.4rem',
+                        marginBottom: '0.45rem',
                         flexWrap: 'wrap',
                       }}
                     >
@@ -539,9 +709,9 @@ export default function CertificationsSection() {
                       <span
                         style={{
                           color: 'var(--accent, #EF4444)',
-                          fontSize: '0.67rem',
+                          fontSize: '0.7rem',
                           fontWeight: 700,
-                          letterSpacing: '0.07em',
+                          letterSpacing: '0.08em',
                           textTransform: 'uppercase',
                         }}
                       >
@@ -549,8 +719,8 @@ export default function CertificationsSection() {
                       </span>
                       {cert.dateTag && (
                         <>
-                          <span style={{ color: 'rgba(255, 255, 255, 0.25)', fontSize: '0.7rem' }}>·</span>
-                          <span style={{ color: '#71717a', fontSize: '0.72rem', fontWeight: 500 }}>
+                          <span style={{ color: '#52525b', fontSize: '0.74rem' }}>·</span>
+                          <span style={{ color: '#71717a', fontSize: '0.74rem', fontWeight: 500 }}>
                             {cert.dateTag}
                           </span>
                         </>
@@ -562,9 +732,9 @@ export default function CertificationsSection() {
                       className="cert-card-title"
                       title={cert.name}
                       style={{
-                        fontSize: '0.88rem',
+                        fontSize: '0.92rem',
                         fontWeight: 700,
-                        color: 'var(--text-primary, #ffffff)',
+                        color: '#ffffff',
                         lineHeight: 1.35,
                         margin: '0 0 0.35rem 0',
                         display: '-webkit-box',
@@ -581,8 +751,8 @@ export default function CertificationsSection() {
                     <p
                       title={cert.issuer}
                       style={{
-                        fontSize: '0.75rem',
-                        color: '#a1a1aa',
+                        fontSize: '0.78rem',
+                        color: '#8b8b93',
                         lineHeight: 1.35,
                         margin: 0,
                         marginTop: 'auto',
@@ -620,10 +790,10 @@ export default function CertificationsSection() {
               onClick={() => setSelectedCert(null)}
             >
               <motion.div
-                initial={{ opacity: 0, scale: 0.94, y: 15 }}
+                initial={{ opacity: 0, scale: 0.95, y: 12 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.94, y: 15 }}
-                transition={{ duration: 0.24, ease: 'easeOut' }}
+                exit={{ opacity: 0, scale: 0.95, y: 12 }}
+                transition={{ duration: 0.22, ease: 'easeOut' }}
                 style={{
                   background: '#141416',
                   border: '1px solid rgba(255, 255, 255, 0.12)',
@@ -746,7 +916,7 @@ export default function CertificationsSection() {
                           borderRadius: '10px',
                           overflow: 'hidden',
                           border: '1px solid rgba(255, 255, 255, 0.08)',
-                          background: '#121214',
+                          background: '#ffffff',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -768,21 +938,14 @@ export default function CertificationsSection() {
                   ) : (
                     <div
                       style={{
-                        textAlign: 'center',
-                        padding: '3rem 1.5rem',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: '0.75rem',
+                        width: '100%',
+                        maxWidth: 620,
+                        borderRadius: '12px',
+                        overflow: 'hidden',
+                        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.7)',
                       }}
                     >
-                      <Award size={48} style={{ color: 'var(--accent, #EF4444)', opacity: 0.8 }} />
-                      <p style={{ color: '#ffffff', fontWeight: 600, margin: 0 }}>
-                        Credential record verified
-                      </p>
-                      <p style={{ color: '#71717a', fontSize: '0.84rem', margin: 0, maxWidth: 420 }}>
-                        Certificate document preview can be uploaded at any time from your admin panel.
-                      </p>
+                      <CertificateDocPreview cert={selectedCert} isModal={true} />
                     </div>
                   )}
 

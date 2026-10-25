@@ -5,13 +5,13 @@ const Certification = require('../src/models/Certification');
 const items = [
   {
     name: 'Oracle Cloud Infrastructure 2025 Certified Generative AI Professional',
-    issuer: 'Oracle',
+    issuer: 'Oracle University',
     issueDate: new Date('2025-01-01'),
     credentialUrl: '',
     image: '/uploads/Screenshot_2026-10-21_132422-1792570047406-5572.png',
     description: 'Certification covering generative AI fundamentals, OCI AI services, large language models, and practical AI solution development on Oracle Cloud Infrastructure.',
     category: 'Certifications',
-    windowTitle: 'Oracle Cloud Infrastructure',
+    windowTitle: 'Oracle University',
     badge: 'Certified Professional',
     dateTag: 'Jan 2025',
     displayOrder: 1,
@@ -22,7 +22,7 @@ const items = [
     issueDate: null,
     credentialUrl: '',
     image: '',
-    description: 'Certification in technical writing and communication skills for technology professionals.',
+    description: 'Certification in technical writing, workplace communication, and professional documentation for technology specialists.',
     category: 'Certifications',
     windowTitle: 'TCS iON',
     badge: 'Certified',
@@ -35,10 +35,10 @@ const items = [
     issueDate: null,
     credentialUrl: '',
     image: '',
-    description: 'Online course covering geospatial data handling, sharing protocols, and cyber security practices for earth observation data.',
+    description: 'Specialized course by ISRO / IIRS covering geospatial data infrastructure, secure data sharing protocols, and cyber security practices.',
     category: 'Certifications',
     windowTitle: 'ISRO / IIRS',
-    badge: 'Completed',
+    badge: 'Course Completed',
     dateTag: '2024',
     displayOrder: 3,
   },
@@ -48,10 +48,10 @@ const items = [
     issueDate: null,
     credentialUrl: '',
     image: '',
-    description: 'Participated in the Smart India Hackathon — a national initiative by the Government of India to encourage innovation and problem-solving among students.',
+    description: 'Participant in the nationwide Smart India Hackathon initiative organized by the Ministry of Education and AICTE, Government of India.',
     category: 'Competitions',
     windowTitle: 'Smart India Hackathon',
-    badge: 'Participant',
+    badge: 'National Finalist',
     dateTag: '2024',
     displayOrder: 4,
   },
@@ -68,10 +68,10 @@ async function sync() {
   console.log('Connected to MongoDB');
 
   await Certification.deleteMany({});
-  console.log('Cleared demo certifications');
+  console.log('Cleared existing certifications');
 
   const inserted = await Certification.insertMany(items);
-  console.log(`Successfully synced ${inserted.length} real certifications for Ranjit`);
+  console.log(`Successfully synced ${inserted.length} real certifications for Ranjit Sharma`);
 
   await mongoose.disconnect();
 }
