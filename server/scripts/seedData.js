@@ -55,21 +55,33 @@ const SKILLS = [
 const EXPERIENCE = [
   {
     company: 'DRDO PXE',
-    role: 'Software Development Intern',
+    companyShort: 'DRDO',
+    companySub: 'DRDO — PXE Chandipur',
+    role: 'Software Engineering Intern',
     employmentType: 'Internship',
     location: 'Chandipur, Odisha',
     startDate: new Date('2026-06-01'),
     endDate: new Date('2026-07-31'),
     current: false,
-    description: 'Worked on the Upper Air Sounding System (UASS) — a LAN-based ground station terminal for real-time meteorological data acquisition and visualization.',
-    responsibilities: [
-      'Developed functionality for processing binary telemetry frames from weather sounding equipment',
-      'Built real-time monitoring interfaces for live GPS and meteorological sensor data',
-      'Worked with TCP/UDP socket communication for LAN-based data acquisition',
-      'Implemented interactive graphical visualization for atmospheric parameter data',
-      'Tested system with real and simulated telemetry streams from weather balloons',
+    durationText: '1 month',
+    projectTitle: 'UAS-RTMVD',
+    repoUrl: 'https://github.com/ranjit-sharma',
+    repoLabel: 'Database repo',
+    certificateUrl: '#',
+    stats: [
+      { value: '6', label: 'TABLES DESIGNED' },
+      { value: '65', label: 'SQL STATEMENTS' },
+      { value: 'H2', label: 'FULLY TESTED' },
     ],
-    technologies: ['JavaScript', 'Node.js', 'React', 'TCP/UDP', 'Binary Data Processing', 'Data Visualization', 'Networking'],
+    description:
+      'Owned the SQL database layer end to end for UAS-RTMVD, a real-time telemetry SCADA dashboard.',
+    responsibilities: [
+      'Owned the SQL database layer end to end for UAS-RTMVD, a real-time telemetry SCADA dashboard.',
+      'Designed a 6-table relational schema mapped to Spring Data JPA / Hibernate entities.',
+      'Enforced integrity with keys, unique and CHECK constraints, cascade deletes and a single-active-frame rule in one transaction.',
+      'Wrote all 65 SQL statements — backend queries, seed data, indexes, reporting and validation — tested on H2.',
+    ],
+    technologies: ['Spring Boot', 'Spring Data JPA', 'Hibernate', 'SQL', 'H2', 'Java'],
     displayOrder: 1,
   },
   {
