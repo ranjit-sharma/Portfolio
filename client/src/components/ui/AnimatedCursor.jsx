@@ -64,6 +64,7 @@ export default function AnimatedCursor() {
 
   // Synchronous refs for lightweight tracking
   const lastSpawnRef = useRef({ x: -100, y: -100 });
+  const lastSpawnTimeRef = useRef(0);
   const categoryIndexRef = useRef(0);
   const itemIndicesRef = useRef([0, 0, 0, 0]);
 
@@ -78,20 +79,20 @@ export default function AnimatedCursor() {
     itemIndicesRef.current[catIdx] = (subIdx + 1) % group.length;
     categoryIndexRef.current = (catIdx + 1) % VERIFIED_TECH_CATEGORIES.length;
 
-    // Movement physics: drift in opposite direction of movement + upward float
+    // Movement physics: gentle, relaxed drift instead of fast scattered jump
     const dist = Math.hypot(dx, dy) || 1;
     const normX = dx / dist;
     const normY = dy / dist;
 
-    const driftX = -normX * 18 + (Math.random() - 0.5) * 22;
-    const driftY = -normY * 18 - (Math.random() * 18 + 12);
-    const rot = (Math.random() - 0.5) * 20;
-    const rotDelta = (Math.random() - 0.5) * 35;
+    const driftX = -normX * 8 + (Math.random() - 0.5) * 10;
+    const driftY = -normY * 8 - (Math.random() * 8 + 8);
+    const rot = (Math.random() - 0.5) * 10;
+    const rotDelta = (Math.random() - 0.5) * 12;
 
     const id = Date.now() + Math.random();
 
     setParticles((prev) => {
-      const trimmed = prev.length > 15 ? prev.slice(prev.length - 14) : prev;
+      const trimmed = prev.length > 9 ? prev.slice(prev.length - 8) : prev;
       return [
         ...trimmed,
         {
@@ -107,10 +108,10 @@ export default function AnimatedCursor() {
       ];
     });
 
-    // Auto-remove after 950ms
+    // Auto-remove after 1100ms
     setTimeout(() => {
       setParticles((prev) => prev.filter((p) => p.id !== id));
-    }, 950);
+    }, 1100);
   };
 
   useEffect(() => {
@@ -119,6 +120,7 @@ export default function AnimatedCursor() {
 
       const x = e.clientX;
       const y = e.clientY;
+      const now = performance.now();
 
       // Check distance moved since last spawn
       const last = lastSpawnRef.current;
@@ -136,10 +138,11 @@ export default function AnimatedCursor() {
           )
         );
 
-      // Spawn next tech icon every 24px of movement
-      if (dist >= 24 && !isText) {
+      // Throttle spawn rate: at least 52px of movement and 85ms interval to prevent fast strobing
+      if (dist >= 52 && now - lastSpawnTimeRef.current >= 85 && !isText) {
         spawnTechParticle(x, y, dx, dy);
         lastSpawnRef.current = { x, y };
+        lastSpawnTimeRef.current = now;
       }
     };
 
@@ -149,11 +152,11 @@ export default function AnimatedCursor() {
       const x = e.clientX;
       const y = e.clientY;
 
-      // Click burst: spawn 4 tech icons (one from Frontend, Database, Languages, Tools)
-      const angles = [0, Math.PI / 2, Math.PI, (3 * Math.PI) / 2];
+      // Soft burst on click: 2 tech icons instead of 4
+      const angles = [Math.PI / 4, (5 * Math.PI) / 4];
       angles.forEach((angle) => {
-        const pushX = Math.cos(angle) * 24;
-        const pushY = Math.sin(angle) * 24;
+        const pushX = Math.cos(angle) * 12;
+        const pushY = Math.sin(angle) * 12;
         spawnTechParticle(x, y, -pushX, -pushY);
       });
     };
@@ -165,7 +168,7 @@ export default function AnimatedCursor() {
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('mousedown', onMouseDown);
     };
-  }, []); // Run once on mount
+  }, []);
 
   return (
     <div
@@ -178,7 +181,7 @@ export default function AnimatedCursor() {
         overflow: 'hidden',
       }}
     >
-      {/* Floating Tech Stack Icons Trail (Only verified skills) */}
+      {/* Floating Tech Stack Icons Trail (Gentle, smooth float) */}
       <AnimatePresence>
         {particles.map((p) => {
           const { tech } = p;
@@ -188,24 +191,24 @@ export default function AnimatedCursor() {
             <motion.div
               key={p.id}
               initial={{
-                scale: 0.2,
+                scale: 0.5,
                 opacity: 0,
                 x: p.x,
                 y: p.y,
-                rotate: p.rot - 15,
+                rotate: p.rot - 6,
               }}
               animate={{
-                scale: [0.2, 1.25, 0.95, 0.2],
-                opacity: [0, 1, 0.95, 0],
+                scale: [0.5, 1.02, 0.9, 0.35],
+                opacity: [0, 0.9, 0.85, 0],
                 x: p.x + p.dx,
                 y: p.y + p.dy,
-                rotate: [p.rot - 15, p.rot, p.rot + p.rotDelta],
+                rotate: [p.rot - 6, p.rot, p.rot + p.rotDelta],
               }}
               exit={{ opacity: 0, scale: 0 }}
               transition={{
-                duration: 0.95,
-                ease: [0.16, 1, 0.3, 1],
-                times: [0, 0.22, 0.65, 1],
+                duration: 1.1,
+                ease: [0.25, 0.1, 0.25, 1],
+                times: [0, 0.25, 0.7, 1],
               }}
               style={{
                 position: 'fixed',
@@ -218,10 +221,10 @@ export default function AnimatedCursor() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: tech.color,
-                filter: `drop-shadow(0 0 8px ${tech.color}99) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5))`,
+                filter: `drop-shadow(0 0 6px ${tech.color}80) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35))`,
               }}
             >
-              <IconComp size={24} />
+              <IconComp size={20} />
             </motion.div>
           );
         })}
