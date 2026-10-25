@@ -632,8 +632,8 @@ export default function CertificationsSection() {
                           style={{
                             width: '100%',
                             height: '100%',
-                            objectFit: 'contain',
-                            background: '#ffffff',
+                            objectFit: 'cover',
+                            objectPosition: 'top center',
                             display: 'block',
                             transition: 'transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
                           }}
