@@ -4,6 +4,7 @@ import { ArrowRight, Download, Mail, MapPin } from 'lucide-react';
 import api from '../services/api';
 import useViews from '../hooks/useViews';
 import { getAssetUrl } from '../utils/assetUrl';
+import { LeetCodeIcon } from '../components/ui/index';
 
 const ROLES = [
   'Full-Stack Developer',
@@ -326,11 +327,7 @@ export default function HeroSection() {
                   {
                     label: 'LeetCode',
                     href: profile?.leetcodeUrl || 'https://leetcode.com/u/ranjitsharma/',
-                    icon: (
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.83 5.83 0 0 0 .349 1.017 5.938 5.938 0 0 0 4.858 3.57 5.961 5.961 0 0 0 2.36-.217 5.918 5.918 0 0 0 2.05-1.114l3.854-4.126 5.406-5.788a1.373 1.373 0 0 0 .02-1.928 1.373 1.373 0 0 0-1.927-.02l-5.406 5.788-3.854 4.126a3.21 3.21 0 0 1-1.12.607 3.24 3.24 0 0 1-1.285.118 3.217 3.217 0 0 1-2.634-1.936 3.003 3.003 0 0 1-.034-1.283 2.908 2.908 0 0 1 .656-1.144l3.854-4.126 5.406-5.788A1.374 1.374 0 0 0 13.483 0zm-2.866 12.815a1.373 1.373 0 0 0-1.373 1.373v5.614a1.373 1.373 0 0 0 2.746 0v-5.614a1.373 1.373 0 0 0-1.373-1.373z" />
-                      </svg>
-                    ),
+                    icon: <LeetCodeIcon size={20} monochrome />,
                   },
                 ].map((s) => (
                   <a
