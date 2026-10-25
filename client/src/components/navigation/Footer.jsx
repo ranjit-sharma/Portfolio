@@ -100,8 +100,9 @@ export default function Footer() {
                         color: 'var(--text-secondary)',
                         fontSize: '0.9rem',
                         transition: 'color var(--transition-fast)',
+                        cursor: 'pointer',
                       }}
-                      onMouseEnter={(e) => (e.target.style.color = 'var(--text-primary)')}
+                      onMouseEnter={(e) => (e.target.style.color = 'var(--accent)')}
                       onMouseLeave={(e) => (e.target.style.color = 'var(--text-secondary)')}
                     >
                       {l.label}
