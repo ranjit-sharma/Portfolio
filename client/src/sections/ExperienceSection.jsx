@@ -90,10 +90,10 @@ function CircledCheckmark() {
       style={{ flexShrink: 0, marginTop: '2px' }}
       aria-hidden="true"
     >
-      <circle cx="12" cy="12" r="10" stroke="#e11d48" strokeWidth="1.75" />
+      <circle cx="12" cy="12" r="10" stroke="var(--accent)" strokeWidth="1.75" />
       <path
         d="M7.5 12.2l3 3 6-6"
-        stroke="#e11d48"
+        stroke="var(--accent)"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -253,7 +253,7 @@ export default function ExperienceSection() {
                         top: '0.65rem',
                         bottom: i < items.length - 1 ? '-2.75rem' : '0.5rem',
                         width: 2,
-                        background: 'linear-gradient(to bottom, #e11d48 0%, rgba(225, 29, 72, 0.4) 70%, rgba(225, 29, 72, 0.1) 100%)',
+                        background: 'linear-gradient(to bottom, var(--accent) 0%, var(--accent-border) 70%, transparent 100%)',
                       }}
                     />
 
@@ -266,8 +266,8 @@ export default function ExperienceSection() {
                         width: 12,
                         height: 12,
                         borderRadius: '50%',
-                        background: '#e11d48',
-                        boxShadow: '0 0 14px 2px rgba(225, 29, 72, 0.75)',
+                        background: 'var(--accent)',
+                        boxShadow: '0 0 14px 2px var(--accent-glow)',
                         zIndex: 2,
                       }}
                     />
@@ -287,8 +287,8 @@ export default function ExperienceSection() {
                         width: 10,
                         height: 10,
                         borderRadius: '50%',
-                        background: '#e11d48',
-                        boxShadow: '0 0 10px rgba(225, 29, 72, 0.8)',
+                        background: 'var(--accent)',
+                        boxShadow: '0 0 10px var(--accent-glow)',
                       }}
                     />
                     <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)' }}>
@@ -302,23 +302,23 @@ export default function ExperienceSection() {
                   {/* Main Experience Card */}
                   <div
                     style={{
-                      background: 'radial-gradient(circle at 12% 10%, rgba(225, 29, 72, 0.08) 0%, transparent 45%), var(--bg-surface)',
-                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                      background: 'radial-gradient(circle at 12% 10%, var(--accent-dim) 0%, transparent 45%), var(--bg-card)',
+                      border: '1px solid var(--border)',
                       borderRadius: '20px',
                       padding: '2rem 2.25rem',
-                      boxShadow: '0 12px 36px -8px rgba(0, 0, 0, 0.35)',
+                      boxShadow: 'var(--shadow-md)',
                       transition: 'border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease',
                       position: 'relative',
                       overflow: 'hidden',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = 'rgba(225, 29, 72, 0.4)';
-                      e.currentTarget.style.boxShadow = '0 16px 44px -8px rgba(225, 29, 72, 0.2)';
+                      e.currentTarget.style.borderColor = 'var(--accent-border)';
+                      e.currentTarget.style.boxShadow = '0 16px 44px -8px var(--accent-glow)';
                       e.currentTarget.style.transform = 'translateY(-2px)';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
-                      e.currentTarget.style.boxShadow = '0 12px 36px -8px rgba(0, 0, 0, 0.35)';
+                      e.currentTarget.style.borderColor = 'var(--border)';
+                      e.currentTarget.style.boxShadow = 'var(--shadow-md)';
                       e.currentTarget.style.transform = 'translateY(0)';
                     }}
                   >
@@ -341,14 +341,14 @@ export default function ExperienceSection() {
                             width: 52,
                             height: 52,
                             borderRadius: '14px',
-                            background: 'linear-gradient(135deg, #e11d48 0%, #be123c 100%)',
-                            boxShadow: '0 8px 24px rgba(225, 29, 72, 0.4)',
+                            background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%)',
+                            boxShadow: '0 8px 24px var(--accent-glow)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             fontWeight: 800,
                             fontSize: '0.95rem',
-                            color: '#ffffff',
+                            color: 'var(--accent-contrast)',
                             letterSpacing: '0.04em',
                             flexShrink: 0,
                           }}
@@ -390,7 +390,7 @@ export default function ExperienceSection() {
                           >
                             {exp.location && (
                               <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                                <MapPin size={13} style={{ color: '#e11d48' }} />
+                                <MapPin size={13} style={{ color: 'var(--accent)' }} />
                                 {exp.location}
                               </span>
                             )}
@@ -410,9 +410,9 @@ export default function ExperienceSection() {
                           gap: '0.45rem',
                           padding: '0.35rem 0.85rem',
                           borderRadius: '9999px',
-                          background: 'rgba(225, 29, 72, 0.1)',
-                          border: '1px solid rgba(225, 29, 72, 0.32)',
-                          color: '#fb7185',
+                          background: 'var(--accent-dim)',
+                          border: '1px solid var(--accent-border)',
+                          color: 'var(--accent)',
                           fontSize: '0.72rem',
                           fontWeight: 700,
                           letterSpacing: '0.12em',
@@ -424,8 +424,8 @@ export default function ExperienceSection() {
                             width: 6,
                             height: 6,
                             borderRadius: '50%',
-                            background: '#e11d48',
-                            boxShadow: '0 0 8px #e11d48',
+                            background: 'var(--accent)',
+                            boxShadow: '0 0 8px var(--accent)',
                           }}
                         />
                         {exp.employmentType || 'INTERNSHIP'}
@@ -476,22 +476,24 @@ export default function ExperienceSection() {
                               width: 38,
                               height: 38,
                               borderRadius: '50%',
-                              background: 'transparent',
-                              border: '1px solid rgba(255, 255, 255, 0.16)',
+                              background: 'var(--bg-elevated)',
+                              border: '1px solid var(--border)',
                               color: 'var(--text-primary)',
                               textDecoration: 'none',
                               transition: 'all 0.2s ease',
                             }}
                             onMouseEnter={(e) => {
-                              e.currentTarget.style.borderColor = 'rgba(225, 29, 72, 0.5)';
-                              e.currentTarget.style.background = 'rgba(225, 29, 72, 0.08)';
-                              e.currentTarget.style.color = '#fb7185';
+                              e.currentTarget.style.borderColor = 'var(--accent-border)';
+                              e.currentTarget.style.background = 'var(--accent-dim)';
+                              e.currentTarget.style.color = 'var(--accent)';
+                              e.currentTarget.style.boxShadow = '0 4px 14px var(--accent-glow)';
                               e.currentTarget.style.transform = 'translateY(-2px)';
                             }}
                             onMouseLeave={(e) => {
-                              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.16)';
-                              e.currentTarget.style.background = 'transparent';
+                              e.currentTarget.style.borderColor = 'var(--border)';
+                              e.currentTarget.style.background = 'var(--bg-elevated)';
                               e.currentTarget.style.color = 'var(--text-primary)';
+                              e.currentTarget.style.boxShadow = 'none';
                               e.currentTarget.style.transform = 'translateY(0)';
                             }}
                           >
@@ -514,8 +516,8 @@ export default function ExperienceSection() {
                                 gap: '0.45rem',
                                 padding: '0.55rem 1rem',
                                 borderRadius: '9999px',
-                                background: 'transparent',
-                                border: '1px solid rgba(255, 255, 255, 0.16)',
+                                background: 'var(--bg-elevated)',
+                                border: '1px solid var(--border)',
                                 color: 'var(--text-primary)',
                                 fontSize: '0.84rem',
                                 fontWeight: 600,
@@ -523,19 +525,21 @@ export default function ExperienceSection() {
                                 transition: 'all 0.2s ease',
                               }}
                               onMouseEnter={(e) => {
-                                e.currentTarget.style.borderColor = 'rgba(225, 29, 72, 0.5)';
-                                e.currentTarget.style.background = 'rgba(225, 29, 72, 0.08)';
-                                e.currentTarget.style.color = '#fb7185';
+                                e.currentTarget.style.borderColor = 'var(--accent-border)';
+                                e.currentTarget.style.background = 'var(--accent-dim)';
+                                e.currentTarget.style.color = 'var(--accent)';
+                                e.currentTarget.style.boxShadow = '0 4px 14px var(--accent-glow)';
                                 e.currentTarget.style.transform = 'translateY(-2px)';
                               }}
                               onMouseLeave={(e) => {
-                                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.16)';
-                                e.currentTarget.style.background = 'transparent';
+                                e.currentTarget.style.borderColor = 'var(--border)';
+                                e.currentTarget.style.background = 'var(--bg-elevated)';
                                 e.currentTarget.style.color = 'var(--text-primary)';
+                                e.currentTarget.style.boxShadow = 'none';
                                 e.currentTarget.style.transform = 'translateY(0)';
                               }}
                             >
-                              <Award size={15} style={{ color: '#fb7185' }} />
+                              <Award size={15} style={{ color: 'var(--accent)' }} />
                               Certificate
                               <ExternalLink size={13} style={{ opacity: 0.7 }} />
                             </button>
@@ -619,8 +623,8 @@ export default function ExperienceSection() {
                           display: 'flex',
                           flexWrap: 'wrap',
                           gap: '0.5rem',
-                          paddingTop: '0.5rem',
-                          borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+                          paddingTop: '0.85rem',
+                          borderTop: '1px solid var(--border)',
                         }}
                       >
                         {exp.technologies.map((tech) => (
@@ -662,7 +666,7 @@ export default function ExperienceSection() {
               position: 'fixed',
               inset: 0,
               zIndex: 9999,
-              background: 'rgba(0, 0, 0, 0.85)',
+              background: 'rgba(0, 0, 0, 0.75)',
               backdropFilter: 'blur(8px)',
               display: 'flex',
               alignItems: 'center',
@@ -686,7 +690,7 @@ export default function ExperienceSection() {
                 overflow: 'hidden',
                 display: 'flex',
                 flexDirection: 'column',
-                boxShadow: '0 24px 64px rgba(0, 0, 0, 0.6)',
+                boxShadow: 'var(--shadow-lg)',
               }}
             >
               {/* Modal Header */}
@@ -701,8 +705,8 @@ export default function ExperienceSection() {
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                  <Award size={18} style={{ color: '#e11d48' }} />
-                  <span style={{ fontWeight: 700, fontSize: '0.95rem' }}>
+                  <Award size={18} style={{ color: 'var(--accent)' }} />
+                  <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)' }}>
                     {activeCertModal.title}
                   </span>
                 </div>
@@ -751,7 +755,7 @@ export default function ExperienceSection() {
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  background: '#090d16',
+                  background: 'var(--bg-base)',
                 }}
               >
                 <img
@@ -762,7 +766,7 @@ export default function ExperienceSection() {
                     maxHeight: '75vh',
                     objectFit: 'contain',
                     borderRadius: '8px',
-                    boxShadow: '0 8px 30px rgba(0,0,0,0.5)',
+                    boxShadow: 'var(--shadow-md)',
                   }}
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';
