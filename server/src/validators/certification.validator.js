@@ -7,6 +7,10 @@ const certificationSchema = z.object({
   credentialUrl: z.string().optional().default(''),
   image: z.string().optional().default(''),
   description: z.string().optional().default(''),
+  category: z.string().optional().default('Certifications'),
+  windowTitle: z.string().optional().default(''),
+  badge: z.string().optional().default(''),
+  dateTag: z.string().optional().default(''),
   displayOrder: z.coerce.number().optional().default(0),
 });
 

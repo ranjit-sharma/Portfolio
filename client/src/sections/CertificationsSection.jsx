@@ -1,57 +1,130 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from '../hooks/useInView';
-import { SectionHeading, SkeletonCard } from '../components/ui/index';
+import { Trophy, Briefcase, CheckCircle2, ArrowUpRight, X, ExternalLink } from 'lucide-react';
 import api from '../services/api';
 import { getAssetUrl } from '../utils/assetUrl';
 
 const FALLBACK_CERTS = [
   {
     _id: '1',
-    name: 'Oracle Cloud Infrastructure 2025 Certified Generative AI Professional',
-    issuer: 'Oracle',
-    issueDate: '2025-01-01',
+    name: 'Oracle Cloud Infrastructure 2025 Certified AI Foundations Associate',
+    issuer: 'Oracle University',
+    issueDate: '2025-10-01',
     credentialUrl: '',
-    image: '/uploads/Screenshot_2026-10-21_132422-1792570047406-5572.png',
-    description: 'Certification in generative AI fundamentals, OCI AI services, and practical AI solution development.',
+    image: '/certificates/cert_1_oracle.png',
+    description: 'Certification covering AI concepts, OCI AI services, machine learning foundations, and cloud deployment.',
+    category: 'Certifications',
+    windowTitle: 'Oracle University',
+    badge: 'Valid until Oct 2027',
+    dateTag: 'Oct 2025',
+    displayOrder: 1,
   },
   {
     _id: '2',
-    name: 'TCS iON Technical Communication',
-    issuer: 'TCS iON',
-    issueDate: '',
+    name: 'Programming In Java',
+    issuer: 'NPTEL · IIT Kharagpur',
+    issueDate: '2025-04-01',
     credentialUrl: '',
-    description: 'Technical writing and communication skills for technology professionals.',
+    image: '/certificates/cert_2_nptel_java.png',
+    description: '12-week course and proctored examination covering core Java, OOP, collections, multithreading, and JVM internals.',
+    category: 'Certifications',
+    windowTitle: 'NPTEL',
+    badge: 'Elite - Silver · 77%',
+    dateTag: 'Jan-Apr 2025 · 12 weeks',
+    displayOrder: 2,
   },
   {
     _id: '3',
-    name: 'Geo-data Sharing and Cyber Security',
-    issuer: 'ISRO / IIRS',
-    issueDate: '',
+    name: 'Data Base Management System',
+    issuer: 'NPTEL · IIT Kharagpur',
+    issueDate: '2025-09-01',
     credentialUrl: '',
-    description: 'Online course covering geospatial data handling, sharing protocols, and cyber security practices.',
+    image: '/certificates/cert_3_nptel_dbms.png',
+    description: '8-week comprehensive course covering relational algebra, SQL, normalization, transactions, indexing, and query optimization.',
+    category: 'Certifications',
+    windowTitle: 'NPTEL',
+    badge: 'Score 57%',
+    dateTag: 'Jul-Sep 2025 · 8 weeks',
+    displayOrder: 3,
   },
   {
     _id: '4',
-    name: 'Smart India Hackathon',
-    issuer: 'Ministry of Education, Government of India',
-    issueDate: '',
+    name: 'Data Structure and Algorithms using Java',
+    issuer: 'NPTEL · IIT Kharagpur',
+    issueDate: '2024-10-01',
     credentialUrl: '',
-    description: 'Participated in the Smart India Hackathon, a national initiative to foster innovation among students.',
+    image: '/certificates/cert_4_nptel_dsa.png',
+    description: '12-week intensive course on algorithmic paradigms, asymptotic analysis, linear and non-linear data structures, and graph algorithms.',
+    category: 'Certifications',
+    windowTitle: 'NPTEL',
+    badge: 'Score 57%',
+    dateTag: 'Jul-Oct 2024 · 12 weeks',
+    displayOrder: 4,
+  },
+  {
+    _id: '5',
+    name: 'Internship Training — Upper Air Sounding Real-Time Monitoring and Visualization Dashboard',
+    issuer: 'Proof & Experimental Establishment (PXE), DRDO',
+    issueDate: '2026-07-17',
+    credentialUrl: '',
+    image: '/certificates/cert_5_drdo.png',
+    description: 'Certificate of Internship Training at Proof & Experimental Establishment (PXE), Ministry of Defence, Government of India.',
+    category: 'Internships',
+    windowTitle: 'DRDO',
+    badge: 'Certificate No. 249/2026',
+    dateTag: '18 Jun – 17 Jul 2026',
+    displayOrder: 5,
+  },
+  {
+    _id: '6',
+    name: 'Certificate of Internship — Software Development Intern',
+    issuer: 'Astro Vedangam Private Limited',
+    issueDate: '2026-01-31',
+    credentialUrl: '',
+    image: '/certificates/cert_6_astro.png',
+    description: 'Software Development Internship certification with Astro Vedangam Private Limited for contributions to web applications.',
+    category: 'Internships',
+    windowTitle: 'Astro Vedangam Private Limited',
+    badge: 'Sep 2025 – Jan 2026',
+    dateTag: 'Sep 2025 – Jan 2026',
+    displayOrder: 6,
+  },
+  {
+    name: "PRAVAAH'25 — Web Hackathon",
+    _id: '7',
+    issuer: 'Certificate of Participation · IIT Bhubaneswar',
+    issueDate: '2025-01-15',
+    credentialUrl: '',
+    image: '/certificates/cert_7_pravaah.png',
+    description: "Participated in the PRAVAAH'25 Annual Cultural and Technology Festival Web Hackathon at Indian Institute of Technology Bhubaneswar.",
+    category: 'Competitions',
+    windowTitle: 'Certificate of Participation',
+    badge: '2025',
+    dateTag: '2025',
+    displayOrder: 7,
+  },
+  {
+    _id: '8',
+    name: 'PixelCraft — The UI Showdown',
+    issuer: 'Certificate of Participation · Brain Logic Club, Trident Academy of Technology',
+    issueDate: '2024-11-20',
+    credentialUrl: '',
+    image: '/certificates/cert_8_pixelcraft.png',
+    description: 'Certificate of Participation in PixelCraft — The UI Showdown organized by the Brain Logic Club at Trident Academy of Technology.',
+    category: 'Competitions',
+    windowTitle: 'Certificate of Participation',
+    badge: 'Score 57%',
+    dateTag: '',
+    displayOrder: 8,
   },
 ];
-
-function formatDate(dateStr) {
-  if (!dateStr) return null;
-  const d = new Date(dateStr);
-  if (isNaN(d)) return null;
-  return d.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
-}
 
 export default function CertificationsSection() {
   const { ref, inView } = useInView();
   const [certs, setCerts] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('all');
   const [selectedCert, setSelectedCert] = useState(null);
 
   useEffect(() => {
@@ -75,7 +148,24 @@ export default function CertificationsSection() {
       .get('/certifications')
       .then((res) => {
         const data = res.data.data;
-        setCerts(data && data.length > 0 ? data : FALLBACK_CERTS);
+        if (data && data.length > 0) {
+          // Merge API data with rich fallback fields if missing
+          const merged = data.map((item, idx) => {
+            const fallback = FALLBACK_CERTS[idx] || {};
+            return {
+              ...fallback,
+              ...item,
+              category: item.category || fallback.category || 'Certifications',
+              windowTitle: item.windowTitle || fallback.windowTitle || item.issuer || 'Certificate',
+              badge: item.badge || fallback.badge || '',
+              dateTag: item.dateTag || fallback.dateTag || '',
+              image: item.image || fallback.image || '',
+            };
+          });
+          setCerts(merged);
+        } else {
+          setCerts(FALLBACK_CERTS);
+        }
       })
       .catch(() => setCerts(FALLBACK_CERTS))
       .finally(() => setLoading(false));
@@ -83,197 +173,417 @@ export default function CertificationsSection() {
 
   const items = certs || FALLBACK_CERTS;
 
-  return (
-    <section id="certifications" className="section-padding">
-      <div className="container">
-        <SectionHeading
-          eyebrow="Certifications"
-          title="Certifications & Achievements"
-          subtitle="Credentials and recognitions earned along the way"
-        />
+  // Counts for tabs
+  const certCount = items.filter((c) => (c.category || '').toLowerCase() === 'certifications').length;
+  const internCount = items.filter((c) => (c.category || '').toLowerCase() === 'internships').length;
+  const compCount = items.filter((c) => (c.category || '').toLowerCase() === 'competitions').length;
 
-        {loading ? (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.25rem' }}>
-            {[...Array(4)].map((_, i) => <SkeletonCard key={i} height={160} />)}
+  const tabs = [
+    { id: 'all', label: 'All', count: items.length },
+    { id: 'certifications', label: 'Certifications', count: certCount },
+    { id: 'internships', label: 'Internships', count: internCount },
+    { id: 'competitions', label: 'Competitions', count: compCount },
+  ];
+
+  const filteredItems = items.filter((c) => {
+    if (activeTab === 'all') return true;
+    return (c.category || '').toLowerCase() === activeTab.toLowerCase();
+  });
+
+  const getCategoryIcon = (category) => {
+    const cat = (category || '').toLowerCase();
+    if (cat.includes('intern')) {
+      return <Briefcase size={12} strokeWidth={2.4} style={{ color: 'var(--accent, #EF4444)' }} />;
+    }
+    if (cat.includes('compet')) {
+      return <Trophy size={12} strokeWidth={2.4} style={{ color: 'var(--accent, #EF4444)' }} />;
+    }
+    return <CheckCircle2 size={12} strokeWidth={2.4} style={{ color: 'var(--accent, #EF4444)' }} />;
+  };
+
+  const getCategoryLabel = (category) => {
+    const cat = (category || '').toLowerCase();
+    if (cat.includes('intern')) return 'INTERNSHIP';
+    if (cat.includes('compet')) return 'COMPETITION';
+    return 'CERTIFICATION';
+  };
+
+  return (
+    <section id="certifications" className="section-padding" style={{ background: 'var(--bg-base, #09090b)' }}>
+      <style>{`
+        .cert-grid {
+          display: grid;
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+          gap: 1.25rem;
+        }
+        @media (max-width: 1080px) {
+          .cert-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+          }
+        }
+        @media (max-width: 600px) {
+          .cert-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
+        .cert-card-interactive {
+          transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+                      box-shadow 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+                      border-color 0.32s ease,
+                      background-color 0.32s ease;
+        }
+        .cert-card-interactive:hover {
+          transform: translateY(-7px) !important;
+          border-color: var(--accent, #EF4444) !important;
+          box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.75), 0 0 24px -2px var(--accent-glow, rgba(239, 68, 68, 0.32)) !important;
+        }
+        .cert-card-interactive:hover .cert-preview-img {
+          transform: scale(1.06) !important;
+        }
+        .cert-card-interactive:hover .cert-arrow-icon {
+          transform: translate(2px, -2px) !important;
+          color: var(--accent, #EF4444) !important;
+        }
+        .cert-card-interactive:hover .cert-card-title {
+          color: var(--accent, #EF4444) !important;
+        }
+      `}</style>
+
+      <div className="container" ref={ref}>
+        {/* Section Header */}
+        <div style={{ marginBottom: '1.75rem' }}>
+          {/* Eyebrow */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.65rem' }}>
+            <span style={{ fontSize: '0.9rem', lineHeight: 1 }}>🏆</span>
+            <span
+              style={{
+                color: 'var(--accent, #EF4444)',
+                fontSize: '0.72rem',
+                fontWeight: 800,
+                letterSpacing: '0.14em',
+                textTransform: 'uppercase',
+              }}
+            >
+              ACHIEVEMENTS &amp; CERTIFICATIONS
+            </span>
           </div>
-        ) : (
-          <div
-            ref={ref}
+
+          {/* Heading */}
+          <h2
             style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-              gap: '1.25rem',
+              fontSize: 'clamp(2.1rem, 3.8vw, 3rem)',
+              fontWeight: 800,
+              letterSpacing: '-0.03em',
+              color: 'var(--text-primary, #ffffff)',
+              lineHeight: 1.15,
+              marginBottom: '0.75rem',
             }}
           >
-            {items.map((cert, i) => (
-              <motion.div
-                key={cert._id}
-                initial={{ opacity: 0, y: 24 }}
-                animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.45, delay: i * 0.08 }}
+            Recognition &amp; Credentials
+          </h2>
+
+          {/* Subtitle */}
+          <p
+            style={{
+              color: 'var(--text-secondary, #a1a1aa)',
+              fontSize: '0.96rem',
+              margin: 0,
+            }}
+          >
+            The actual certificates — click any card to view it full size.
+          </p>
+        </div>
+
+        {/* Filter Pills */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.55rem',
+            flexWrap: 'wrap',
+            marginBottom: '2rem',
+          }}
+        >
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
                 style={{
-                  background: 'var(--bg-card)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-lg)',
-                  padding: '1.25rem',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.6rem',
-                  boxShadow: 'var(--shadow-sm)',
-                  transition: 'all var(--transition-base)',
+                  background: isActive ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.02)',
+                  border: isActive
+                    ? '1px solid rgba(255, 255, 255, 0.16)'
+                    : '1px solid rgba(255, 255, 255, 0.05)',
+                  borderRadius: '9999px',
+                  padding: '0.45rem 1rem',
+                  fontSize: '0.85rem',
+                  fontWeight: isActive ? 600 : 500,
+                  color: isActive ? 'var(--text-primary, #ffffff)' : 'var(--text-secondary, #a1a1aa)',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  transition: 'all 0.22s ease',
+                  boxShadow: isActive ? '0 2px 8px rgba(0, 0, 0, 0.3)' : 'none',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--accent-border)';
-                  e.currentTarget.style.boxShadow = '0 8px 24px var(--accent-glow)';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  if (!isActive) {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                    e.currentTarget.style.color = 'var(--text-primary, #ffffff)';
+                  }
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--border)';
-                  e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
-                  e.currentTarget.style.transform = 'translateY(0)';
+                  if (!isActive) {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)';
+                    e.currentTarget.style.color = 'var(--text-secondary, #a1a1aa)';
+                  }
                 }}
               >
-                {/* Header */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '0.78rem', color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
-                    {cert.issuer}
-                  </span>
-                  {formatDate(cert.issueDate) && (
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                      {formatDate(cert.issueDate)}
-                    </span>
-                  )}
-                </div>
+                <span>{tab.label}</span>
+                <span
+                  style={{
+                    color: isActive ? 'var(--accent, #EF4444)' : '#71717a',
+                    fontWeight: 700,
+                    fontSize: '0.8rem',
+                  }}
+                >
+                  {tab.count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
 
-                {/* Certificate name */}
-                <h3 style={{ fontWeight: 700, fontSize: '0.9rem', lineHeight: 1.4, color: 'var(--text-primary)' }}>
-                  {cert.name}
-                </h3>
-
-                {/* Certificate Preview Image if uploaded */}
-                {cert.image && (
+        {/* Loading state skeleton */}
+        {loading ? (
+          <div className="cert-grid">
+            {[...Array(8)].map((_, i) => (
+              <div
+                key={i}
+                style={{
+                  height: 310,
+                  borderRadius: '16px',
+                  background: 'var(--bg-elevated, #18181b)',
+                  border: '1px solid var(--border, #27272a)',
+                  opacity: 0.6,
+                }}
+              />
+            ))}
+          </div>
+        ) : (
+          /* Cards Grid */
+          <motion.div layout className="cert-grid">
+            <AnimatePresence>
+              {filteredItems.map((cert, i) => (
+                <motion.div
+                  key={cert._id || i}
+                  layout
+                  initial={{ opacity: 0, y: 20, scale: 0.98 }}
+                  animate={inView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 20 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.35, delay: i * 0.04 }}
+                  className="cert-card-interactive"
+                  onClick={() => setSelectedCert(cert)}
+                  style={{
+                    background: 'var(--bg-card, #121214)',
+                    border: '1px solid var(--border, rgba(255, 255, 255, 0.08))',
+                    borderRadius: '16px',
+                    padding: '0.75rem',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    position: 'relative',
+                  }}
+                >
+                  {/* Window Mockup Frame */}
                   <div
-                    onClick={() => setSelectedCert(cert)}
                     style={{
-                      position: 'relative',
-                      height: 160,
-                      borderRadius: 'var(--radius-md)',
+                      borderRadius: '10px',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      background: '#18181b',
                       overflow: 'hidden',
-                      border: '1px solid var(--border)',
-                      background: 'var(--bg-elevated)',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      padding: '4px',
+                      position: 'relative',
+                      boxShadow: '0 4px 14px rgba(0, 0, 0, 0.45)',
                     }}
-                    title="Click to view certificate"
                   >
-                    {cert.image.toLowerCase().endsWith('.pdf') ? (
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem', color: 'var(--text-secondary)' }}>
-                        <span style={{ fontSize: '2rem' }}>📄</span>
-                        <span style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--accent)' }}>View Certificate PDF</span>
-                      </div>
-                    ) : (
-                      <img
-                        src={getAssetUrl(cert.image)}
-                        alt={cert.name}
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
-                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                      />
-                    )}
+                    {/* Window Header */}
                     <div
                       style={{
-                        position: 'absolute',
-                        inset: 0,
-                        background: 'rgba(0, 0, 0, 0.45)',
+                        height: 30,
+                        padding: '0 9px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        background: '#1a1a1e',
+                        borderBottom: '1px solid rgba(255, 255, 255, 0.07)',
+                      }}
+                    >
+                      {/* Left: 3 macOS dots + windowTitle */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#ff5f56', display: 'inline-block' }} />
+                        <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#ffbd2e', display: 'inline-block' }} />
+                        <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#27c93f', display: 'inline-block' }} />
+                        <span
+                          style={{
+                            fontSize: '0.67rem',
+                            color: '#a1a1aa',
+                            fontWeight: 500,
+                            marginLeft: '0.45rem',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            maxWidth: 140,
+                          }}
+                        >
+                          {cert.windowTitle || cert.issuer}
+                        </span>
+                      </div>
+
+                      {/* Right: Expand arrow */}
+                      <ArrowUpRight
+                        size={13}
+                        className="cert-arrow-icon"
+                        style={{
+                          color: '#71717a',
+                          transition: 'transform 0.25s ease, color 0.25s ease',
+                          flexShrink: 0,
+                        }}
+                      />
+                    </div>
+
+                    {/* Window Image Preview */}
+                    <div
+                      style={{
+                        height: 132,
+                        position: 'relative',
+                        background: '#09090b',
+                        overflow: 'hidden',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        opacity: 0,
-                        transition: 'opacity var(--transition-fast)',
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
-                      onMouseLeave={(e) => (e.currentTarget.style.opacity = '0')}
                     >
-                      <span
-                        style={{
-                          background: 'var(--bg-surface)',
-                          color: 'var(--text-primary)',
-                          padding: '0.35rem 0.85rem',
-                          borderRadius: 'var(--radius-pill)',
-                          fontSize: '0.75rem',
-                          fontWeight: 600,
-                          border: '1px solid var(--border)',
+                      <img
+                        src={getAssetUrl(cert.image)}
+                        alt={cert.name}
+                        className="cert-preview-img"
+                        loading="lazy"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
                         }}
-                      >
-                        View Certificate
-                      </span>
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          display: 'block',
+                          transition: 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)',
+                        }}
+                      />
+
+                      {/* Overlay badge (bottom-left) */}
+                      {cert.badge && (
+                        <div
+                          style={{
+                            position: 'absolute',
+                            bottom: 7,
+                            left: 7,
+                            background: 'rgba(15, 15, 18, 0.88)',
+                            backdropFilter: 'blur(6px)',
+                            border: '1px solid rgba(239, 68, 68, 0.38)',
+                            borderRadius: '4px',
+                            padding: '2px 7px',
+                            fontSize: '0.66rem',
+                            fontWeight: 600,
+                            color: 'var(--accent, #EF4444)',
+                            boxShadow: '0 2px 6px rgba(0, 0, 0, 0.65)',
+                            pointerEvents: 'none',
+                            lineHeight: 1.25,
+                            zIndex: 2,
+                          }}
+                        >
+                          {cert.badge}
+                        </div>
+                      )}
                     </div>
                   </div>
-                )}
 
-                {/* Description */}
-                {cert.description && (
-                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.825rem', lineHeight: 1.6, flex: 1 }}>
-                    {cert.description}
-                  </p>
-                )}
-
-                {/* Action links */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', marginTop: 'auto', paddingTop: '0.5rem', flexWrap: 'wrap' }}>
-                  {cert.image && (
-                    <button
-                      type="button"
-                      onClick={() => setSelectedCert(cert)}
+                  {/* Card Content Details (below window) */}
+                  <div style={{ padding: '0.75rem 0.25rem 0.25rem 0.25rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                    {/* Category Tag + Date Row */}
+                    <div
                       style={{
-                        background: 'transparent',
-                        border: 'none',
-                        color: 'var(--accent)',
-                        fontSize: '0.8rem',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        display: 'inline-flex',
+                        display: 'flex',
                         alignItems: 'center',
-                        gap: '0.3rem',
-                        padding: 0,
-                        fontFamily: 'inherit',
+                        gap: '0.35rem',
+                        marginBottom: '0.42rem',
+                        flexWrap: 'wrap',
                       }}
                     >
-                      View Certificate →
-                    </button>
-                  )}
+                      {getCategoryIcon(cert.category)}
+                      <span
+                        style={{
+                          color: 'var(--accent, #EF4444)',
+                          fontSize: '0.67rem',
+                          fontWeight: 700,
+                          letterSpacing: '0.07em',
+                          textTransform: 'uppercase',
+                        }}
+                      >
+                        {getCategoryLabel(cert.category)}
+                      </span>
+                      {cert.dateTag && (
+                        <>
+                          <span style={{ color: 'rgba(255, 255, 255, 0.25)', fontSize: '0.7rem' }}>·</span>
+                          <span style={{ color: '#71717a', fontSize: '0.72rem', fontWeight: 500 }}>
+                            {cert.dateTag}
+                          </span>
+                        </>
+                      )}
+                    </div>
 
-                  {cert.credentialUrl ? (
-                    <a
-                      href={cert.credentialUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    {/* Title */}
+                    <h3
+                      className="cert-card-title"
+                      title={cert.name}
                       style={{
-                        fontSize: '0.78rem',
-                        color: 'var(--text-secondary)',
-                        fontWeight: 500,
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '0.25rem',
-                        transition: 'color var(--transition-fast)',
+                        fontSize: '0.88rem',
+                        fontWeight: 700,
+                        color: 'var(--text-primary, #ffffff)',
+                        lineHeight: 1.35,
+                        margin: '0 0 0.35rem 0',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        transition: 'color 0.2s ease',
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
-                      onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-secondary)')}
                     >
-                      Verify Credential →
-                    </a>
-                  ) : !cert.image && (
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                      Credential not publicly verifiable
-                    </span>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                      {cert.name}
+                    </h3>
+
+                    {/* Subtitle / Issuer */}
+                    <p
+                      title={cert.issuer}
+                      style={{
+                        fontSize: '0.75rem',
+                        color: '#a1a1aa',
+                        lineHeight: 1.35,
+                        margin: 0,
+                        marginTop: 'auto',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      {cert.issuer}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
         )}
 
         {/* Certificate Lightbox Modal */}
@@ -286,132 +596,213 @@ export default function CertificationsSection() {
                 position: 'fixed',
                 inset: 0,
                 zIndex: 2000,
-                background: 'rgba(0, 0, 0, 0.8)',
-                backdropFilter: 'blur(6px)',
+                background: 'rgba(0, 0, 0, 0.85)',
+                backdropFilter: 'blur(8px)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '1.5rem',
+                padding: '1.25rem',
               }}
               onClick={() => setSelectedCert(null)}
             >
               <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.94, y: 15 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.94, y: 15 }}
+                transition={{ duration: 0.24, ease: 'easeOut' }}
                 style={{
-                  background: 'var(--bg-card)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-xl)',
-                  maxWidth: 720,
+                  background: '#141416',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  borderRadius: '16px',
+                  maxWidth: 820,
                   width: '100%',
-                  maxHeight: '90vh',
+                  maxHeight: '92vh',
                   display: 'flex',
                   flexDirection: 'column',
                   overflow: 'hidden',
-                  boxShadow: 'var(--shadow-lg)',
+                  boxShadow: '0 25px 60px rgba(0, 0, 0, 0.85), 0 0 35px var(--accent-glow, rgba(239, 68, 68, 0.2))',
                 }}
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Modal Header */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 1.25rem', borderBottom: '1px solid var(--border)' }}>
-                  <div>
-                    <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>{selectedCert.name}</h3>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                      {selectedCert.issuer} {selectedCert.issueDate && `· ${formatDate(selectedCert.issueDate)}`}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0.9rem 1.25rem',
+                    borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+                    background: '#1a1a1e',
+                  }}
+                >
+                  <div style={{ flex: 1, paddingRight: '1rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
+                      {getCategoryIcon(selectedCert.category)}
+                      <span
+                        style={{
+                          color: 'var(--accent, #EF4444)',
+                          fontSize: '0.68rem',
+                          fontWeight: 700,
+                          letterSpacing: '0.07em',
+                          textTransform: 'uppercase',
+                        }}
+                      >
+                        {getCategoryLabel(selectedCert.category)}
+                      </span>
+                      {selectedCert.dateTag && (
+                        <span style={{ color: '#71717a', fontSize: '0.72rem' }}>
+                          · {selectedCert.dateTag}
+                        </span>
+                      )}
+                    </div>
+                    <h3
+                      style={{
+                        fontSize: '1rem',
+                        fontWeight: 700,
+                        color: '#ffffff',
+                        margin: 0,
+                        lineHeight: 1.3,
+                      }}
+                    >
+                      {selectedCert.name}
+                    </h3>
+                    <p style={{ fontSize: '0.78rem', color: '#a1a1aa', margin: '0.2rem 0 0 0' }}>
+                      {selectedCert.issuer}
                     </p>
                   </div>
                   <button
+                    type="button"
                     onClick={() => setSelectedCert(null)}
                     style={{
-                      background: 'var(--bg-elevated)',
-                      border: '1px solid var(--border)',
+                      background: 'rgba(255, 255, 255, 0.06)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
                       borderRadius: '50%',
                       width: 32,
                       height: 32,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      color: 'var(--text-secondary)',
+                      color: '#a1a1aa',
                       cursor: 'pointer',
-                      fontSize: '0.9rem',
+                      fontSize: '0.85rem',
+                      transition: 'all 0.2s',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = '#ffffff';
+                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = '#a1a1aa';
+                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)';
                     }}
                   >
-                    ✕
+                    <X size={16} />
                   </button>
                 </div>
 
                 {/* Modal Body */}
-                <div style={{ padding: '1.25rem', overflowY: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div
+                  style={{
+                    padding: '1.25rem',
+                    overflowY: 'auto',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: '#0a0a0c',
+                  }}
+                >
                   {selectedCert.image ? (
-                    selectedCert.image.toLowerCase().endsWith('.pdf') ? (
-                      <iframe
-                        src={selectedCert.image}
-                        title={selectedCert.name}
-                        style={{ width: '100%', height: 480, border: 'none', borderRadius: 'var(--radius-md)' }}
-                      />
-                    ) : (
+                    <div
+                      style={{
+                        width: '100%',
+                        borderRadius: '10px',
+                        overflow: 'hidden',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        background: '#121214',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.7)',
+                      }}
+                    >
                       <img
                         src={getAssetUrl(selectedCert.image)}
                         alt={selectedCert.name}
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
+                        style={{
+                          width: '100%',
+                          maxHeight: '68vh',
+                          objectFit: 'contain',
+                          display: 'block',
                         }}
-                        style={{ maxWidth: '100%', maxHeight: '65vh', objectFit: 'contain', borderRadius: 'var(--radius-md)' }}
                       />
-                    )
-                  ) : (
-                    <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
-                      No preview image uploaded for this certificate.
                     </div>
+                  ) : (
+                    <div style={{ textAlign: 'center', padding: '3rem', color: '#71717a' }}>
+                      No preview image available for this certificate.
+                    </div>
+                  )}
+
+                  {selectedCert.description && (
+                    <p
+                      style={{
+                        marginTop: '1rem',
+                        fontSize: '0.85rem',
+                        color: '#a1a1aa',
+                        lineHeight: 1.6,
+                        textAlign: 'center',
+                        maxWidth: '650px',
+                      }}
+                    >
+                      {selectedCert.description}
+                    </p>
                   )}
                 </div>
 
                 {/* Modal Footer */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.85rem 1.25rem', borderTop: '1px solid var(--border)', background: 'var(--bg-surface)' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0.85rem 1.25rem',
+                    borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                    background: '#18181b',
+                  }}
+                >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                     {selectedCert.image && (
                       <a
-                        href={selectedCert.image}
+                        href={getAssetUrl(selectedCert.image)}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{
-                          color: 'var(--accent)',
-                          fontSize: '0.85rem',
+                          color: 'var(--accent, #EF4444)',
+                          fontSize: '0.82rem',
                           fontWeight: 600,
                           textDecoration: 'none',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.35rem',
                         }}
                       >
-                        Open Original File ↗
-                      </a>
-                    )}
-                    {selectedCert.credentialUrl && (
-                      <a
-                        href={selectedCert.credentialUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                          color: 'var(--text-secondary)',
-                          fontSize: '0.85rem',
-                          fontWeight: 500,
-                          textDecoration: 'none',
-                        }}
-                      >
-                        Verify Credential →
+                        <ExternalLink size={14} /> Open Original File
                       </a>
                     )}
                   </div>
                   <button
+                    type="button"
                     onClick={() => setSelectedCert(null)}
                     style={{
-                      background: 'var(--accent)',
-                      color: 'var(--accent-contrast)',
+                      background: 'var(--accent, #EF4444)',
+                      color: 'var(--accent-contrast, #ffffff)',
                       border: 'none',
-                      padding: '0.45rem 1rem',
-                      borderRadius: 'var(--radius-md)',
+                      padding: '0.45rem 1.15rem',
+                      borderRadius: '8px',
                       fontWeight: 600,
-                      fontSize: '0.85rem',
+                      fontSize: '0.84rem',
                       cursor: 'pointer',
+                      boxShadow: '0 2px 8px var(--accent-glow, rgba(239, 68, 68, 0.35))',
                     }}
                   >
                     Close

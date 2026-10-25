@@ -4,7 +4,7 @@ import { Spinner } from '../components/ui/index';
 import { Upload, Trash2 } from 'lucide-react';
 import { getAssetUrl } from '../utils/assetUrl';
 
-const EMPTY = { name: '', issuer: '', issueDate: '', credentialUrl: '', image: '', description: '', displayOrder: 0 };
+const EMPTY = { name: '', issuer: '', issueDate: '', credentialUrl: '', image: '', description: '', category: 'Certifications', windowTitle: '', badge: '', dateTag: '', displayOrder: 0 };
 
 export default function AdminCertifications() {
   const [items, setItems] = useState([]);
@@ -93,6 +93,17 @@ export default function AdminCertifications() {
               <div><label style={labelSt}>Issuer *</label><input style={inputSt} value={form.issuer} onChange={e => setForm(f => ({ ...f, issuer: e.target.value }))} required /></div>
               <div><label style={labelSt}>Issue Date</label><input type="date" style={inputSt} value={form.issueDate} onChange={e => setForm(f => ({ ...f, issueDate: e.target.value }))} /></div>
               <div><label style={labelSt}>Display Order</label><input type="number" style={inputSt} value={form.displayOrder} onChange={e => setForm(f => ({ ...f, displayOrder: parseInt(e.target.value) || 0 }))} /></div>
+              <div>
+                <label style={labelSt}>Category *</label>
+                <select style={inputSt} value={form.category || 'Certifications'} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}>
+                  <option value="Certifications">Certifications</option>
+                  <option value="Internships">Internships</option>
+                  <option value="Competitions">Competitions</option>
+                </select>
+              </div>
+              <div><label style={labelSt}>Window Mockup Title</label><input style={inputSt} value={form.windowTitle || ''} onChange={e => setForm(f => ({ ...f, windowTitle: e.target.value }))} placeholder="e.g. Oracle University, NPTEL, DRDO" /></div>
+              <div><label style={labelSt}>Badge / Score</label><input style={inputSt} value={form.badge || ''} onChange={e => setForm(f => ({ ...f, badge: e.target.value }))} placeholder="e.g. Valid until Oct 2027, Elite - Silver · 77%" /></div>
+              <div><label style={labelSt}>Date / Duration Tag</label><input style={inputSt} value={form.dateTag || ''} onChange={e => setForm(f => ({ ...f, dateTag: e.target.value }))} placeholder="e.g. Oct 2025, Jan-Apr 2025 · 12 weeks" /></div>
             </div>
             <div><label style={labelSt}>Credential URL</label><input type="url" style={inputSt} value={form.credentialUrl} onChange={e => setForm(f => ({ ...f, credentialUrl: e.target.value }))} placeholder="https://..." /></div>
             <div>
@@ -298,7 +309,17 @@ export default function AdminCertifications() {
                 )}
 
                 <div>
-                  <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>{cert.name}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <span style={{ fontWeight: 600, fontSize: '0.95rem' }}>{cert.name}</span>
+                    <span style={{ background: 'var(--accent-dim, rgba(239,68,68,0.15))', color: 'var(--accent, #ef4444)', fontSize: '0.7rem', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
+                      {cert.category || 'Certifications'}
+                    </span>
+                    {cert.badge && (
+                      <span style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-secondary)', fontSize: '0.7rem', padding: '1px 6px', borderRadius: '4px' }}>
+                        {cert.badge}
+                      </span>
+                    )}
+                  </div>
                   <div style={{ color: 'var(--text-muted)', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '0.65rem', marginTop: '0.2rem' }}>
                     <span>{cert.issuer}</span>
                     {cert.image ? (

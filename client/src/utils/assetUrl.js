@@ -27,6 +27,8 @@ export function getAssetUrl(path) {
   if (!path) return '';
   // Already an absolute URL – return as-is
   if (/^https?:\/\//.test(path)) return path;
+  // Static certificates bundled with frontend public folder
+  if (path.startsWith('/certificates/')) return path;
   // Prefix with backend origin if configured, otherwise keep relative
   return API_ORIGIN ? `${API_ORIGIN}${path}` : path;
 }

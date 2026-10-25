@@ -8,6 +8,10 @@ const certificationSchema = new mongoose.Schema(
     credentialUrl: { type: String, default: '' },
     image: { type: String, default: '' },
     description: { type: String, default: '' },
+    category: { type: String, default: 'Certifications' },
+    windowTitle: { type: String, default: '' },
+    badge: { type: String, default: '' },
+    dateTag: { type: String, default: '' },
     displayOrder: { type: Number, default: 0 },
   },
   { timestamps: true }
