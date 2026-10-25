@@ -93,10 +93,12 @@ export default function ProjectsSection() {
                 initial={{ opacity: 0, y: 28 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
+                className="card-ambient"
                 style={{
-                  background: 'var(--bg-elevated)',
+                  background: 'radial-gradient(circle at 12% 10%, var(--accent-dim) 0%, transparent 48%), var(--bg-card)',
                   border: '1px solid var(--border)',
                   borderRadius: 'var(--radius-xl)',
+                  boxShadow: 'var(--shadow-md)',
                   overflow: 'hidden',
                   display: 'flex',
                   flexDirection: 'column',
@@ -105,12 +107,12 @@ export default function ProjectsSection() {
                 onMouseEnter={(e) => {
                   e.currentTarget.style.borderColor = 'var(--accent-border)';
                   e.currentTarget.style.transform = 'translateY(-3px)';
-                  e.currentTarget.style.boxShadow = '0 12px 32px var(--accent-glow)';
+                  e.currentTarget.style.boxShadow = '0 16px 44px -8px var(--accent-glow)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.borderColor = 'var(--border)';
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.boxShadow = 'var(--shadow-md)';
                 }}
               >
                 {/* Image area */}

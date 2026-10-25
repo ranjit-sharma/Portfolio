@@ -108,12 +108,13 @@ export default function ContactSection() {
             style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}
           >
             <div
+              className="card-ambient"
               style={{
-                background: 'var(--bg-card)',
+                background: 'radial-gradient(circle at 12% 10%, var(--accent-dim) 0%, transparent 48%), var(--bg-card)',
                 border: '1px solid var(--border)',
                 borderRadius: 'var(--radius-xl)',
                 padding: '1.75rem',
-                boxShadow: 'var(--shadow-sm)',
+                boxShadow: 'var(--shadow-md)',
               }}
             >
               <h3 style={{ fontWeight: 700, fontSize: '1rem', marginBottom: '1.25rem' }}>
@@ -314,12 +315,13 @@ export default function ContactSection() {
               <form
                 onSubmit={handleSubmit}
                 noValidate
+                className="card-ambient"
                 style={{
-                  background: 'var(--bg-card)',
+                  background: 'radial-gradient(circle at 12% 10%, var(--accent-dim) 0%, transparent 48%), var(--bg-card)',
                   border: '1px solid var(--border)',
                   borderRadius: 'var(--radius-xl)',
                   padding: '1.75rem',
-                  boxShadow: 'var(--shadow-sm)',
+                  boxShadow: 'var(--shadow-md)',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '1rem',

@@ -133,22 +133,23 @@ export default function SkillsSection() {
                   initial={{ opacity: 0, y: 24 }}
                   animate={inView ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.45, delay: ci * 0.07 }}
+                  className="card-ambient"
                   style={{
-                    background: 'var(--bg-card)',
+                    background: 'radial-gradient(circle at 12% 10%, var(--accent-dim) 0%, transparent 48%), var(--bg-card)',
                     border: '1px solid var(--border)',
                     borderRadius: 'var(--radius-lg)',
                     padding: '1.25rem',
-                    boxShadow: 'var(--shadow-sm)',
+                    boxShadow: 'var(--shadow-md)',
                     transition: 'all var(--transition-base)',
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = 'var(--accent-border)';
-                    e.currentTarget.style.boxShadow = '0 6px 22px var(--accent-glow)';
+                    e.currentTarget.style.boxShadow = '0 12px 32px -6px var(--accent-glow)';
                     e.currentTarget.style.transform = 'translateY(-2px)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.borderColor = 'var(--border)';
-                    e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
+                    e.currentTarget.style.boxShadow = 'var(--shadow-md)';
                     e.currentTarget.style.transform = 'translateY(0)';
                   }}
                 >

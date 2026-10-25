@@ -279,13 +279,25 @@ textarea::placeholder {
   }
 }
 
-/* ─── Card Hover ────────────────────────────────────────────────────── */
+/* ─── Card Hover & Ambient Glow ──────────────────────────────────────── */
 .card-hover {
   transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
 }
 .card-hover:hover {
   border-color: var(--accent-border);
   box-shadow: 0 8px 24px var(--accent-glow);
+  transform: translateY(-2px);
+}
+
+.card-ambient {
+  background: radial-gradient(circle at 12% 10%, var(--accent-dim) 0%, transparent 48%), var(--bg-card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
+}
+.card-ambient:hover {
+  border-color: var(--accent-border);
+  box-shadow: 0 16px 44px -8px var(--accent-glow);
   transform: translateY(-2px);
 }
 

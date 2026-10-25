@@ -451,8 +451,9 @@ export default function HeroSection() {
             <div style={{ position: 'relative', width: '100%', maxWidth: 480 }}>
               {/* Code window */}
               <div
+                className="card-ambient"
                 style={{
-                  background: 'var(--bg-card)',
+                  background: 'radial-gradient(circle at 12% 10%, var(--accent-dim) 0%, transparent 48%), var(--bg-card)',
                   border: '1px solid var(--border)',
                   borderRadius: 'var(--radius-xl)',
                   padding: '1.6rem 1.75rem',

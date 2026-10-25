@@ -529,10 +529,10 @@ export default function CertificationsSection() {
                   animate={inView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 20 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.35, delay: i * 0.04 }}
-                  className="cert-card-interactive"
+                  className="cert-card-interactive card-ambient"
                   onClick={() => setSelectedCert(cert)}
                   style={{
-                    background: 'var(--bg-card)',
+                    background: 'radial-gradient(circle at 12% 10%, var(--accent-dim) 0%, transparent 48%), var(--bg-card)',
                     border: '1px solid var(--border)',
                     borderRadius: '16px',
                     padding: '0.75rem',
@@ -540,7 +540,7 @@ export default function CertificationsSection() {
                     display: 'flex',
                     flexDirection: 'column',
                     position: 'relative',
-                    boxShadow: 'var(--shadow-sm)',
+                    boxShadow: 'var(--shadow-md)',
                   }}
                 >
                   {/* macOS Window Mockup Frame */}

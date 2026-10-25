@@ -68,11 +68,13 @@ export default function AboutSection() {
             transition={{ duration: 0.55 }}
           >
             <div
+              className="card-ambient"
               style={{
-                background: 'var(--bg-surface)',
+                background: 'radial-gradient(circle at 12% 10%, var(--accent-dim) 0%, transparent 48%), var(--bg-card)',
                 border: '1px solid var(--border)',
                 borderRadius: 'var(--radius-xl)',
                 padding: '2rem',
+                boxShadow: 'var(--shadow-md)',
               }}
             >
               {/* Header: Avatar on left, Name & Degree on right */}
@@ -225,23 +227,24 @@ export default function AboutSection() {
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.45, delay: i * 0.08 }}
                 style={{
-                  background: 'var(--bg-elevated)',
+                  background: 'radial-gradient(circle at 10% 10%, var(--accent-dim) 0%, transparent 45%), var(--bg-card)',
                   border: '1px solid var(--border)',
                   borderRadius: 'var(--radius-lg)',
                   padding: '1.25rem',
                   display: 'flex',
                   gap: '1rem',
                   alignItems: 'flex-start',
+                  boxShadow: 'var(--shadow-sm)',
                   transition: 'all var(--transition-fast)',
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.borderColor = 'var(--accent-border)';
-                  e.currentTarget.style.boxShadow = '0 4px 20px var(--accent-glow)';
-                  e.currentTarget.style.transform = 'translateY(-1px)';
+                  e.currentTarget.style.boxShadow = '0 6px 24px var(--accent-glow)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.borderColor = 'var(--border)';
-                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
@@ -253,7 +256,7 @@ export default function AboutSection() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    background: 'var(--bg-surface)',
+                    background: 'var(--bg-elevated)',
                     border: '1px solid var(--border)',
                     borderRadius: 'var(--radius-md)',
                     marginTop: '0.15rem',
