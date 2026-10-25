@@ -79,20 +79,20 @@ export default function AnimatedCursor() {
     itemIndicesRef.current[catIdx] = (subIdx + 1) % group.length;
     categoryIndexRef.current = (catIdx + 1) % VERIFIED_TECH_CATEGORIES.length;
 
-    // Movement physics: gentle, relaxed drift instead of fast scattered jump
+    // Movement physics: responsive, crisp floating drift
     const dist = Math.hypot(dx, dy) || 1;
     const normX = dx / dist;
     const normY = dy / dist;
 
-    const driftX = -normX * 8 + (Math.random() - 0.5) * 10;
-    const driftY = -normY * 8 - (Math.random() * 8 + 8);
-    const rot = (Math.random() - 0.5) * 10;
-    const rotDelta = (Math.random() - 0.5) * 12;
+    const driftX = -normX * 12 + (Math.random() - 0.5) * 14;
+    const driftY = -normY * 12 - (Math.random() * 10 + 10);
+    const rot = (Math.random() - 0.5) * 12;
+    const rotDelta = (Math.random() - 0.5) * 18;
 
     const id = Date.now() + Math.random();
 
     setParticles((prev) => {
-      const trimmed = prev.length > 9 ? prev.slice(prev.length - 8) : prev;
+      const trimmed = prev.length > 12 ? prev.slice(prev.length - 11) : prev;
       return [
         ...trimmed,
         {
@@ -108,10 +108,10 @@ export default function AnimatedCursor() {
       ];
     });
 
-    // Auto-remove after 1100ms
+    // Auto-remove after 750ms
     setTimeout(() => {
       setParticles((prev) => prev.filter((p) => p.id !== id));
-    }, 1100);
+    }, 750);
   };
 
   useEffect(() => {
@@ -138,8 +138,8 @@ export default function AnimatedCursor() {
           )
         );
 
-      // Throttle spawn rate: at least 52px of movement and 85ms interval to prevent fast strobing
-      if (dist >= 52 && now - lastSpawnTimeRef.current >= 85 && !isText) {
+      // Paced spawn rate: 36px distance and 48ms interval for a responsive, snappy feel
+      if (dist >= 36 && now - lastSpawnTimeRef.current >= 48 && !isText) {
         spawnTechParticle(x, y, dx, dy);
         lastSpawnRef.current = { x, y };
         lastSpawnTimeRef.current = now;
@@ -152,11 +152,11 @@ export default function AnimatedCursor() {
       const x = e.clientX;
       const y = e.clientY;
 
-      // Soft burst on click: 2 tech icons instead of 4
-      const angles = [Math.PI / 4, (5 * Math.PI) / 4];
+      // Burst on click: 3 tech icons
+      const angles = [0, (2 * Math.PI) / 3, (4 * Math.PI) / 3];
       angles.forEach((angle) => {
-        const pushX = Math.cos(angle) * 12;
-        const pushY = Math.sin(angle) * 12;
+        const pushX = Math.cos(angle) * 16;
+        const pushY = Math.sin(angle) * 16;
         spawnTechParticle(x, y, -pushX, -pushY);
       });
     };
@@ -181,7 +181,7 @@ export default function AnimatedCursor() {
         overflow: 'hidden',
       }}
     >
-      {/* Floating Tech Stack Icons Trail (Gentle, smooth float) */}
+      {/* Floating Tech Stack Icons Trail (Snappy and responsive) */}
       <AnimatePresence>
         {particles.map((p) => {
           const { tech } = p;
@@ -191,24 +191,24 @@ export default function AnimatedCursor() {
             <motion.div
               key={p.id}
               initial={{
-                scale: 0.5,
+                scale: 0.4,
                 opacity: 0,
                 x: p.x,
                 y: p.y,
-                rotate: p.rot - 6,
+                rotate: p.rot - 8,
               }}
               animate={{
-                scale: [0.5, 1.02, 0.9, 0.35],
-                opacity: [0, 0.9, 0.85, 0],
+                scale: [0.4, 1.1, 0.9, 0.25],
+                opacity: [0, 0.95, 0.9, 0],
                 x: p.x + p.dx,
                 y: p.y + p.dy,
-                rotate: [p.rot - 6, p.rot, p.rot + p.rotDelta],
+                rotate: [p.rot - 8, p.rot, p.rot + p.rotDelta],
               }}
               exit={{ opacity: 0, scale: 0 }}
               transition={{
-                duration: 1.1,
-                ease: [0.25, 0.1, 0.25, 1],
-                times: [0, 0.25, 0.7, 1],
+                duration: 0.75,
+                ease: [0.2, 0.9, 0.3, 1],
+                times: [0, 0.2, 0.65, 1],
               }}
               style={{
                 position: 'fixed',
@@ -224,7 +224,7 @@ export default function AnimatedCursor() {
                 filter: `drop-shadow(0 0 6px ${tech.color}80) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35))`,
               }}
             >
-              <IconComp size={20} />
+              <IconComp size={22} />
             </motion.div>
           );
         })}
