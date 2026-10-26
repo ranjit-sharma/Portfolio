@@ -6,6 +6,7 @@ import { RSLogo } from '../ui';
 
 const NAV_LINKS = [
   { label: 'About', href: '#about' },
+  { label: 'Education', href: '#education' },
   { label: 'Skills', href: '#skills' },
   { label: 'Experience', href: '#experience' },
   { label: 'Projects', href: '#projects' },
@@ -314,7 +315,8 @@ export default function Navbar() {
       </AnimatePresence>
 
       <style>{`
-        @media (min-width: 768px) {
+        /* 7 links only fit beside the controls from 1024px; below that use the menu button */
+        @media (min-width: 1024px) {
           .nav-desktop-container {
             display: flex !important;
           }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useInView } from '../hooks/useInView';
 import { SectionHeading, SkillIcon, RSLogo } from '../components/ui/index';
 import api from '../services/api';
@@ -27,6 +27,7 @@ const HIGHLIGHTS = [
 
 export default function AboutSection() {
   const { ref, inView } = useInView();
+  const reduceMotion = useReducedMotion();
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
@@ -40,41 +41,233 @@ export default function AboutSection() {
     ? profile.bio.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)
     : [];
 
+  const facts = [
+    { Icon: MapPin, label: 'Location', value: profile?.location || 'Bhubaneswar, India' },
+    { Icon: GraduationCap, label: 'Education', value: 'B.Tech CS · 2027' },
+    { Icon: Languages, label: 'Languages', value: profile?.languages || 'English, Hindi, Odia' },
+  ];
+
+  // Reduced motion: render in place, no entrance animation
+  const reveal = (hidden, delay = 0) =>
+    reduceMotion
+      ? { initial: false }
+      : {
+          initial: hidden,
+          animate: inView ? { opacity: 1, x: 0, y: 0 } : hidden,
+          transition: { duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] },
+        };
+
   return (
     <section id="about" className="section-padding">
+      <style>{`
+        .about-grid {
+          display: grid;
+          grid-template-columns: 320px minmax(0, 1fr);
+          gap: 1rem;
+          align-items: stretch;
+        }
+        .about-card {
+          background: linear-gradient(160deg, var(--bg-elevated) 0%, var(--bg-card) 60%);
+          border: 1px solid var(--border);
+          border-radius: var(--radius-xl);
+          box-shadow: var(--shadow-md);
+        }
+        /* Profile column (no card surface) */
+        .about-profile {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .about-avatar {
+          width: 132px;
+          height: 132px;
+          padding: 4px;
+          margin-bottom: 1.1rem;
+          border-radius: 28px;
+          background: linear-gradient(140deg, var(--accent), var(--accent-border) 60%, transparent);
+          box-shadow: 0 0 40px -6px var(--accent-glow);
+        }
+        .about-avatar img,
+        .about-avatar-fallback {
+          width: 100%;
+          height: 100%;
+          border-radius: 24px;
+          object-fit: cover;
+          background: var(--bg-card);
+        }
+        .about-avatar-fallback {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .about-name {
+          margin: 0;
+          font-size: 1.4rem;
+          font-weight: 800;
+          letter-spacing: -0.01em;
+          color: var(--text-primary);
+        }
+        .about-headline {
+          margin: 0.3rem 0 0;
+          font-size: 0.9rem;
+          font-weight: 600;
+          color: var(--accent);
+        }
+        .about-status {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.45rem;
+          margin-top: 0.9rem;
+          padding: 0.3rem 0.8rem;
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: var(--accent);
+          background: var(--accent-dim);
+          border: 1px solid var(--accent-border);
+          border-radius: 9999px;
+        }
+        .about-status-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: var(--accent);
+          animation: pulse-glow 2s ease infinite;
+        }
+        .about-facts {
+          width: 100%;
+          margin: 1.4rem 0 0;
+          padding: 0;
+          list-style: none;
+          border-top: 1px solid var(--border);
+        }
+        .about-facts li {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 0.75rem 0;
+          border-bottom: 1px solid var(--border);
+        }
+        .about-fact-icon {
+          width: 30px;
+          height: 30px;
+          flex-shrink: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 9px;
+          color: var(--accent);
+          background: var(--accent-dim);
+        }
+        .about-fact-label {
+          display: block;
+          font-size: 0.66rem;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: var(--text-muted);
+        }
+        .about-fact-value {
+          display: block;
+          font-size: 0.86rem;
+          font-weight: 600;
+          color: var(--text-primary);
+        }
+        .about-main {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          min-width: 0;
+        }
+        .about-bio {
+          display: flex;
+          flex-direction: column;
+          gap: 0.85rem;
+          margin-bottom: 0.5rem;
+        }
+        .about-bio p {
+          margin: 0;
+          font-size: 1rem;
+          line-height: 1.85;
+          color: var(--text-secondary);
+          white-space: pre-line;
+        }
+        /* Highlights */
+        .about-highlights {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 1rem;
+          list-style: none;
+          margin: 0;
+          padding: 0;
+        }
+        .about-highlight {
+          position: relative;
+          height: 100%;
+          padding: 1.15rem 1.2rem;
+          transition: border-color var(--transition-card), box-shadow var(--transition-card);
+        }
+        .about-highlight:hover {
+          border-color: var(--accent-border);
+          box-shadow: 0 16px 34px -14px var(--accent-glow), var(--shadow-md);
+        }
+        .about-highlight-top {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 0.75rem;
+        }
+        .about-highlight-icon {
+          width: 38px;
+          height: 38px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 11px;
+          background: var(--bg-hover);
+          border: 1px solid var(--border);
+        }
+        .about-highlight-num {
+          font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: var(--text-muted);
+        }
+        .about-highlight h4 {
+          margin: 0 0 0.3rem;
+          font-size: 0.95rem;
+          font-weight: 700;
+          color: var(--text-primary);
+        }
+        .about-highlight p {
+          margin: 0;
+          font-size: 0.84rem;
+          line-height: 1.6;
+          color: var(--text-secondary);
+        }
+        @media (max-width: 900px) {
+          .about-grid {
+            grid-template-columns: minmax(0, 1fr);
+          }
+        }
+        @media (max-width: 600px) {
+          .about-highlights {
+            grid-template-columns: minmax(0, 1fr);
+          }
+        }
+      `}</style>
+
       <div className="container">
         <SectionHeading
+          index="01"
           eyebrow="About"
           title="Building from idea to deployment"
           subtitle="A student developer passionate about the full stack"
         />
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: '3rem',
-            alignItems: 'start',
-          }}
-        >
-          {/* Bio text */}
-          <motion.div
-            ref={ref}
-            initial={{ opacity: 0, x: -30 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.55 }}
-          >
-            {/* Header: Avatar on left, Name & Degree on right */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '1.25rem',
-                marginBottom: '1.5rem',
-                flexWrap: 'wrap',
-              }}
-            >
-              {/* Avatar */}
+        <div ref={ref} className="about-grid">
+          {/* Profile card */}
+          <motion.aside className="about-profile" {...reveal({ opacity: 0, x: -24 })}>
+            <div className="about-avatar">
               {profile?.avatarUrl ? (
                 <img
                   src={getAssetUrl(profile.avatarUrl)}
@@ -82,214 +275,63 @@ export default function AboutSection() {
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';
                   }}
-                  style={{
-                    width: 96,
-                    height: 96,
-                    borderRadius: 'var(--radius-xl, 20px)',
-                    objectFit: 'cover',
-                    border: '2px solid var(--accent)',
-                    boxShadow: '0 0 24px var(--accent-glow), 0 4px 12px rgba(0,0,0,0.2)',
-                    flexShrink: 0,
-                  }}
                 />
               ) : (
-                <div
-                  style={{
-                    width: 96,
-                    height: 96,
-                    borderRadius: 'var(--radius-xl, 20px)',
-                    background: 'var(--accent-dim)',
-                    border: '2px solid var(--accent)',
-                    boxShadow: '0 0 24px var(--accent-glow)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
-                  aria-label="Ranjit Sharma monogram logo"
-                >
-                  <RSLogo size={56} color="var(--accent)" glow />
+                <div className="about-avatar-fallback" aria-label="Ranjit Sharma monogram logo">
+                  <RSLogo size={64} color="var(--accent)" glow />
                 </div>
               )}
-
-              {/* Right of Avatar: Name & Education */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: 1, minWidth: '220px' }}>
-                <h3
-                  style={{
-                    fontSize: '1.45rem',
-                    fontWeight: 800,
-                    color: 'var(--text-primary)',
-                    lineHeight: 1.25,
-                    letterSpacing: '-0.01em',
-                  }}
-                >
-                  {profile?.name || 'Ranjit Sharma'}
-                </h3>
-                <p
-                  style={{
-                    color: 'var(--accent)',
-                    fontSize: '0.92rem',
-                    fontWeight: 500,
-                    lineHeight: 1.5,
-                    margin: 0,
-                  }}
-                >
-                  {profile?.headline || 'B.Tech in Computer Science · Trident Academy of Technology, Bhubaneswar'}
-                </p>
-              </div>
             </div>
 
+            <h3 className="about-name">{profile?.name || 'Ranjit Sharma'}</h3>
+            <p className="about-headline">
+              {profile?.headline || 'B.Tech in Computer Science · Trident Academy of Technology, Bhubaneswar'}
+            </p>
+            <span className="about-status">
+              <span className="about-status-dot" />
+              Open to opportunities
+            </span>
+
+            <ul className="about-facts">
+              {facts.map(({ Icon, label, value }) => (
+                <li key={label}>
+                  <span className="about-fact-icon" aria-hidden="true">
+                    <Icon size={15} />
+                  </span>
+                  <span>
+                    <span className="about-fact-label">{label}</span>
+                    <span className="about-fact-value">{value}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </motion.aside>
+
+          <div className="about-main">
             {bioParagraphs.length > 0 && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+              <motion.div className="about-bio" {...reveal({ opacity: 0, y: 20 }, 0.1)}>
                 {bioParagraphs.map((para, i) => (
-                  <p
-                    key={i}
-                    style={{
-                      color: 'var(--text-secondary)',
-                      fontSize: '0.95rem',
-                      lineHeight: 1.75,
-                      whiteSpace: 'pre-line',
-                    }}
-                  >
-                    {para}
-                  </p>
+                  <p key={i}>{para}</p>
                 ))}
-              </div>
+              </motion.div>
             )}
 
-            {/* Quick badges */}
-            <div
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: '0.65rem',
-                marginTop: bioParagraphs.length > 0 ? '1.5rem' : '0.75rem',
-              }}
-            >
-              <div
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.45rem 1rem',
-                  borderRadius: 'var(--radius-pill, 9999px)',
-                  background: 'var(--bg-elevated)',
-                  border: '1px solid var(--border)',
-                  fontSize: '0.85rem',
-                  color: 'var(--text-secondary)',
-                  fontWeight: 500,
-                }}
-              >
-                <MapPin size={15} style={{ color: 'var(--accent)', flexShrink: 0 }} />
-                <span>{profile?.location || 'Bhubaneswar, India'}</span>
-              </div>
-
-              <div
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.45rem 1rem',
-                  borderRadius: 'var(--radius-pill, 9999px)',
-                  background: 'var(--bg-elevated)',
-                  border: '1px solid var(--border)',
-                  fontSize: '0.85rem',
-                  color: 'var(--text-secondary)',
-                  fontWeight: 500,
-                }}
-              >
-                <GraduationCap size={15} style={{ color: 'var(--accent)', flexShrink: 0 }} />
-                <span>B.Tech CS · 2027</span>
-              </div>
-
-              <div
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.45rem 1rem',
-                  borderRadius: 'var(--radius-pill, 9999px)',
-                  background: 'var(--bg-elevated)',
-                  border: '1px solid var(--border)',
-                  fontSize: '0.85rem',
-                  color: 'var(--text-secondary)',
-                  fontWeight: 500,
-                }}
-              >
-                <Languages size={15} style={{ color: 'var(--accent)', flexShrink: 0 }} />
-                <span>{profile?.languages || 'English, Hindi, Odia'}</span>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Highlights grid */}
-          <div style={{ display: 'grid', gap: '1rem' }}>
-            {HIGHLIGHTS.map((item, i) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.45, delay: i * 0.08 }}
-                style={{
-                  background: 'radial-gradient(circle at 10% 10%, var(--accent-dim) 0%, transparent 45%), var(--bg-card)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-lg)',
-                  padding: '1.25rem',
-                  display: 'flex',
-                  gap: '1rem',
-                  alignItems: 'flex-start',
-                  boxShadow: 'var(--shadow-sm)',
-                  transition: 'border-color var(--transition-card, 400ms cubic-bezier(0.16, 1, 0.3, 1)), box-shadow var(--transition-card, 400ms cubic-bezier(0.16, 1, 0.3, 1))',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--accent-border)';
-                  e.currentTarget.style.boxShadow = '0 10px 28px -6px var(--accent-glow)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--border)';
-                  e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
-                }}
-              >
-                <div
-                  style={{
-                    flexShrink: 0,
-                    width: 40,
-                    height: 40,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: 'var(--bg-elevated)',
-                    border: '1px solid var(--border)',
-                    borderRadius: 'var(--radius-md)',
-                    marginTop: '0.15rem',
-                    transition: 'all var(--transition-fast)',
-                  }}
-                >
-                  <SkillIcon name={item.title} size={20} />
-                </div>
-                <div>
-                  <h4
-                    style={{
-                      fontWeight: 600,
-                      fontSize: '0.95rem',
-                      marginBottom: '0.3rem',
-                      color: 'var(--text-primary)',
-                    }}
-                  >
-                    {item.title}
-                  </h4>
-                  <p
-                    style={{
-                      color: 'var(--text-secondary)',
-                      fontSize: '0.875rem',
-                      lineHeight: 1.6,
-                    }}
-                  >
-                    {item.desc}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
+            <ul className="about-highlights">
+              {HIGHLIGHTS.map((item, i) => (
+                <motion.li key={item.title} {...reveal({ opacity: 0, y: 20 }, 0.2 + i * 0.08)}>
+                  <article className="about-card about-highlight card-spotlight">
+                    <div className="about-highlight-top">
+                      <span className="about-highlight-icon" aria-hidden="true">
+                        <SkillIcon name={item.title} size={19} />
+                      </span>
+                      <span className="about-highlight-num">0{i + 1}</span>
+                    </div>
+                    <h4>{item.title}</h4>
+                    <p>{item.desc}</p>
+                  </article>
+                </motion.li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>

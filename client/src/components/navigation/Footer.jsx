@@ -1,4 +1,7 @@
 import { useState, useEffect } from 'react';
+import { ArrowRight, ArrowUp, Mail } from 'lucide-react';
+import { SiGithub, SiLeetcode } from 'react-icons/si';
+import { FaLinkedinIn, FaWhatsapp } from 'react-icons/fa6';
 import { RSLogo } from '../ui';
 import api from '../../services/api';
 
@@ -6,8 +9,11 @@ const currentYear = new Date().getFullYear();
 
 const LINKS = [
   { label: 'About', href: '#about' },
-  { label: 'Projects', href: '#projects' },
+  { label: 'Education', href: '#education' },
+  { label: 'Skills', href: '#skills' },
   { label: 'Experience', href: '#experience' },
+  { label: 'Projects', href: '#projects' },
+  { label: 'Certifications', href: '#certifications' },
   { label: 'Contact', href: '#contact' },
 ];
 
@@ -28,186 +34,318 @@ export default function Footer() {
 
   const scrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
+  const email = profile?.email || 'ranjitsharma76088@gmail.com';
+  const socials = [
+    { label: 'GitHub', Icon: SiGithub, href: profile?.githubUrl || 'https://github.com/Ranjitsharma76088' },
+    { label: 'LinkedIn', Icon: FaLinkedinIn, href: profile?.linkedinUrl || 'https://linkedin.com/in/ranjit-sharma' },
+    { label: 'LeetCode', Icon: SiLeetcode, href: profile?.leetcodeUrl || 'https://leetcode.com/u/ranjitsharma/' },
+    { label: 'WhatsApp', Icon: FaWhatsapp, href: 'https://wa.me/917482869029' },
+  ];
+
   return (
-    <footer
-      style={{
-        borderTop: '1px solid var(--border)',
-        background: 'var(--bg-surface)',
-        padding: '3rem 0 2rem',
-      }}
-      role="contentinfo"
-    >
+    <footer className="site-footer" role="contentinfo">
+      <style>{`
+        .site-footer {
+          position: relative;
+          padding: 0 0 1.75rem;
+          background: linear-gradient(180deg, transparent, var(--bg-surface) 40%);
+          border-top: 1px solid var(--border);
+        }
+        /* Call-to-action band */
+        .ft-cta {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 1.5rem;
+          flex-wrap: wrap;
+          margin: 3rem 0 3rem;
+          padding: 1.75rem 2rem;
+          border: 1px solid var(--accent-border);
+          border-radius: 1rem;
+          background:
+            radial-gradient(circle at 0% 0%, var(--accent-dim) 0%, transparent 55%),
+            var(--bg-card);
+        }
+        .ft-cta-title {
+          margin: 0;
+          font-size: clamp(1.2rem, 2.4vw, 1.6rem);
+          font-weight: 800;
+          letter-spacing: -0.02em;
+          line-height: 1.25;
+          color: var(--text-primary);
+        }
+        .ft-cta-title span {
+          color: var(--accent);
+        }
+        .ft-cta-actions {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          flex-wrap: wrap;
+        }
+        .ft-cta-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.75rem 1.4rem;
+          font: inherit;
+          font-size: 0.9rem;
+          font-weight: 700;
+          color: var(--accent-contrast);
+          background: var(--accent);
+          border: none;
+          border-radius: 9999px;
+          box-shadow: 0 6px 20px -6px var(--accent-glow);
+          cursor: pointer;
+          transition: background var(--transition-fast), transform var(--transition-fast);
+        }
+        .ft-cta-btn:hover {
+          background: var(--accent-hover);
+          transform: translateY(-1px);
+        }
+        .ft-cta-btn svg {
+          transition: transform var(--transition-fast);
+        }
+        .ft-cta-btn:hover svg {
+          transform: translateX(3px);
+        }
+        .ft-email {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.45rem;
+          font-size: 0.88rem;
+          font-weight: 600;
+          color: var(--text-secondary);
+          text-decoration: none;
+          overflow-wrap: anywhere;
+          transition: color var(--transition-fast);
+        }
+        .ft-email:hover {
+          color: var(--accent);
+        }
+        /* Main columns */
+        .ft-main {
+          display: grid;
+          grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr);
+          gap: 2.5rem;
+          margin-bottom: 2.5rem;
+        }
+        .ft-brand {
+          display: flex;
+          align-items: center;
+          gap: 0.65rem;
+          margin-bottom: 0.85rem;
+          font-size: 1.2rem;
+          font-weight: 800;
+          color: var(--text-primary);
+        }
+        .ft-tagline {
+          margin: 0 0 1rem;
+          max-width: 34ch;
+          font-size: 0.9rem;
+          line-height: 1.65;
+          color: var(--text-secondary);
+        }
+        .ft-status {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.45rem;
+          padding: 0.3rem 0.8rem;
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: var(--accent);
+          background: var(--accent-dim);
+          border: 1px solid var(--accent-border);
+          border-radius: 9999px;
+        }
+        .ft-status-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: var(--accent);
+          animation: pulse-glow 2s ease infinite;
+        }
+        .ft-heading {
+          margin: 0 0 1rem;
+          font-size: 0.72rem;
+          font-weight: 800;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: var(--text-muted);
+        }
+        .ft-links {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 0.55rem 1rem;
+          margin: 0;
+          padding: 0;
+          list-style: none;
+        }
+        .ft-links a {
+          font-size: 0.9rem;
+          color: var(--text-secondary);
+          text-decoration: none;
+          transition: color var(--transition-fast), padding var(--transition-fast);
+        }
+        .ft-links a:hover,
+        .ft-links a:focus-visible {
+          color: var(--accent);
+          padding-left: 4px;
+        }
+        .ft-socials {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 0.6rem;
+          margin: 0;
+          padding: 0;
+          list-style: none;
+        }
+        .ft-social {
+          display: flex;
+          align-items: center;
+          gap: 0.55rem;
+          padding: 0.55rem 0.75rem;
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: var(--text-secondary);
+          text-decoration: none;
+          background: var(--bg-card);
+          border: 1px solid var(--border);
+          border-radius: 0.75rem;
+          transition: border-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+        }
+        .ft-social:hover,
+        .ft-social:focus-visible {
+          color: var(--accent);
+          border-color: var(--accent-border);
+          transform: translateY(-2px);
+        }
+        /* Bottom bar */
+        .ft-bottom {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 1rem;
+          flex-wrap: wrap;
+          padding-top: 1.5rem;
+          border-top: 1px solid var(--border);
+          font-size: 0.82rem;
+          color: var(--text-muted);
+        }
+        .ft-bottom p {
+          margin: 0;
+        }
+        .ft-top {
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--text-secondary);
+          background: var(--bg-card);
+          border: 1px solid var(--border);
+          border-radius: 50%;
+          cursor: pointer;
+          transition: color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+        }
+        .ft-top:hover,
+        .ft-top:focus-visible {
+          color: var(--accent);
+          border-color: var(--accent);
+          transform: translateY(-3px);
+        }
+        @media (max-width: 900px) {
+          .ft-main {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+          .ft-main > :first-child {
+            grid-column: 1 / -1;
+          }
+        }
+        @media (max-width: 560px) {
+          .ft-cta {
+            padding: 1.35rem;
+          }
+          .ft-main {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 2rem;
+          }
+        }
+      `}</style>
+
       <div className="container">
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '2rem',
-            marginBottom: '2.5rem',
-          }}
-        >
+        {/* Call to action */}
+        <div className="ft-cta">
+          <h2 className="ft-cta-title">
+            Have an idea or an opening? <span>Let&apos;s build it together.</span>
+          </h2>
+          <div className="ft-cta-actions">
+            <button type="button" className="ft-cta-btn" onClick={() => scrollTo('#contact')}>
+              Get in touch <ArrowRight size={16} aria-hidden="true" />
+            </button>
+            <a href={`mailto:${email}`} className="ft-email">
+              <Mail size={15} aria-hidden="true" />
+              {email}
+            </a>
+          </div>
+        </div>
+
+        <div className="ft-main">
           {/* Branding */}
           <div>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.6rem',
-                fontWeight: 800,
-                fontSize: '1.2rem',
-                marginBottom: '0.75rem',
-              }}
-            >
+            <div className="ft-brand">
               <RSLogo height={34} color="var(--accent)" glow />
-              <span>Ranjit Sharma</span>
+              <span>{profile?.name || 'Ranjit Sharma'}</span>
             </div>
-            <p
-              style={{
-                color: 'var(--text-secondary)',
-                fontSize: '0.9rem',
-                lineHeight: 1.6,
-                maxWidth: '28ch',
-              }}
-            >
-              Full-Stack Developer. Building reliable, modern web experiences.
-            </p>
+            <p className="ft-tagline">Full-Stack Developer. Building reliable, modern web experiences.</p>
+            <span className="ft-status">
+              <span className="ft-status-dot" />
+              Open to opportunities
+            </span>
           </div>
 
           {/* Navigation */}
-          <div>
-            <h3
-              style={{
-                fontSize: '0.8rem',
-                fontWeight: 600,
-                color: 'var(--text-muted)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                marginBottom: '1rem',
-              }}
-            >
-              Navigate
-            </h3>
-            <nav aria-label="Footer navigation">
-              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                {LINKS.map((l) => (
-                  <li key={l.href}>
-                    <a
-                      href={l.href}
-                      onClick={(e) => { e.preventDefault(); scrollTo(l.href); }}
-                      style={{
-                        color: 'var(--text-secondary)',
-                        fontSize: '0.9rem',
-                        transition: 'color var(--transition-fast)',
-                        cursor: 'pointer',
-                      }}
-                      onMouseEnter={(e) => (e.target.style.color = 'var(--accent)')}
-                      onMouseLeave={(e) => (e.target.style.color = 'var(--text-secondary)')}
-                    >
-                      {l.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </div>
+          <nav aria-label="Footer navigation">
+            <h3 className="ft-heading">Navigate</h3>
+            <ul className="ft-links">
+              {LINKS.map((l) => (
+                <li key={l.href}>
+                  <a
+                    href={l.href}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      scrollTo(l.href);
+                    }}
+                  >
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
 
-          {/* Contact */}
+          {/* Connect */}
           <div>
-            <h3
-              style={{
-                fontSize: '0.8rem',
-                fontWeight: 600,
-                color: 'var(--text-muted)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                marginBottom: '1rem',
-              }}
-            >
-              Connect
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <a
-                href={profile?.githubUrl || 'https://github.com/Ranjitsharma76088'}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', transition: 'color var(--transition-fast)' }}
-                onMouseEnter={(e) => (e.target.style.color = 'var(--accent)')}
-                onMouseLeave={(e) => (e.target.style.color = 'var(--text-secondary)')}
-              >
-                GitHub
-              </a>
-              <a
-                href={profile?.linkedinUrl || 'https://linkedin.com/in/ranjit-sharma'}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', transition: 'color var(--transition-fast)' }}
-                onMouseEnter={(e) => (e.target.style.color = 'var(--accent)')}
-                onMouseLeave={(e) => (e.target.style.color = 'var(--text-secondary)')}
-              >
-                LinkedIn
-              </a>
-              <a
-                href={profile?.leetcodeUrl || 'https://leetcode.com/u/ranjitsharma/'}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', transition: 'color var(--transition-fast)' }}
-                onMouseEnter={(e) => (e.target.style.color = 'var(--accent)')}
-                onMouseLeave={(e) => (e.target.style.color = 'var(--text-secondary)')}
-              >
-                LeetCode
-              </a>
-              <a
-                href="https://wa.me/917482869029"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', transition: 'color var(--transition-fast)' }}
-                onMouseEnter={(e) => (e.target.style.color = 'var(--accent)')}
-                onMouseLeave={(e) => (e.target.style.color = 'var(--text-secondary)')}
-              >
-                WhatsApp
-              </a>
-            </div>
+            <h3 className="ft-heading">Connect</h3>
+            <ul className="ft-socials">
+              {socials.map(({ label, Icon, href }) => (
+                <li key={label}>
+                  <a href={href} target="_blank" rel="noopener noreferrer" className="ft-social">
+                    <Icon size={15} aria-hidden="true" />
+                    {label}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
         {/* Bottom bar */}
-        <div
-          style={{
-            borderTop: '1px solid var(--border)',
-            paddingTop: '1.5rem',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '1rem',
-          }}
-        >
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-            © {currentYear} Ranjit Sharma. All rights reserved.
-          </p>
-
-          <button
-            onClick={scrollTop}
-            aria-label="Back to top"
-            style={{
-              background: 'var(--bg-elevated)',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-pill)',
-              padding: '0.45rem 1rem',
-              color: 'var(--text-secondary)',
-              cursor: 'pointer',
-              fontSize: '0.8rem',
-              fontWeight: 500,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.3rem',
-              transition: 'all var(--transition-fast)',
-              fontFamily: 'inherit',
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
-          >
-            ↑ Back to top
+        <div className="ft-bottom">
+          <p>© {currentYear} {profile?.name || 'Ranjit Sharma'}. All rights reserved.</p>
+          <p>Built with React &amp; Node.js</p>
+          <button type="button" className="ft-top" onClick={scrollTop} aria-label="Back to top">
+            <ArrowUp size={17} />
           </button>
         </div>
       </div>

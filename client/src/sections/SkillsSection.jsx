@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import {
   TbLayout,
   TbServer,
@@ -8,7 +9,7 @@ import {
   TbTools,
 } from 'react-icons/tb';
 import { useInView } from '../hooks/useInView';
-import { SectionHeading, SkeletonCard, SkillIcon, TiltCard } from '../components/ui/index';
+import { SectionHeading, SkeletonCard, SkillIcon } from '../components/ui/index';
 import api from '../services/api';
 
 const FALLBACK_SKILLS = {
@@ -30,54 +31,21 @@ const CATEGORY_ICONS = {
   Tools: TbTools,
 };
 
-function SkillBadge({ skill }) {
+// Each scrolling strip needs enough chips to be wider than its row before it can loop
+const MIN_CHIPS_PER_COPY = 8;
+
+function SkillChip({ skill }) {
   return (
-    <div
-      tabIndex={0}
-      role="button"
-      aria-label={skill}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '0.55rem',
-        padding: '0.35rem 0.85rem',
-        minHeight: '38px',
-        background: 'var(--bg-elevated)',
-        border: '1px solid var(--border)',
-        borderRadius: 'var(--radius-pill)',
-        cursor: 'default',
-        transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-        flexShrink: 0,
-        userSelect: 'none',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = 'var(--accent)';
-        e.currentTarget.style.transform = 'translateY(-2px)';
-        e.currentTarget.style.boxShadow = '0 4px 14px var(--accent-glow)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = 'var(--border)';
-        e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.boxShadow = 'none';
-      }}
-    >
-      <SkillIcon name={skill} size={18} />
-      <span
-        style={{
-          fontSize: '0.8125rem',
-          fontWeight: 600,
-          color: 'var(--text-primary)',
-          whiteSpace: 'nowrap',
-        }}
-      >
-        {skill}
-      </span>
-    </div>
+    <span className="skr-chip">
+      <SkillIcon name={skill} size={17} />
+      {skill}
+    </span>
   );
 }
 
 export default function SkillsSection() {
   const { ref, inView } = useInView();
+  const reduceMotion = useReducedMotion();
   const [skillsMap, setSkillsMap] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -101,130 +69,190 @@ export default function SkillsSection() {
       .finally(() => setLoading(false));
   }, []);
 
-  return (
-    <section id="skills" className="section-padding" style={{ background: 'var(--bg-surface)' }}>
-      <div className="container">
-        <SectionHeading
-          eyebrow="Skills"
-          title="Technical Toolkit"
-          subtitle="Technologies and tools I work with regularly"
-          centered
-        />
+  const entries = Object.entries(skillsMap || FALLBACK_SKILLS);
 
-        {loading ? (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.25rem' }}>
-            {[...Array(6)].map((_, i) => <SkeletonCard key={i} height={160} />)}
-          </div>
-        ) : (
-          <div
-            ref={ref}
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))',
-              gap: '1.25rem',
-            }}
-          >
-            {Object.entries(skillsMap || FALLBACK_SKILLS).map(([category, skills], ci) => {
-              const CatIcon = CATEGORY_ICONS[category] || TbCode;
-              return (
-                <TiltCard
-                  key={category}
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={inView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.45, delay: ci * 0.07 }}
-                  maxTilt={7}
-                  style={{
-                    background: 'var(--bg-card)',
-                    border: '1px solid var(--border)',
-                    borderRadius: 'var(--radius-lg)',
-                    padding: '1.25rem',
-                    boxShadow: 'var(--shadow-md)',
-                    transition: 'border-color var(--transition-card, 400ms cubic-bezier(0.16, 1, 0.3, 1)), box-shadow var(--transition-card, 400ms cubic-bezier(0.16, 1, 0.3, 1))',
-                    willChange: 'transform, box-shadow',
-                    backfaceVisibility: 'hidden',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = 'var(--accent-border)';
-                    e.currentTarget.style.boxShadow = '0 16px 36px -8px var(--accent-glow)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = 'var(--border)';
-                    e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-                  }}
-                >
-                  {/* Category Header */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      gap: '0.5rem',
-                      marginBottom: '1rem',
-                      paddingBottom: '0.75rem',
-                      borderBottom: '1px solid var(--border)',
-                    }}
+  return (
+    <section id="skills" className="section-padding">
+      <style>{`
+        .skr-rows {
+          display: flex;
+          flex-direction: column;
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          border-top: 1px solid var(--border);
+        }
+        .skr-row {
+          display: grid;
+          grid-template-columns: 230px minmax(0, 1fr);
+          align-items: center;
+          gap: 1.5rem;
+          padding: 1rem 0;
+          border-bottom: 1px solid var(--border);
+        }
+        .skr-label {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+        .skr-icon {
+          width: 40px;
+          height: 40px;
+          flex-shrink: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 12px;
+          color: var(--accent);
+          background: var(--accent-dim);
+          border: 1px solid var(--accent-border);
+        }
+        .skr-name {
+          margin: 0;
+          font-size: 1rem;
+          font-weight: 800;
+          color: var(--text-primary);
+        }
+        .skr-count {
+          display: block;
+          font-size: 0.74rem;
+          font-weight: 600;
+          color: var(--text-muted);
+        }
+        /* Sliding strip: two identical copies move by half the track width, so it loops seamlessly */
+        .skr-strip {
+          overflow: hidden;
+          -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+        }
+        .skr-track {
+          display: flex;
+          width: max-content;
+          animation: skrScroll var(--skr-duration, 30s) linear infinite;
+        }
+        .skr-row-reverse .skr-track {
+          animation-direction: reverse;
+        }
+        .skr-strip:hover .skr-track {
+          animation-play-state: paused;
+        }
+        .skr-copy {
+          display: flex;
+          gap: 0.6rem;
+          padding-right: 0.6rem;
+        }
+        .skr-chip {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 0.95rem;
+          font-size: 0.86rem;
+          font-weight: 600;
+          white-space: nowrap;
+          color: var(--text-primary);
+          background: var(--bg-card);
+          border: 1px solid var(--border);
+          border-radius: 9999px;
+          transition: border-color var(--transition-fast), color var(--transition-fast);
+        }
+        .skr-chip:hover {
+          border-color: var(--accent-border);
+          color: var(--accent);
+        }
+        @keyframes skrScroll {
+          to { transform: translateX(-50%); }
+        }
+        /* Reduced motion: no sliding, the chips simply wrap */
+        .skr-static .skr-track {
+          width: auto;
+          animation: none;
+        }
+        .skr-static .skr-copy {
+          flex-wrap: wrap;
+        }
+        .skr-static .skr-strip {
+          -webkit-mask-image: none;
+          mask-image: none;
+        }
+        .sr-only {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          overflow: hidden;
+          clip: rect(0 0 0 0);
+          white-space: nowrap;
+        }
+        @media (max-width: 720px) {
+          .skr-row {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 0.75rem;
+          }
+        }
+      `}</style>
+
+      <div className="container">
+        <div style={{ maxWidth: 1040, margin: '0 auto' }}>
+          <SectionHeading
+            index="03"
+            eyebrow="Skills"
+            title="Technical Toolkit"
+            subtitle="Technologies and tools I work with regularly"
+          />
+
+          {loading ? (
+            <SkeletonCard height={420} />
+          ) : (
+            <ul ref={ref} className={`skr-rows${reduceMotion ? ' skr-static' : ''}`}>
+              {entries.map(([category, skills], ci) => {
+                const CatIcon = CATEGORY_ICONS[category] || TbCode;
+                // Repeat short lists so one copy is wide enough to fill the row
+                const copy = Array.from(
+                  { length: Math.ceil(MIN_CHIPS_PER_COPY / skills.length) },
+                  () => skills
+                ).flat();
+                return (
+                  <motion.li
+                    key={category}
+                    className={`skr-row${ci % 2 ? ' skr-row-reverse' : ''}`}
+                    initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+                    animate={inView || reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+                    transition={{ duration: 0.45, delay: ci * 0.07, ease: [0.16, 1, 0.3, 1] }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                      <div
-                        style={{
-                          width: 32,
-                          height: 32,
-                          borderRadius: '50%',
-                          background: 'var(--accent-dim)',
-                          border: '1px solid var(--accent-border)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: 'var(--accent)',
-                        }}
-                      >
-                        <CatIcon size={18} strokeWidth={2.2} />
+                    <div className="skr-label">
+                      <span className="skr-icon" aria-hidden="true">
+                        <CatIcon size={20} strokeWidth={2.1} />
+                      </span>
+                      <div>
+                        <h3 className="skr-name">{category}</h3>
+                        <span className="skr-count">
+                          {skills.length} {skills.length === 1 ? 'skill' : 'skills'}
+                        </span>
                       </div>
-                      <h3
-                        style={{
-                          fontWeight: 700,
-                          fontSize: '0.94rem',
-                          color: 'var(--text-primary)',
-                          margin: 0,
-                        }}
-                      >
-                        {category}
-                      </h3>
                     </div>
 
-                    <span
-                      style={{
-                        fontSize: '0.72rem',
-                        fontWeight: 600,
-                        color: 'var(--text-secondary)',
-                        background: 'var(--bg-elevated)',
-                        padding: '0.15rem 0.55rem',
-                        borderRadius: 'var(--radius-pill)',
-                        border: '1px solid var(--border)',
-                      }}
-                    >
-                      {skills.length} {skills.length === 1 ? 'skill' : 'skills'}
-                    </span>
-                  </div>
-
-                  {/* Skill Badges (Icon + Name) */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexWrap: 'wrap',
-                      gap: '0.5rem',
-                      alignItems: 'center',
-                    }}
-                  >
-                    {skills.map((skill) => (
-                      <SkillBadge key={skill} skill={skill} />
-                    ))}
-                  </div>
-                </TiltCard>
-              );
-            })}
-          </div>
-        )}
+                    {/* Screen readers get the plain list; the moving strip is decorative */}
+                    <ul className="sr-only">
+                      {skills.map((skill) => (
+                        <li key={skill}>{skill}</li>
+                      ))}
+                    </ul>
+                    <div className="skr-strip" aria-hidden="true">
+                      <div className="skr-track" style={{ '--skr-duration': `${copy.length * 3.5}s` }}>
+                        {(reduceMotion ? [skills] : [copy, copy]).map((list, k) => (
+                          <div key={k} className="skr-copy">
+                            {list.map((skill, j) => (
+                              <SkillChip key={`${skill}-${j}`} skill={skill} />
+                            ))}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
       </div>
     </section>
   );

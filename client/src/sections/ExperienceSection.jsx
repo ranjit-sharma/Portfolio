@@ -171,6 +171,7 @@ export default function ExperienceSection() {
 
       <div className="container">
         <SectionHeading
+          index="04"
           eyebrow="Experience"
           title="Work & Internships"
           subtitle="Hands-on engineering experience building real mission-critical systems"
@@ -301,10 +302,11 @@ export default function ExperienceSection() {
 
                   {/* Main Experience Card */}
                   <div
+                    className="card-spotlight"
                     style={{
                       background: 'radial-gradient(circle at 12% 10%, var(--accent-dim) 0%, transparent 45%), var(--bg-card)',
                       border: '1px solid var(--border)',
-                      borderRadius: '20px',
+                      borderRadius: '1rem',
                       padding: '2rem 2.25rem',
                       boxShadow: 'var(--shadow-md)',
                       transition: 'border-color var(--transition-card, 400ms cubic-bezier(0.16, 1, 0.3, 1)), box-shadow var(--transition-card, 400ms cubic-bezier(0.16, 1, 0.3, 1))',
@@ -684,7 +686,7 @@ export default function ExperienceSection() {
                 maxHeight: '90vh',
                 background: 'var(--bg-surface)',
                 border: '1px solid var(--border)',
-                borderRadius: '16px',
+                borderRadius: '1rem',
                 overflow: 'hidden',
                 display: 'flex',
                 flexDirection: 'column',

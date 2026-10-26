@@ -1,10 +1,13 @@
 import { useEffect, useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useInView } from '../hooks/useInView';
-import { Trophy, Briefcase, CheckCircle2, X, ExternalLink, Award, FileText } from 'lucide-react';
-import { TiltCard } from '../components/ui/index';
+import { Trophy, Briefcase, CheckCircle2, X, ExternalLink, Award, FileText, ArrowUpRight } from 'lucide-react';
+import { SectionHeading } from '../components/ui/index';
 import api from '../services/api';
 import { getAssetUrl } from '../utils/assetUrl';
+
+const isPdf = (cert) => !!cert.image && cert.image.toLowerCase().endsWith('.pdf');
+const isImage = (cert) => !!cert.image && !isPdf(cert);
 
 const FALLBACK_CERTS = [
   {
@@ -244,6 +247,7 @@ export default function CertificationsSection() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
   const [selectedCert, setSelectedCert] = useState(null);
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
     function handleKeyDown(e) {
@@ -304,15 +308,16 @@ export default function CertificationsSection() {
     );
   }, [items, activeTab]);
 
-  const getCategoryIcon = (category) => {
+
+  const getCategoryIcon = (category, size = 12) => {
     const cat = (category || '').toLowerCase();
     if (cat.includes('intern')) {
-      return <Briefcase size={12} strokeWidth={2.4} style={{ color: 'var(--accent)' }} />;
+      return <Briefcase size={size} strokeWidth={2.4} style={{ color: 'var(--accent)' }} />;
     }
     if (cat.includes('compet') || cat.includes('hackathon')) {
-      return <Trophy size={12} strokeWidth={2.4} style={{ color: 'var(--accent)' }} />;
+      return <Trophy size={size} strokeWidth={2.4} style={{ color: 'var(--accent)' }} />;
     }
-    return <CheckCircle2 size={12} strokeWidth={2.4} style={{ color: 'var(--accent)' }} />;
+    return <CheckCircle2 size={size} strokeWidth={2.4} style={{ color: 'var(--accent)' }} />;
   };
 
   const getCategoryLabel = (category) => {
@@ -323,113 +328,411 @@ export default function CertificationsSection() {
   };
 
   return (
-    <section id="certifications" className="section-padding" style={{ background: 'var(--bg-base)' }}>
+    <section id="certifications" className="section-padding">
       <style>{`
-        .cert-grid {
+        /* Credential cards: framed-print style */
+        .cert-cards {
           display: grid;
           grid-template-columns: repeat(4, minmax(0, 1fr));
-          gap: 1.15rem;
+          gap: 1rem;
+          list-style: none;
+          margin: 0;
+          padding: 0;
         }
-        @media (max-width: 1080px) {
-          .cert-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        .cert-card {
+          display: flex;
+          flex-direction: column;
+          gap: 0.9rem;
+          width: 100%;
+          height: 100%;
+          padding: 0.7rem 0.7rem 1rem;
+          font: inherit;
+          text-align: left;
+          color: inherit;
+          background: var(--bg-card);
+          border: 1px solid var(--border);
+          border-radius: 1rem;
+          box-shadow: var(--shadow-sm);
+          cursor: pointer;
+          transition: border-color var(--transition-card), box-shadow var(--transition-card), transform var(--transition-card);
+        }
+        .cert-card:hover,
+        .cert-card:focus-visible {
+          border-color: var(--accent-border);
+          box-shadow: 0 20px 40px -18px var(--accent-glow), var(--shadow-md);
+          transform: translateY(-4px);
+        }
+        .cert-card:focus-visible {
+          outline: 2px solid var(--accent);
+          outline-offset: 2px;
+        }
+        /* Inset frame that shows the whole certificate */
+        .cert-card-thumb {
+          position: relative;
+          aspect-ratio: 4 / 3;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0.65rem;
+          border-radius: 0.75rem;
+          background:
+            radial-gradient(circle at 50% 40%, var(--accent-dim) 0%, transparent 70%),
+            var(--bg-elevated);
+          box-shadow: inset 0 0 0 1px var(--border), inset 0 8px 18px -10px rgba(0, 0, 0, 0.6);
+          overflow: hidden;
+        }
+        .cert-card-thumb img {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
+          border-radius: 4px;
+          box-shadow: 0 10px 22px -10px rgba(0, 0, 0, 0.7);
+          transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .cert-card:hover .cert-card-thumb img {
+          transform: translateY(-3px) scale(1.03);
+        }
+        .cert-card-doc,
+        .cert-card-pdf {
+          position: absolute;
+          inset: 0.65rem;
+        }
+        .cert-card-pdf {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 0.35rem;
+          font-size: 0.7rem;
+          font-weight: 700;
+          letter-spacing: 0.06em;
+          color: var(--accent);
+        }
+        .cert-badge {
+          position: absolute;
+          top: 0.5rem;
+          right: 0.5rem;
+          padding: 2px 8px;
+          font-size: 0.64rem;
+          font-weight: 700;
+          color: var(--accent-contrast);
+          background: var(--accent);
+          border-radius: 6px;
+          box-shadow: 0 4px 12px -4px var(--accent-glow);
+        }
+        .cert-card-body {
+          display: flex;
+          flex-direction: column;
+          gap: 0.45rem;
+          flex: 1;
+          min-width: 0;
+          padding: 0 0.35rem;
+        }
+        .cert-meta {
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 0.4rem;
+          font-size: 0.66rem;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: var(--accent);
+        }
+        .cert-meta-date {
+          font-weight: 500;
+          letter-spacing: 0;
+          text-transform: none;
+          color: var(--text-muted);
+        }
+        .cert-card-title {
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          font-size: 0.98rem;
+          font-weight: 800;
+          line-height: 1.35;
+          color: var(--text-primary);
+        }
+        /* Footer row: issuer + round arrow button */
+        .cert-card-foot {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 0.75rem;
+          margin-top: auto;
+          padding-top: 0.75rem;
+          border-top: 1px dashed var(--border);
+        }
+        .cert-card-issuer {
+          min-width: 0;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          font-size: 0.8rem;
+          font-weight: 600;
+          color: var(--text-secondary);
+        }
+        .cert-card-go {
+          width: 32px;
+          height: 32px;
+          flex-shrink: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          color: var(--accent);
+          border: 1px solid var(--accent-border);
+          transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+        }
+        .cert-card:hover .cert-card-go {
+          color: var(--accent-contrast);
+          background: var(--accent);
+          transform: rotate(45deg);
+        }
+
+        /* Certificate viewer */
+        .cert-modal-backdrop {
+          position: fixed;
+          inset: 0;
+          z-index: 2000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 1.25rem;
+          background: rgba(0, 0, 0, 0.78);
+          backdrop-filter: blur(10px);
+        }
+        .cert-modal {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) 340px;
+          width: 100%;
+          max-width: 1120px;
+          max-height: 92vh;
+          overflow: hidden;
+          background: var(--bg-surface);
+          border: 1px solid var(--border);
+          border-radius: 1rem;
+          box-shadow: var(--shadow-lg), 0 0 60px -10px var(--accent-glow);
+        }
+        .cert-modal-stage {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 0;
+          padding: 2rem;
+          background:
+            radial-gradient(circle at 50% 45%, var(--accent-dim) 0%, transparent 65%),
+            var(--bg-base);
+        }
+        .cert-modal-img {
+          display: block;
+          max-width: 100%;
+          max-height: calc(92vh - 4rem);
+          object-fit: contain;
+          border-radius: 10px;
+          background: #fff;
+          box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.06);
+        }
+        .cert-modal-pdf {
+          width: 100%;
+          height: calc(92vh - 4rem);
+          border: none;
+          border-radius: 10px;
+          background: #fff;
+        }
+        .cert-modal-doc {
+          width: 100%;
+          max-width: 640px;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.7);
+        }
+        .cert-modal-side {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          gap: 1.1rem;
+          padding: 1.75rem 1.6rem;
+          overflow-y: auto;
+          background: linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg-surface) 70%);
+          border-left: 1px solid var(--border);
+        }
+        .cert-modal-close {
+          position: absolute;
+          top: 1rem;
+          right: 1rem;
+          width: 34px;
+          height: 34px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          color: var(--text-secondary);
+          background: var(--bg-hover);
+          border: 1px solid var(--border);
+          cursor: pointer;
+          transition: color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+        }
+        .cert-modal-close:hover,
+        .cert-modal-close:focus-visible {
+          color: var(--text-primary);
+          border-color: var(--accent);
+          transform: rotate(90deg);
+        }
+        .cert-modal-badge {
+          align-self: flex-start;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.4rem;
+          padding: 0.3rem 0.75rem;
+          font-size: 0.7rem;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+          color: var(--accent);
+          background: var(--accent-dim);
+          border: 1px solid var(--accent-border);
+          border-radius: 9999px;
+        }
+        .cert-modal-title {
+          margin: 0;
+          padding-right: 2.5rem;
+          font-size: 1.35rem;
+          font-weight: 800;
+          line-height: 1.3;
+          letter-spacing: -0.01em;
+          color: var(--text-primary);
+        }
+        .cert-modal-facts {
+          display: flex;
+          flex-direction: column;
+          margin: 0;
+          border: 1px solid var(--border);
+          border-radius: 14px;
+          overflow: hidden;
+        }
+        .cert-modal-facts > div {
+          display: flex;
+          justify-content: space-between;
+          gap: 1rem;
+          padding: 0.65rem 0.9rem;
+          font-size: 0.84rem;
+          background: var(--bg-card);
+        }
+        .cert-modal-facts > div + div {
+          border-top: 1px solid var(--border);
+        }
+        .cert-modal-facts dt {
+          color: var(--text-muted);
+          font-weight: 600;
+        }
+        .cert-modal-facts dd {
+          margin: 0;
+          text-align: right;
+          font-weight: 700;
+          color: var(--text-primary);
+        }
+        .cert-modal-about h4 {
+          margin: 0 0 0.4rem;
+          font-size: 0.72rem;
+          font-weight: 800;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: var(--text-muted);
+        }
+        .cert-modal-about p {
+          margin: 0;
+          font-size: 0.88rem;
+          line-height: 1.7;
+          color: var(--text-secondary);
+        }
+        .cert-modal-actions {
+          display: flex;
+          flex-direction: column;
+          gap: 0.6rem;
+          margin-top: auto;
+        }
+        .cert-modal-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          padding: 0.75rem 1rem;
+          font-size: 0.88rem;
+          font-weight: 700;
+          text-decoration: none;
+          color: var(--text-primary);
+          background: var(--bg-card);
+          border: 1px solid var(--border);
+          border-radius: 9999px;
+          transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+        }
+        .cert-modal-btn:hover {
+          border-color: var(--accent-border);
+          box-shadow: 0 0 16px var(--accent-glow);
+        }
+        .cert-modal-btn-primary {
+          color: var(--accent-contrast);
+          background: var(--accent);
+          border-color: var(--accent);
+        }
+        .cert-modal-btn-primary:hover {
+          background: var(--accent-hover);
+        }
+        @media (max-width: 860px) {
+          .cert-modal {
+            grid-template-columns: minmax(0, 1fr);
+            overflow-y: auto;
+          }
+          .cert-modal-stage {
+            padding: 1rem;
+          }
+          .cert-modal-img {
+            max-height: 55vh;
+          }
+          .cert-modal-pdf {
+            height: 55vh;
+          }
+          .cert-modal-side {
+            overflow: visible;
+            border-left: none;
+            border-top: 1px solid var(--border);
           }
         }
-        /* Mobile stack flow */
-        @media (max-width: 640px) {
-          .cert-grid {
-            display: flex !important;
-            flex-direction: column !important;
-            gap: 0 !important;
-            position: relative !important;
-            padding-bottom: 16px !important;
-          }
-
-          .cert-grid > div:not(.cert-card-interactive) {
-            margin-bottom: 1rem;
-          }
-
-          .cert-card-interactive {
-            position: sticky !important;
-            top: calc(75px + var(--stack-offset-mob, 0px)) !important;
-            z-index: var(--stack-z, 1) !important;
-            margin-bottom: 24px !important;
-            transform: none !important;
-            transform-style: flat !important;
-            backface-visibility: visible !important;
-            background: var(--bg-card) !important;
-            background-image: radial-gradient(circle at 12% 10%, var(--accent-dim) 0%, transparent 48%), linear-gradient(var(--bg-card), var(--bg-card)) !important;
-            box-shadow: 0 10px 32px -6px rgba(0, 0, 0, 0.6), 0 0 1px var(--border) !important;
-          }
-
-          .cert-card-interactive:last-child {
-            margin-bottom: 0 !important;
+        @media (max-width: 1100px) {
+          .cert-cards {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
           }
         }
-
-        /* Card transition matching site-wide project and experience cards */
-        .cert-card-interactive {
-          transition: box-shadow var(--transition-card, 400ms cubic-bezier(0.16, 1, 0.3, 1)),
-                      border-color var(--transition-card, 400ms cubic-bezier(0.16, 1, 0.3, 1)),
-                      background-color var(--transition-card, 400ms cubic-bezier(0.16, 1, 0.3, 1));
-          will-change: transform, box-shadow;
-          backface-visibility: hidden;
-        }
-
-        .cert-card-interactive:hover {
-          border-color: var(--accent-border) !important;
-          box-shadow: 0 16px 36px -8px var(--accent-glow) !important;
-        }
-
-        /* Title color shift */
-        .cert-card-interactive:hover .cert-card-title {
-          color: var(--accent) !important;
+        /* Phones: cards stick under the navbar and stack on top of each other while scrolling */
+        @media (max-width: 600px) {
+          .cert-cards {
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 1rem;
+          }
+          .cert-cards > li {
+            position: sticky;
+            top: calc(var(--navbar-height) + 1rem + var(--stack-i) * 14px);
+            margin-bottom: 1.5rem;
+          }
+          .cert-cards > li:last-child {
+            margin-bottom: 0;
+          }
+          .cert-card {
+            box-shadow: 0 -10px 30px -12px rgba(0, 0, 0, 0.7), var(--shadow-md);
+          }
         }
       `}</style>
 
       <div className="container" ref={ref}>
-        {/* Section Header */}
-        <div style={{ marginBottom: '1.75rem' }}>
-          {/* Eyebrow — Trophy icon removed per user request */}
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.65rem' }}>
-            <span
-              style={{
-                color: 'var(--accent)',
-                fontSize: '0.72rem',
-                fontWeight: 800,
-                letterSpacing: '0.14em',
-                textTransform: 'uppercase',
-              }}
-            >
-              ACHIEVEMENTS &amp; CERTIFICATIONS
-            </span>
-          </div>
-
-          {/* Heading */}
-          <h2
-            style={{
-              fontSize: 'clamp(2.1rem, 3.8vw, 3rem)',
-              fontWeight: 800,
-              letterSpacing: '-0.03em',
-              color: 'var(--text-primary)',
-              lineHeight: 1.15,
-              marginBottom: '0.75rem',
-            }}
-          >
-            Recognition &amp; Credentials
-          </h2>
-
-          {/* Subtitle */}
-          <p
-            style={{
-              color: 'var(--text-secondary)',
-              fontSize: '0.96rem',
-              margin: 0,
-            }}
-          >
-            The actual certificates — click any card to view it full size.
-          </p>
-        </div>
+        <SectionHeading
+          index="06"
+          eyebrow="Achievements & Certifications"
+          title="Recognition & Credentials"
+          subtitle="The actual certificates — pick one from the list, or click the preview to view it full size."
+        />
 
         {/* Filter Pills */}
         {tabs.length > 1 && (
@@ -448,7 +751,9 @@ export default function CertificationsSection() {
                 <button
                   key={tab.id}
                   type="button"
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => {
+                    setActiveTab(tab.id);
+                  }}
                   style={{
                     background: isActive ? 'var(--accent-dim)' : 'var(--bg-card)',
                     border: isActive
@@ -497,13 +802,13 @@ export default function CertificationsSection() {
 
         {/* Loading state skeleton */}
         {loading ? (
-          <div className="cert-grid">
-            {[...Array(4)].map((_, i) => (
+          <div className="cert-cards">
+            {[0, 1, 2, 3].map((h) => (
               <div
-                key={i}
+                key={h}
                 style={{
-                  height: 310,
-                  borderRadius: '16px',
+                  height: 380,
+                  borderRadius: 'var(--radius-xl)',
                   background: 'var(--bg-elevated)',
                   border: '1px solid var(--border)',
                   opacity: 0.6,
@@ -519,7 +824,7 @@ export default function CertificationsSection() {
               textAlign: 'center',
               background: 'var(--bg-card)',
               border: '1px solid var(--border)',
-              borderRadius: '16px',
+              borderRadius: '1rem',
               maxWidth: 520,
               margin: '0 auto',
             }}
@@ -533,461 +838,147 @@ export default function CertificationsSection() {
             </p>
           </div>
         ) : (
-          /* Cards Grid */
-          <motion.div layout className="cert-grid">
-            <AnimatePresence>
-              {filteredItems.map((cert, i) => (
-                <TiltCard
-                  key={cert._id || i}
-                  layout
-                  initial={{ opacity: 0, y: 20, scale: 0.98 }}
-                  animate={inView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 20 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.35, delay: i * 0.04 }}
-                  className="cert-card-interactive card-ambient"
+          /* Credential cards */
+          <ul className="cert-cards">
+            {filteredItems.map((cert, i) => (
+              <motion.li
+                key={cert._id || cert.name}
+                style={{ '--stack-i': i, zIndex: i + 1 }}
+                initial={reduceMotion ? false : { opacity: 0, y: 20 }}
+                animate={inView || reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                transition={{ duration: 0.45, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <button
+                  type="button"
+                  className="cert-card card-spotlight"
                   onClick={() => setSelectedCert(cert)}
-                  maxTilt={8}
-                  style={{
-                    background: 'radial-gradient(circle at 12% 10%, var(--accent-dim) 0%, transparent 48%), var(--bg-card)',
-                    border: '1px solid var(--border)',
-                    borderRadius: '16px',
-                    padding: '0.75rem',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    position: 'relative',
-                    boxShadow: 'var(--shadow-md)',
-                    '--stack-offset-mob': `${i * 20}px`,
-                    '--stack-z': i + 1,
-                  }}
+                  aria-label={`View certificate: ${cert.name}`}
                 >
-                  {/* macOS Window Mockup Frame */}
-                  <div
-                    style={{
-                      borderRadius: '12px',
-                      border: '1px solid var(--border)',
-                      background: 'var(--bg-elevated)',
-                      overflow: 'hidden',
-                      position: 'relative',
-                      boxShadow: 'var(--shadow-sm)',
-                    }}
-                  >
-                    {/* Window Header */}
-                    <div
-                      style={{
-                        height: 32,
-                        padding: '0 10px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        background: 'var(--bg-hover)',
-                        borderBottom: '1px solid var(--border)',
-                      }}
-                    >
-                      {/* Left: 3 macOS dots + windowTitle */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#ff5f56', display: 'inline-block' }} />
-                        <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#ffbd2e', display: 'inline-block' }} />
-                        <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#27c93f', display: 'inline-block' }} />
-                        <span
-                          style={{
-                            fontSize: '0.7rem',
-                            color: 'var(--text-secondary)',
-                            fontWeight: 500,
-                            marginLeft: '0.45rem',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            maxWidth: 160,
-                          }}
-                        >
-                          {cert.windowTitle || cert.issuer}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Window Image Preview / Document Viewport */}
-                    <div
-                      style={{
-                        height: 140,
-                        position: 'relative',
-                        background: 'var(--bg-surface)',
-                        overflow: 'hidden',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      {cert.image && !cert.image.toLowerCase().endsWith('.pdf') ? (
-                        <img
-                          src={getAssetUrl(cert.image)}
-                          alt={cert.name}
-                          className="cert-preview-img"
-                          loading="lazy"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                          }}
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                            objectPosition: 'top center',
-                            display: 'block',
-                            transition: 'transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
-                          }}
-                        />
-                      ) : cert.image && cert.image.toLowerCase().endsWith('.pdf') ? (
-                        <div
-                          style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '0.35rem',
-                            width: '100%',
-                            height: '100%',
-                            background: 'var(--accent-dim)',
-                            color: 'var(--accent)',
-                          }}
-                        >
-                          <FileText size={32} strokeWidth={1.7} />
-                          <span style={{ fontSize: '0.67rem', fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: '0.04em' }}>
-                            PDF DOCUMENT
-                          </span>
-                        </div>
-                      ) : (
-                        <div style={{ width: '100%', height: '100%' }}>
-                          <CertificateDocPreview cert={cert} isModal={false} />
-                        </div>
-                      )}
-
-                      {/* Overlay badge (bottom-left) */}
-                      {cert.badge && (
-                        <div
-                          style={{
-                            position: 'absolute',
-                            bottom: 8,
-                            left: 8,
-                            background: 'var(--bg-surface)',
-                            backdropFilter: 'blur(8px)',
-                            border: '1px solid var(--accent-border)',
-                            borderRadius: '6px',
-                            padding: '2.5px 8px',
-                            fontSize: '0.68rem',
-                            fontWeight: 600,
-                            color: 'var(--accent)',
-                            boxShadow: 'var(--shadow-sm)',
-                            pointerEvents: 'none',
-                            lineHeight: 1.25,
-                            zIndex: 2,
-                          }}
-                        >
-                          {cert.badge}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Card Content Details (below window) */}
-                  <div style={{ padding: '0.85rem 0.25rem 0.25rem 0.25rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                    {/* Category Tag + Date Row */}
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.4rem',
-                        marginBottom: '0.45rem',
-                        flexWrap: 'wrap',
-                      }}
-                    >
-                      {getCategoryIcon(cert.category)}
-                      <span
-                        style={{
-                          color: 'var(--accent)',
-                          fontSize: '0.7rem',
-                          fontWeight: 700,
-                          letterSpacing: '0.08em',
-                          textTransform: 'uppercase',
-                        }}
-                      >
-                        {getCategoryLabel(cert.category)}
+                  <span className="cert-card-thumb">
+                    {isImage(cert) ? (
+                      <img src={getAssetUrl(cert.image)} alt="" loading="lazy" />
+                    ) : isPdf(cert) ? (
+                      <span className="cert-card-pdf">
+                        <FileText size={34} strokeWidth={1.6} />
+                        PDF DOCUMENT
                       </span>
-                      {cert.dateTag && (
-                        <>
-                          <span style={{ color: 'var(--text-muted)', fontSize: '0.74rem' }}>·</span>
-                          <span style={{ color: 'var(--text-muted)', fontSize: '0.74rem', fontWeight: 500 }}>
-                            {cert.dateTag}
-                          </span>
-                        </>
-                      )}
-                    </div>
+                    ) : (
+                      <span className="cert-card-doc">
+                        <CertificateDocPreview cert={cert} isModal={false} />
+                      </span>
+                    )}
+                    {cert.badge && <span className="cert-badge">{cert.badge}</span>}
+                  </span>
 
-                    {/* Title — Uses var(--text-primary) for perfect legibility in both Light & Dark modes */}
-                    <h3
-                      className="cert-card-title"
-                      title={cert.name}
-                      style={{
-                        fontSize: '0.92rem',
-                        fontWeight: 700,
-                        color: 'var(--text-primary)',
-                        lineHeight: 1.35,
-                        margin: '0 0 0.35rem 0',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                        transition: 'color 0.2s ease',
-                      }}
-                    >
-                      {cert.name}
-                    </h3>
-
-                    {/* Subtitle / Issuer */}
-                    <p
-                      title={cert.issuer}
-                      style={{
-                        fontSize: '0.78rem',
-                        color: 'var(--text-secondary)',
-                        lineHeight: 1.35,
-                        margin: 0,
-                        marginTop: 'auto',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}
-                    >
-                      {cert.issuer}
-                    </p>
-                  </div>
-                </TiltCard>
-              ))}
-            </AnimatePresence>
-          </motion.div>
+                  <span className="cert-card-body">
+                    <span className="cert-meta">
+                      {getCategoryIcon(cert.category)}
+                      <span>{getCategoryLabel(cert.category)}</span>
+                      {cert.dateTag && <span className="cert-meta-date">· {cert.dateTag}</span>}
+                    </span>
+                    <span className="cert-card-title">{cert.name}</span>
+                    <span className="cert-card-foot">
+                      <span className="cert-card-issuer">{cert.issuer}</span>
+                      <span className="cert-card-go" aria-hidden="true">
+                        <ArrowUpRight size={15} />
+                      </span>
+                    </span>
+                  </span>
+                </button>
+              </motion.li>
+            ))}
+          </ul>
         )}
 
         {/* Certificate Lightbox Modal */}
         <AnimatePresence>
           {selectedCert && (
-            <div
+            <motion.div
               role="dialog"
               aria-modal="true"
-              style={{
-                position: 'fixed',
-                inset: 0,
-                zIndex: 2000,
-                background: 'rgba(0, 0, 0, 0.75)',
-                backdropFilter: 'blur(8px)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '1.25rem',
-              }}
+              aria-labelledby="cert-modal-title"
+              className="cert-modal-backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
               onClick={() => setSelectedCert(null)}
             >
               <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 12 }}
+                className="cert-modal"
+                initial={reduceMotion ? false : { opacity: 0, scale: 0.96, y: 16 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 12 }}
-                transition={{ duration: 0.22, ease: 'easeOut' }}
-                style={{
-                  background: 'var(--bg-surface)',
-                  border: '1px solid var(--border)',
-                  borderRadius: '16px',
-                  maxWidth: 820,
-                  width: '100%',
-                  maxHeight: '92vh',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  overflow: 'hidden',
-                  boxShadow: 'var(--shadow-lg), 0 0 35px var(--accent-glow)',
-                }}
+                exit={reduceMotion ? undefined : { opacity: 0, scale: 0.96, y: 16 }}
+                transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                 onClick={(e) => e.stopPropagation()}
               >
-                {/* Modal Header */}
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '0.9rem 1.25rem',
-                    borderBottom: '1px solid var(--border)',
-                    background: 'var(--bg-elevated)',
-                  }}
-                >
-                  <div style={{ flex: 1, paddingRight: '1rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
-                      {getCategoryIcon(selectedCert.category)}
-                      <span
-                        style={{
-                          color: 'var(--accent)',
-                          fontSize: '0.68rem',
-                          fontWeight: 700,
-                          letterSpacing: '0.07em',
-                          textTransform: 'uppercase',
-                        }}
-                      >
-                        {getCategoryLabel(selectedCert.category)}
-                      </span>
-                      {selectedCert.dateTag && (
-                        <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>
-                          · {selectedCert.dateTag}
-                        </span>
-                      )}
-                    </div>
-                    <h3
-                      style={{
-                        fontSize: '1rem',
-                        fontWeight: 700,
-                        color: 'var(--text-primary)',
-                        margin: 0,
-                        lineHeight: 1.3,
-                      }}
-                    >
-                      {selectedCert.name}
-                    </h3>
-                    <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '0.2rem 0 0 0' }}>
-                      {selectedCert.issuer}
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedCert(null)}
-                    style={{
-                      background: 'var(--bg-hover)',
-                      border: '1px solid var(--border)',
-                      borderRadius: '50%',
-                      width: 32,
-                      height: 32,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: 'var(--text-secondary)',
-                      cursor: 'pointer',
-                      fontSize: '0.85rem',
-                      transition: 'all 0.2s',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.color = 'var(--text-primary)';
-                      e.currentTarget.style.borderColor = 'var(--accent)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.color = 'var(--text-secondary)';
-                      e.currentTarget.style.borderColor = 'var(--border)';
-                    }}
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-
-                {/* Modal Body */}
-                <div
-                  style={{
-                    padding: '1.25rem',
-                    overflowY: 'auto',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: 'var(--bg-base)',
-                  }}
-                >
-                  {selectedCert.image ? (
-                    selectedCert.image.toLowerCase().endsWith('.pdf') ? (
-                      <iframe
-                        src={getAssetUrl(selectedCert.image)}
-                        title={selectedCert.name}
-                        style={{
-                          width: '100%',
-                          height: 480,
-                          border: 'none',
-                          borderRadius: '10px',
-                          background: '#fff',
-                        }}
-                      />
-                    ) : (
-                      <div
-                        style={{
-                          width: '100%',
-                          borderRadius: '10px',
-                          overflow: 'hidden',
-                          border: '1px solid var(--border)',
-                          background: '#ffffff',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          boxShadow: 'var(--shadow-md)',
-                        }}
-                      >
-                        <img
-                          src={getAssetUrl(selectedCert.image)}
-                          alt={selectedCert.name}
-                          style={{
-                            width: '100%',
-                            maxHeight: '68vh',
-                            objectFit: 'contain',
-                            display: 'block',
-                          }}
-                        />
-                      </div>
-                    )
+                {/* Certificate stage */}
+                <div className="cert-modal-stage">
+                  {isPdf(selectedCert) ? (
+                    <iframe src={getAssetUrl(selectedCert.image)} title={selectedCert.name} className="cert-modal-pdf" />
+                  ) : isImage(selectedCert) ? (
+                    <img src={getAssetUrl(selectedCert.image)} alt={selectedCert.name} className="cert-modal-img" />
                   ) : (
-                    <div
-                      style={{
-                        width: '100%',
-                        maxWidth: 620,
-                        borderRadius: '12px',
-                        overflow: 'hidden',
-                        boxShadow: 'var(--shadow-md)',
-                      }}
-                    >
+                    <div className="cert-modal-doc">
                       <CertificateDocPreview cert={selectedCert} isModal={true} />
                     </div>
                   )}
-
-                  {selectedCert.description && (
-                    <p
-                      style={{
-                        marginTop: '1rem',
-                        fontSize: '0.85rem',
-                        color: 'var(--text-secondary)',
-                        lineHeight: 1.6,
-                        textAlign: 'center',
-                        maxWidth: '650px',
-                      }}
-                    >
-                      {selectedCert.description}
-                    </p>
-                  )}
                 </div>
 
-                {/* Modal Footer */}
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '0.85rem 1.25rem',
-                    borderTop: '1px solid var(--border)',
-                    background: 'var(--bg-elevated)',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                {/* Details panel */}
+                <aside className="cert-modal-side">
+                  <button
+                    type="button"
+                    className="cert-modal-close"
+                    onClick={() => setSelectedCert(null)}
+                    aria-label="Close certificate viewer"
+                  >
+                    <X size={17} />
+                  </button>
+
+                  <span className="cert-modal-badge">
+                    {getCategoryIcon(selectedCert.category, 13)}
+                    {getCategoryLabel(selectedCert.category)}
+                  </span>
+                  <h3 id="cert-modal-title" className="cert-modal-title">
+                    {selectedCert.name}
+                  </h3>
+
+                  <dl className="cert-modal-facts">
+                    <div>
+                      <dt>Issued by</dt>
+                      <dd>{selectedCert.issuer}</dd>
+                    </div>
+                    {selectedCert.dateTag && (
+                      <div>
+                        <dt>Date</dt>
+                        <dd>{selectedCert.dateTag}</dd>
+                      </div>
+                    )}
+                    {selectedCert.badge && (
+                      <div>
+                        <dt>Status</dt>
+                        <dd>{selectedCert.badge}</dd>
+                      </div>
+                    )}
+                  </dl>
+
+                  {selectedCert.description && (
+                    <div className="cert-modal-about">
+                      <h4>About this credential</h4>
+                      <p>{selectedCert.description}</p>
+                    </div>
+                  )}
+
+                  <div className="cert-modal-actions">
                     {selectedCert.image && (
                       <a
                         href={getAssetUrl(selectedCert.image)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        style={{
-                          color: 'var(--accent)',
-                          fontSize: '0.82rem',
-                          fontWeight: 600,
-                          textDecoration: 'none',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '0.35rem',
-                        }}
+                        className="cert-modal-btn cert-modal-btn-primary"
                       >
-                        <ExternalLink size={14} /> Open Original File
+                        <ExternalLink size={15} aria-hidden="true" /> Open original file
                       </a>
                     )}
                     {selectedCert.credentialUrl && (
@@ -995,40 +986,15 @@ export default function CertificationsSection() {
                         href={selectedCert.credentialUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        style={{
-                          color: 'var(--text-secondary)',
-                          fontSize: '0.82rem',
-                          fontWeight: 500,
-                          textDecoration: 'none',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '0.35rem',
-                        }}
+                        className="cert-modal-btn"
                       >
-                        <ExternalLink size={14} /> Verify Credential
+                        <CheckCircle2 size={15} aria-hidden="true" /> Verify credential
                       </a>
                     )}
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedCert(null)}
-                    style={{
-                      background: 'var(--accent)',
-                      color: 'var(--accent-contrast)',
-                      border: 'none',
-                      padding: '0.45rem 1.35rem',
-                      borderRadius: 'var(--radius-pill)',
-                      fontWeight: 600,
-                      fontSize: '0.84rem',
-                      cursor: 'pointer',
-                      boxShadow: '0 2px 8px var(--accent-glow)',
-                    }}
-                  >
-                    Close
-                  </button>
-                </div>
+                </aside>
               </motion.div>
-            </div>
+            </motion.div>
           )}
         </AnimatePresence>
       </div>

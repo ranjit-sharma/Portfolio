@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { Folder, FolderGit2, ExternalLink } from 'lucide-react';
+import { motion, AnimatePresence, useMotionValue, useReducedMotion, useSpring, useTransform } from 'framer-motion';
+import { Folder, FolderGit2, ExternalLink, ChevronLeft, ChevronRight, RotateCw, Lock } from 'lucide-react';
 import { SiGithub } from 'react-icons/si';
 import { useInView } from '../hooks/useInView';
-import { SectionHeading, SkeletonCard } from '../components/ui/index';
+import { SectionHeading, SkeletonCard, SkillIcon } from '../components/ui/index';
 import api from '../services/api';
 import { getAssetUrl } from '../utils/assetUrl';
 
@@ -117,6 +117,7 @@ function getProjectMeta(proj) {
 }
 
 function TiltBrowserMockup({ children }) {
+  const reduceMotion = useReducedMotion();
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
@@ -129,6 +130,7 @@ function TiltBrowserMockup({ children }) {
   const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-8.5deg', '8.5deg']);
 
   const handleMouseMove = (e) => {
+    if (reduceMotion) return;
     const rect = e.currentTarget.getBoundingClientRect();
     if (!rect.width || !rect.height) return;
     const xPct = (e.clientX - rect.left) / rect.width - 0.5;
@@ -308,9 +310,9 @@ export default function ProjectsSection() {
           background: var(--bg-card);
           border: 1px solid var(--border);
           border-top-left-radius: 0;
-          border-top-right-radius: 16px;
-          border-bottom-left-radius: 20px;
-          border-bottom-right-radius: 20px;
+          border-top-right-radius: 1rem;
+          border-bottom-left-radius: 1rem;
+          border-bottom-right-radius: 1rem;
           padding: 2.25rem 2.5rem;
           box-shadow: var(--shadow-md);
           transition: border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
@@ -374,94 +376,132 @@ export default function ProjectsSection() {
         }
 
         .project-stack-title {
+          position: relative;
           font-size: clamp(1.6rem, 2.4vw, 2.25rem);
           font-weight: 800;
           color: var(--text-primary);
           letter-spacing: -0.02em;
           line-height: 1.15;
-          margin-bottom: 0.85rem;
+          margin-bottom: 1.1rem;
+          padding-bottom: 0.75rem;
+        }
+
+        /* Short accent bar under the title */
+        .project-stack-title::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          width: 56px;
+          height: 3px;
+          border-radius: 3px;
+          background: linear-gradient(90deg, var(--accent) 55%, var(--accent-border));
         }
 
         .project-stack-desc {
           font-size: 0.93rem;
-          line-height: 1.6;
+          line-height: 1.75;
           color: var(--text-secondary);
-          margin-bottom: 1.25rem;
+          margin-bottom: 1.35rem;
           display: -webkit-box;
           -webkit-line-clamp: 3;
           -webkit-box-orient: vertical;
           overflow: hidden;
         }
 
-        /* Stats Grid - Recessed Dark Telemetry Console */
+        /* Stats - three separate mini cards */
         .project-stats-grid {
           display: grid;
           grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: 0;
+          gap: 0.6rem;
           margin-bottom: 1.35rem;
-          padding: 0.85rem 0.5rem;
-          background: linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0%, rgba(0, 0, 0, 0.3) 100%), var(--bg-surface);
-          border: 1px solid var(--border);
-          border-radius: 12px;
-          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 2px 8px rgba(0, 0, 0, 0.25);
         }
 
         .project-stat-item {
+          position: relative;
           display: flex;
           flex-direction: column;
           justify-content: center;
-          padding: 0.15rem 1rem;
-          border-right: 1px solid var(--border);
+          padding: 0.8rem 0.9rem 0.75rem;
+          background: var(--bg-elevated);
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          overflow: hidden;
+          transition: border-color var(--transition-fast), transform var(--transition-fast);
         }
 
-        .project-stat-item:last-child {
-          border-right: none;
+        .project-stat-item::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0.9rem;
+          right: 0.9rem;
+          height: 2px;
+          border-radius: 0 0 2px 2px;
+          background: var(--accent);
+          opacity: 0.7;
+        }
+
+        .project-stat-item:hover {
+          border-color: var(--accent-border);
+          transform: translateY(-2px);
         }
 
         .project-stat-value {
-          font-size: 1.25rem;
+          font-size: 1.15rem;
           font-weight: 800;
-          color: var(--text-primary);
+          color: var(--accent);
           letter-spacing: -0.01em;
           line-height: 1.2;
+          overflow-wrap: anywhere;
         }
 
         .project-stat-label {
-          font-size: 0.67rem;
+          font-size: 0.64rem;
           font-weight: 700;
-          color: var(--text-secondary);
+          color: var(--text-muted);
           text-transform: uppercase;
           letter-spacing: 0.08em;
-          margin-top: 0.25rem;
+          margin-top: 0.3rem;
         }
 
-        /* Tech Stack Pills - Sleek Dark Glass Badges */
+        /* Tech stack - labelled chips with logos */
+        .project-tech-label {
+          margin-bottom: 0.55rem;
+          font-size: 0.68rem;
+          font-weight: 800;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: var(--text-muted);
+        }
+
         .project-tech-pills {
           display: flex;
           flex-wrap: wrap;
-          gap: 0.45rem;
-          margin-bottom: 1.35rem;
-          max-height: 74px;
-          overflow: hidden;
+          gap: 0.4rem;
+          margin: 0 0 1.35rem;
+          padding: 0;
+          list-style: none;
         }
 
         .project-tech-pill {
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid var(--border);
-          border-radius: var(--radius-pill);
-          padding: 0.26rem 0.78rem;
-          font-size: 0.75rem;
-          font-weight: 500;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.4rem;
+          padding: 0.32rem 0.65rem;
+          font-size: 0.76rem;
+          font-weight: 600;
           color: var(--text-primary);
-          transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+          background: var(--bg-elevated);
+          border: 1px solid var(--border);
+          border-radius: 8px;
+          transition: border-color var(--transition-fast), background var(--transition-fast), transform var(--transition-fast);
         }
 
         .project-tech-pill:hover {
-          border-color: var(--accent);
-          color: var(--accent);
+          border-color: var(--accent-border);
           background: var(--accent-dim);
-          box-shadow: 0 2px 12px var(--accent-glow);
+          transform: translateY(-1px);
         }
 
         .project-stack-actions {
@@ -529,59 +569,96 @@ export default function ProjectsSection() {
 
         .project-browser-frame {
           position: relative;
-          border-radius: 12px;
-          border: 1px solid var(--border);
-          background: #090d14;
-          overflow: hidden;
-          box-shadow: var(--shadow-md);
+          padding: 1px;
+          border-radius: 16px;
+          /* 1px gradient border: accent at the top-left fading into the normal border */
+          background: linear-gradient(135deg, var(--accent-border), var(--border) 45%, var(--border));
+          box-shadow: 0 24px 50px -20px rgba(0, 0, 0, 0.75), var(--shadow-md);
           will-change: transform;
-          transition: border-color 0.3s ease, box-shadow 0.3s ease;
+          transition: box-shadow 0.3s ease;
+        }
+
+        /* Soft accent glow behind the window */
+        .project-browser-frame::before {
+          content: '';
+          position: absolute;
+          inset: 12% 8% -6%;
+          z-index: -1;
+          border-radius: 50%;
+          background: var(--accent);
+          opacity: 0.12;
+          filter: blur(48px);
+          transition: opacity 0.3s ease;
         }
 
         .project-stack-visual:hover .project-browser-frame {
-          border-color: var(--accent-border);
-          box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.6), 0 0 20px var(--accent-glow);
+          box-shadow: 0 28px 60px -20px rgba(0, 0, 0, 0.8), 0 0 0 1px var(--accent-border);
+        }
+
+        .project-stack-visual:hover .project-browser-frame::before {
+          opacity: 0.22;
         }
 
         .project-browser-header {
-          height: 28px;
-          background: var(--bg-elevated);
-          border-bottom: 1px solid var(--border);
-          padding: 0 0.75rem;
           display: flex;
           align-items: center;
-          position: relative;
+          gap: 0.85rem;
+          height: 38px;
+          padding: 0 0.85rem;
+          background: var(--bg-elevated);
+          border-bottom: 1px solid var(--border);
+          border-radius: 15px 15px 0 0;
         }
 
         .project-traffic-dots {
           display: flex;
           align-items: center;
-          gap: 5px;
+          gap: 6px;
+          flex-shrink: 0;
         }
 
         .project-traffic-dot {
-          width: 7px;
-          height: 7px;
+          width: 10px;
+          height: 10px;
           border-radius: 50%;
+          box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.25);
+        }
+
+        .project-browser-nav {
+          display: flex;
+          align-items: center;
+          gap: 0.35rem;
+          flex-shrink: 0;
+          color: var(--text-muted);
         }
 
         .project-address-pill {
-          position: absolute;
-          left: 50%;
-          transform: translateX(-50%);
-          max-width: 65%;
+          flex: 1;
+          min-width: 0;
+          max-width: 360px;
+          margin: 0 auto;
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 0.1rem 0.75rem;
-          border-radius: 999px;
-          background: rgba(255, 255, 255, 0.04);
+          gap: 0.4rem;
+          height: 24px;
+          padding: 0 0.85rem;
+          border-radius: 8px;
+          background: var(--bg-base);
           border: 1px solid var(--border);
-          font-size: 0.68rem;
-          font-family: monospace;
-          color: var(--text-muted);
-          white-space: nowrap;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+          font-size: 0.7rem;
+          color: var(--text-secondary);
+        }
+
+        .project-address-pill svg {
+          flex-shrink: 0;
+          color: var(--accent);
+        }
+
+        .project-address-text {
           overflow: hidden;
+          white-space: nowrap;
           text-overflow: ellipsis;
         }
 
@@ -591,9 +668,19 @@ export default function ProjectsSection() {
           aspect-ratio: 1888 / 924;
           overflow: hidden;
           background: #090d14;
+          border-radius: 0 0 15px 15px;
           display: flex;
           align-items: center;
           justify-content: center;
+        }
+
+        /* Glass sheen across the top of the screenshot */
+        .project-browser-viewport::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, transparent 28%);
         }
 
         .project-mockup-img {
@@ -602,6 +689,43 @@ export default function ProjectsSection() {
           object-fit: cover;
           object-position: top center;
           display: block;
+          transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .project-stack-visual:hover .project-mockup-img {
+          transform: scale(1.04);
+        }
+
+        .project-visit-pill {
+          position: absolute;
+          left: 50%;
+          bottom: 14px;
+          z-index: 1;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.35rem;
+          padding: 0.4rem 0.9rem;
+          font-size: 0.76rem;
+          font-weight: 700;
+          color: var(--accent-contrast);
+          background: var(--accent);
+          border-radius: 9999px;
+          box-shadow: 0 8px 20px -6px var(--accent-glow);
+          opacity: 0;
+          transform: translate(-50%, 8px);
+          transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+
+        .project-stack-visual:hover .project-visit-pill,
+        .project-browser-viewport a:focus-visible .project-visit-pill {
+          opacity: 1;
+          transform: translate(-50%, 0);
+        }
+
+        @media (max-width: 580px) {
+          .project-browser-nav {
+            display: none;
+          }
         }
 
         @media (max-width: 960px) {
@@ -613,7 +737,7 @@ export default function ProjectsSection() {
 
           .folder-body {
             padding: 1.35rem;
-            border-radius: 16px;
+            border-radius: 1rem;
           }
 
           .project-stack-inner {
@@ -638,9 +762,6 @@ export default function ProjectsSection() {
             order: 2;
           }
 
-          .project-stats-grid {
-            gap: 0.85rem;
-          }
         }
 
         @media (max-width: 580px) {
@@ -652,12 +773,6 @@ export default function ProjectsSection() {
           }
           .project-stats-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 0.75rem;
-            padding: 0.85rem 1rem;
-          }
-          .project-stat-item {
-            border-right: none;
-            padding: 0;
           }
           .folder-body {
             padding: 1.15rem;
@@ -667,6 +782,7 @@ export default function ProjectsSection() {
 
       <div className="container">
         <SectionHeading
+          index="05"
           eyebrow="Projects"
           title="Engineered Systems"
           subtitle="Full-stack systems and applications engineered from concept to production"
@@ -737,7 +853,7 @@ export default function ProjectsSection() {
                       </div>
 
                       {/* Main Folder Card Body */}
-                      <div className="folder-body">
+                      <div className="folder-body card-spotlight">
                         {/* Ambient glow overlay */}
                         <div
                           aria-hidden="true"
@@ -789,12 +905,16 @@ export default function ProjectsSection() {
 
                             {/* Tech Stack Pills */}
                             {Array.isArray(proj.technologies) && proj.technologies.length > 0 && (
-                              <div className="project-tech-pills">
-                                {proj.technologies.map((tech) => (
-                                  <span key={tech} className="project-tech-pill">
-                                    {tech}
-                                  </span>
-                                ))}
+                              <div>
+                                <div className="project-tech-label">Tech stack</div>
+                                <ul className="project-tech-pills">
+                                  {proj.technologies.map((tech) => (
+                                    <li key={tech} className="project-tech-pill">
+                                      <SkillIcon name={tech} size={14} />
+                                      {tech}
+                                    </li>
+                                  ))}
+                                </ul>
                               </div>
                             )}
 
@@ -845,8 +965,15 @@ export default function ProjectsSection() {
                                 />
                               </div>
 
+                              <div className="project-browser-nav" aria-hidden="true">
+                                <ChevronLeft size={15} />
+                                <ChevronRight size={15} />
+                                <RotateCw size={13} />
+                              </div>
+
                               <div className="project-address-pill">
-                                {displayUrl}
+                                <Lock size={11} aria-hidden="true" />
+                                <span className="project-address-text">{displayUrl}</span>
                               </div>
                             </div>
 
@@ -869,6 +996,9 @@ export default function ProjectsSection() {
                                     loading={i === 0 ? 'eager' : 'lazy'}
                                     decoding="async"
                                   />
+                                  <span className="project-visit-pill" aria-hidden="true">
+                                    Visit live site <ExternalLink size={13} />
+                                  </span>
                                 </a>
                               ) : (
                                 <div

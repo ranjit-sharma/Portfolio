@@ -1,10 +1,10 @@
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from 'framer-motion';
 import { useInView } from '../../hooks/useInView';
 
 /**
- * Section heading with animated underline accent.
+ * Section heading with a numbered eyebrow. Styles live in index.css (.section-heading*).
  */
-export function SectionHeading({ eyebrow, title, subtitle, centered = false }) {
+export function SectionHeading({ eyebrow, title, subtitle, centered = false, index }) {
   const { ref, inView } = useInView();
 
   return (
@@ -13,45 +13,16 @@ export function SectionHeading({ eyebrow, title, subtitle, centered = false }) {
       initial={{ opacity: 0, y: 24 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.5 }}
-      className={`mb-16 ${centered ? 'text-center' : ''}`}
+      className={`section-heading${centered ? ' section-heading-centered' : ''}`}
     >
       {eyebrow && (
-        <span
-          style={{
-            color: 'var(--accent)',
-            fontSize: '0.8rem',
-            fontWeight: 600,
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            display: 'block',
-            marginBottom: '0.5rem',
-          }}
-        >
+        <span className="section-eyebrow">
+          {index && <span className="section-index">{index}</span>}
           {eyebrow}
         </span>
       )}
-      <h2
-        style={{
-          fontSize: 'clamp(1.75rem, 3vw, 2.5rem)',
-          fontWeight: 800,
-          color: 'var(--text-primary)',
-          marginBottom: subtitle ? '0.75rem' : 0,
-        }}
-      >
-        {title}
-      </h2>
-      {subtitle && (
-        <p
-          style={{
-            color: 'var(--text-secondary)',
-            fontSize: '1.05rem',
-            maxWidth: '48ch',
-            margin: centered ? '0 auto' : 0,
-          }}
-        >
-          {subtitle}
-        </p>
-      )}
+      <h2 className="section-title">{title}</h2>
+      {subtitle && <p className="section-subtitle">{subtitle}</p>}
     </motion.div>
   );
 }
@@ -116,6 +87,7 @@ export function TiltCard({
   onClick,
   ...props
 }) {
+  const reduceMotion = useReducedMotion();
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
@@ -126,13 +98,14 @@ export function TiltCard({
   const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], [`-${maxTilt}deg`, `${maxTilt}deg`]);
 
   const handleMouseMove = (e) => {
+    if (props.onMouseMove) props.onMouseMove(e);
+    if (reduceMotion) return;
     const rect = e.currentTarget.getBoundingClientRect();
     if (!rect.width || !rect.height) return;
     const xPct = (e.clientX - rect.left) / rect.width - 0.5;
     const yPct = (e.clientY - rect.top) / rect.height - 0.5;
     x.set(xPct);
     y.set(yPct);
-    if (props.onMouseMove) props.onMouseMove(e);
   };
 
   const handleMouseLeave = (e) => {
@@ -143,8 +116,9 @@ export function TiltCard({
 
   return (
     <motion.div
-      className={className}
+      className={`card-spotlight ${className}`}
       onClick={onClick}
+      whileTap={onClick && !reduceMotion ? { scale: 0.98 } : undefined}
       style={{
         transformPerspective: 1000,
         rotateX,

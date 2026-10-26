@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
+import { useOutletContext } from 'react-router-dom';
 import { ArrowRight, Download, Mail, MapPin } from 'lucide-react';
 import api from '../services/api';
 import useViews from '../hooks/useViews';
@@ -12,6 +13,18 @@ const ROLES = [
   'Backend Developer',
   'React Developer',
 ];
+
+const HEADING_WORDS = [
+  { text: 'Hi,' },
+  { text: "I'm" },
+  { text: 'Ranjit', accent: true },
+  { text: 'Sharma', accent: true, after: '.' },
+];
+
+const HEADING_WORD_VARIANTS = {
+  hidden: { opacity: 0, y: '0.6em', filter: 'blur(8px)' },
+  visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
+};
 
 function TypingEffect({ words }) {
   const [idx, setIdx] = useState(0);
@@ -47,6 +60,8 @@ function TypingEffect({ words }) {
 }
 
 export default function HeroSection() {
+  const reduceMotion = useReducedMotion();
+  const { introDone } = useOutletContext() ?? { introDone: true };
   const [profile, setProfile] = useState(null);
   useViews();
 
@@ -69,20 +84,6 @@ export default function HeroSection() {
         padding: '4rem 0',
       }}
     >
-      {/* Subtle background glow */}
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          top: '15%',
-          right: '5%',
-          width: 650,
-          height: 650,
-          background: 'radial-gradient(circle at 60% 40%, var(--accent-glow) 0%, transparent 68%)',
-          pointerEvents: 'none',
-        }}
-      />
-
       <div className="container" style={{ position: 'relative', zIndex: 1 }}>
         <div
           style={{
@@ -129,9 +130,10 @@ export default function HeroSection() {
 
             {/* Main heading */}
             <motion.h1
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
+              aria-label="Hi, I'm Ranjit Sharma."
+              initial={reduceMotion ? false : 'hidden'}
+              animate={introDone || reduceMotion ? 'visible' : 'hidden'}
+              variants={{ visible: { transition: { staggerChildren: 0.09, delayChildren: 0.3 } } }}
               style={{
                 fontSize: 'clamp(2.2rem, 5vw, 4rem)',
                 fontWeight: 900,
@@ -140,8 +142,15 @@ export default function HeroSection() {
                 marginBottom: '0.75rem',
               }}
             >
-              Hi, I'm{' '}
-              <span style={{ color: 'var(--accent)' }}>Ranjit Sharma</span>.
+              {HEADING_WORDS.map((word, i) => (
+                <span key={i} aria-hidden="true">
+                  <motion.span variants={HEADING_WORD_VARIANTS} style={{ display: 'inline-block' }}>
+                    <span style={{ color: word.accent ? 'var(--accent)' : undefined }}>{word.text}</span>
+                    {word.after}
+                  </motion.span>
+                  {i < HEADING_WORDS.length - 1 && ' '}
+                </span>
+              ))}
             </motion.h1>
 
             {/* Typing effect */}
