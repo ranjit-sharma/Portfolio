@@ -738,7 +738,7 @@ export default function ExperienceSection() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      borderRadius: '6px',
+                      borderRadius: '50%',
                     }}
                     aria-label="Close modal"
                   >

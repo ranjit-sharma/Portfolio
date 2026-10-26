@@ -48,7 +48,7 @@ function TypingEffect({ words }) {
 
 export default function HeroSection() {
   const [profile, setProfile] = useState(null);
-  const { views } = useViews();
+  useViews();
 
   useEffect(() => {
     api
@@ -125,30 +125,6 @@ export default function HeroSection() {
                 />
                 B.Tech in Computer Science · Open to opportunities
               </span>
-
-              {views != null && (
-                <span
-                  id="hero-views-counter"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.4rem',
-                    background: 'var(--bg-elevated)',
-                    border: '1px solid var(--border)',
-                    borderRadius: 'var(--radius-pill)',
-                    padding: '0.35rem 0.85rem',
-                    fontSize: '0.8rem',
-                    color: 'var(--text-secondary)',
-                    fontWeight: 500,
-                  }}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--accent)' }}>
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                  <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>{views.toLocaleString()}</span> views
-                </span>
-              )}
             </motion.div>
 
             {/* Main heading */}

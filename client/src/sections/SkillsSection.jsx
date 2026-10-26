@@ -133,9 +133,8 @@ export default function SkillsSection() {
                   initial={{ opacity: 0, y: 24 }}
                   animate={inView ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.45, delay: ci * 0.07 }}
-                  className="card-ambient"
                   style={{
-                    background: 'radial-gradient(circle at 12% 10%, var(--accent-dim) 0%, transparent 48%), var(--bg-card)',
+                    background: 'var(--bg-card)',
                     border: '1px solid var(--border)',
                     borderRadius: 'var(--radius-lg)',
                     padding: '1.25rem',
@@ -170,7 +169,7 @@ export default function SkillsSection() {
                         style={{
                           width: 32,
                           height: 32,
-                          borderRadius: 'var(--radius-sm)',
+                          borderRadius: '50%',
                           background: 'var(--accent-dim)',
                           border: '1px solid var(--accent-border)',
                           display: 'flex',

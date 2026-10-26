@@ -126,7 +126,7 @@ export function Button({
     alignItems: 'center',
     gap: '0.5rem',
     fontWeight: 600,
-    borderRadius: 'var(--radius-md)',
+    borderRadius: 'var(--radius-pill)',
     border: '1px solid transparent',
     cursor: disabled ? 'not-allowed' : 'pointer',
     opacity: disabled ? 0.5 : 1,

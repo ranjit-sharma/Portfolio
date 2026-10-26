@@ -4,6 +4,7 @@ const projectSchema = new mongoose.Schema(
   {
     title: { type: String, required: true, trim: true },
     slug: { type: String, required: true, unique: true, lowercase: true },
+    categoryText: { type: String, default: '' },
     shortDescription: { type: String, required: true },
     fullDescription: { type: String },
     technologies: [{ type: String }],

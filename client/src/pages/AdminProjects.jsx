@@ -2,11 +2,12 @@ import { useCallback, useEffect, useState, useRef } from 'react';
 import api from '../services/api';
 import { Spinner, Badge } from '../components/ui/index';
 import { Upload, Trash2 } from 'lucide-react';
+import { getAssetUrl } from '../utils/assetUrl';
 
 const EMPTY_FORM = {
-  title: '', shortDescription: '', fullDescription: '', technologies: '',
-  features: '', githubUrl: '', liveDemoUrl: '', image: '',
-  featured: false, status: 'active', displayOrder: 0,
+  title: '', categoryText: '', shortDescription: '', technologies: '',
+  githubUrl: '', liveDemoUrl: '', image: '',
+  status: 'active', displayOrder: 0,
 };
 
 export default function AdminProjects() {
@@ -59,11 +60,11 @@ export default function AdminProjects() {
   const openCreate = () => { setForm(EMPTY_FORM); setEditing(null); setShowForm(true); setError(''); };
   const openEdit = (p) => {
     setForm({
-      title: p.title || '', shortDescription: p.shortDescription || '',
-      fullDescription: p.fullDescription || '', technologies: (p.technologies || []).join(', '),
-      features: (p.features || []).join('\n'), githubUrl: p.githubUrl || '',
+      title: p.title || '', categoryText: p.categoryText || '', shortDescription: p.shortDescription || '',
+      technologies: (p.technologies || []).join(', '),
+      githubUrl: p.githubUrl || '',
       liveDemoUrl: p.liveDemoUrl || '', image: p.image || '',
-      featured: p.featured || false, status: p.status || 'active', displayOrder: p.displayOrder || 0,
+      status: p.status || 'active', displayOrder: p.displayOrder || 0,
     });
     setEditing(p._id);
     setShowForm(true);
@@ -77,7 +78,6 @@ export default function AdminProjects() {
     const payload = {
       ...form,
       technologies: form.technologies.split(',').map((t) => t.trim()).filter(Boolean),
-      features: form.features.split('\n').map((f) => f.trim()).filter(Boolean),
       displayOrder: parseInt(form.displayOrder) || 0,
     };
     try {
@@ -108,7 +108,7 @@ export default function AdminProjects() {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
         <h1 style={{ fontSize: '1.4rem', fontWeight: 800 }}>Projects</h1>
-        <button onClick={openCreate} style={{ background: 'var(--accent)', color: '#111', border: 'none', borderRadius: 'var(--radius-md)', padding: '0.55rem 1.1rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+        <button onClick={openCreate} style={{ background: 'var(--accent)', color: '#111', border: 'none', borderRadius: 'var(--radius-pill)', padding: '0.55rem 1.25rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
           + Add Project
         </button>
       </div>
@@ -123,6 +123,12 @@ export default function AdminProjects() {
                 <input style={inputSt} value={form.title} onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))} required />
               </div>
               <div>
+                <label style={labelSt}>Category / Domain Tag</label>
+                <input style={inputSt} value={form.categoryText} onChange={(e) => setForm(f => ({ ...f, categoryText: e.target.value }))} placeholder="e.g. Full-Stack MERN, Telemetry & SCADA" />
+              </div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+              <div>
                 <label style={labelSt}>Status</label>
                 <select style={{ ...inputSt, cursor: 'pointer' }} value={form.status} onChange={(e) => setForm(f => ({ ...f, status: e.target.value }))}>
                   <option value="active">Active</option>
@@ -130,28 +136,18 @@ export default function AdminProjects() {
                   <option value="archived">Archived</option>
                 </select>
               </div>
-            </div>
-            <div>
-              <label style={labelSt}>Short Description *</label>
-              <textarea style={{ ...inputSt, resize: 'vertical', minHeight: 80 }} value={form.shortDescription} onChange={(e) => setForm(f => ({ ...f, shortDescription: e.target.value }))} required />
-            </div>
-            <div>
-              <label style={labelSt}>Full Description</label>
-              <textarea style={{ ...inputSt, resize: 'vertical', minHeight: 100 }} value={form.fullDescription} onChange={(e) => setForm(f => ({ ...f, fullDescription: e.target.value }))} />
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-              <div>
-                <label style={labelSt}>Technologies (comma-separated)</label>
-                <input style={inputSt} value={form.technologies} onChange={(e) => setForm(f => ({ ...f, technologies: e.target.value }))} placeholder="React, Node.js, MongoDB" />
-              </div>
               <div>
                 <label style={labelSt}>Display Order</label>
                 <input type="number" style={inputSt} value={form.displayOrder} onChange={(e) => setForm(f => ({ ...f, displayOrder: e.target.value }))} />
               </div>
             </div>
             <div>
-              <label style={labelSt}>Key Features (one per line)</label>
-              <textarea style={{ ...inputSt, resize: 'vertical', minHeight: 80 }} value={form.features} onChange={(e) => setForm(f => ({ ...f, features: e.target.value }))} placeholder="Feature 1&#10;Feature 2&#10;Feature 3" />
+              <label style={labelSt}>Description *</label>
+              <textarea style={{ ...inputSt, resize: 'vertical', minHeight: 80 }} value={form.shortDescription} onChange={(e) => setForm(f => ({ ...f, shortDescription: e.target.value }))} required />
+            </div>
+            <div>
+              <label style={labelSt}>Technologies (comma-separated)</label>
+              <input style={inputSt} value={form.technologies} onChange={(e) => setForm(f => ({ ...f, technologies: e.target.value }))} placeholder="React, Node.js, MongoDB" />
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
               <div>
@@ -187,17 +183,29 @@ export default function AdminProjects() {
 
                 {form.image ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-                    <img
-                      src={form.image}
-                      alt="Project preview"
+                    <div
                       style={{
-                        width: 120,
+                        width: 130,
                         height: 75,
-                        objectFit: 'cover',
                         borderRadius: 'var(--radius-sm)',
                         border: '1px solid var(--border)',
+                        background: 'var(--bg-base)',
+                        overflow: 'hidden',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                       }}
-                    />
+                    >
+                      <img
+                        src={getAssetUrl(form.image)}
+                        alt="Project preview"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'contain',
+                        }}
+                      />
+                    </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                       <button
                         type="button"
@@ -269,16 +277,12 @@ export default function AdminProjects() {
                 )}
               </div>
             </div>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-              <input type="checkbox" checked={form.featured} onChange={(e) => setForm(f => ({ ...f, featured: e.target.checked }))} />
-              Featured project
-            </label>
             {error && <p style={{ color: '#ef4444', fontSize: '0.85rem' }}>{error}</p>}
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <button type="submit" disabled={saving} style={{ background: 'var(--accent)', color: '#111', border: 'none', borderRadius: 'var(--radius-md)', padding: '0.55rem 1.1rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+              <button type="submit" disabled={saving} style={{ background: 'var(--accent)', color: '#111', border: 'none', borderRadius: 'var(--radius-pill)', padding: '0.55rem 1.4rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                 {saving ? <><Spinner size={14} color="#111" /> Saving...</> : (editing ? 'Update' : 'Create')}
               </button>
-              <button type="button" onClick={() => setShowForm(false)} style={{ background: 'transparent', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '0.55rem 1rem', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: 'inherit' }}>
+              <button type="button" onClick={() => setShowForm(false)} style={{ background: 'transparent', border: '1px solid var(--border)', borderRadius: 'var(--radius-pill)', padding: '0.55rem 1.2rem', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: 'inherit' }}>
                 Cancel
               </button>
             </div>
@@ -296,20 +300,48 @@ export default function AdminProjects() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {projects.map((p) => (
             <div key={p._id} style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '1.1rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 600, marginBottom: '0.2rem' }}>{p.title}</div>
-                <div style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>{p.shortDescription?.slice(0, 80)}...</div>
-                <div style={{ display: 'flex', gap: '0.35rem', marginTop: '0.4rem', flexWrap: 'wrap' }}>
-                  <Badge variant={p.status === 'active' ? 'accent' : 'default'}>{p.status}</Badge>
-                  {p.featured && <Badge variant="accent">Featured</Badge>}
-                  {p.technologies?.slice(0, 3).map((t) => <Badge key={t}>{t}</Badge>)}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, minWidth: 260 }}>
+                {p.image && (
+                  <div
+                    style={{
+                      width: 80,
+                      height: 50,
+                      borderRadius: 'var(--radius-sm)',
+                      border: '1px solid var(--border)',
+                      background: 'var(--bg-base)',
+                      overflow: 'hidden',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <img
+                      src={getAssetUrl(p.image)}
+                      alt={p.title}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain',
+                      }}
+                    />
+                  </div>
+                )}
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 600, marginBottom: '0.2rem' }}>{p.title}</div>
+                  <div style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>{p.shortDescription?.slice(0, 80)}...</div>
+                  <div style={{ display: 'flex', gap: '0.35rem', marginTop: '0.4rem', flexWrap: 'wrap' }}>
+                    <Badge variant={p.status === 'active' ? 'accent' : 'default'}>{p.status}</Badge>
+                    {p.categoryText && <Badge variant="default">{p.categoryText}</Badge>}
+                    {p.technologies?.slice(0, 3).map((t) => <Badge key={t}>{t}</Badge>)}
+                  </div>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <button onClick={() => openEdit(p)} style={{ background: 'transparent', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '0.4rem 0.8rem', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.82rem' }}>
+                <button onClick={() => openEdit(p)} style={{ background: 'transparent', border: '1px solid var(--border)', borderRadius: 'var(--radius-pill)', padding: '0.4rem 0.95rem', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.82rem' }}>
                   Edit
                 </button>
-                <button onClick={() => handleDelete(p._id)} style={{ background: 'transparent', border: '1px solid #ef444440', borderRadius: 'var(--radius-md)', padding: '0.4rem 0.8rem', color: '#ef4444', cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.82rem' }}>
+                <button onClick={() => handleDelete(p._id)} style={{ background: 'transparent', border: '1px solid #ef444440', borderRadius: 'var(--radius-pill)', padding: '0.4rem 0.95rem', color: '#ef4444', cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.82rem' }}>
                   Delete
                 </button>
               </div>

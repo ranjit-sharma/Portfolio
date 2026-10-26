@@ -178,7 +178,7 @@ export default function Navbar() {
                 style={{
                   background: 'var(--bg-elevated)',
                   border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-md)',
+                  borderRadius: '50%',
                   padding: '0.45rem',
                   cursor: 'pointer',
                   display: 'flex',

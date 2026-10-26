@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { RSLogo } from '../ui';
-import useViews from '../../hooks/useViews';
 import api from '../../services/api';
 
 const currentYear = new Date().getFullYear();
@@ -13,7 +12,6 @@ const LINKS = [
 ];
 
 export default function Footer() {
-  const { views } = useViews();
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
@@ -188,46 +186,14 @@ export default function Footer() {
             © {currentYear} Ranjit Sharma. All rights reserved.
           </p>
 
-          {/* Total Views Badge */}
-          <div
-            id="footer-views-counter"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.35rem 0.85rem',
-              borderRadius: 'var(--radius-pill)',
-              background: 'var(--bg-elevated)',
-              border: '1px solid var(--border)',
-              fontSize: '0.82rem',
-              color: 'var(--text-secondary)',
-              fontWeight: 500,
-            }}
-          >
-            <span
-              style={{
-                width: 7,
-                height: 7,
-                borderRadius: '50%',
-                background: 'var(--accent)',
-                boxShadow: '0 0 8px var(--accent)',
-                display: 'inline-block',
-              }}
-            />
-            <span style={{ color: 'var(--text-muted)' }}>Total Views:</span>
-            <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>
-              {views != null ? views.toLocaleString() : '...'}
-            </span>
-          </div>
-
           <button
             onClick={scrollTop}
             aria-label="Back to top"
             style={{
               background: 'var(--bg-elevated)',
               border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-md)',
-              padding: '0.4rem 0.8rem',
+              borderRadius: 'var(--radius-pill)',
+              padding: '0.45rem 1rem',
               color: 'var(--text-secondary)',
               cursor: 'pointer',
               fontSize: '0.8rem',
