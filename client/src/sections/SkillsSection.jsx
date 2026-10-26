@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import {
   TbLayout,
   TbServer,
@@ -9,7 +8,7 @@ import {
   TbTools,
 } from 'react-icons/tb';
 import { useInView } from '../hooks/useInView';
-import { SectionHeading, SkeletonCard, SkillIcon } from '../components/ui/index';
+import { SectionHeading, SkeletonCard, SkillIcon, TiltCard } from '../components/ui/index';
 import api from '../services/api';
 
 const FALLBACK_SKILLS = {
@@ -128,28 +127,29 @@ export default function SkillsSection() {
             {Object.entries(skillsMap || FALLBACK_SKILLS).map(([category, skills], ci) => {
               const CatIcon = CATEGORY_ICONS[category] || TbCode;
               return (
-                <motion.div
+                <TiltCard
                   key={category}
                   initial={{ opacity: 0, y: 24 }}
                   animate={inView ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.45, delay: ci * 0.07 }}
+                  maxTilt={7}
                   style={{
                     background: 'var(--bg-card)',
                     border: '1px solid var(--border)',
                     borderRadius: 'var(--radius-lg)',
                     padding: '1.25rem',
                     boxShadow: 'var(--shadow-md)',
-                    transition: 'all var(--transition-base)',
+                    transition: 'border-color var(--transition-card, 400ms cubic-bezier(0.16, 1, 0.3, 1)), box-shadow var(--transition-card, 400ms cubic-bezier(0.16, 1, 0.3, 1))',
+                    willChange: 'transform, box-shadow',
+                    backfaceVisibility: 'hidden',
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = 'var(--accent-border)';
-                    e.currentTarget.style.boxShadow = '0 12px 32px -6px var(--accent-glow)';
-                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 16px 36px -8px var(--accent-glow)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.borderColor = 'var(--border)';
                     e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-                    e.currentTarget.style.transform = 'translateY(0)';
                   }}
                 >
                   {/* Category Header */}
@@ -220,7 +220,7 @@ export default function SkillsSection() {
                       <SkillBadge key={skill} skill={skill} />
                     ))}
                   </div>
-                </motion.div>
+                </TiltCard>
               );
             })}
           </div>

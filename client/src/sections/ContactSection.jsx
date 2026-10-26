@@ -48,14 +48,49 @@ export default function ContactSection() {
     setStatus('loading');
     setErrors({});
 
+    const recipientEmail = profile?.email || 'ranjitsharma76088@gmail.com';
+
     try {
-      const res = await api.post('/contact', form);
+      // Submit via FormSubmit AJAX endpoint for direct email delivery
+      const fsRes = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(recipientEmail)}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          subject: form.subject,
+          message: form.message,
+          _subject: `New Portfolio Message from ${form.name}: ${form.subject}`,
+          _template: 'table',
+          _captcha: 'false',
+        }),
+      });
+
+      // Also persist to backend database for the admin dashboard inbox
+      await api.post('/contact', form).catch(() => {});
+
+      if (!fsRes.ok) {
+        const errorData = await fsRes.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to submit via FormSubmit');
+      }
+
       setStatus('success');
-      setServerMsg(res.data.message || 'Message sent successfully!');
+      setServerMsg('Message sent successfully! I will get back to you soon.');
       setForm(INITIAL_FORM);
     } catch (err) {
-      setStatus('error');
-      setServerMsg(err.message || 'Failed to send message. Please try again.');
+      // Fallback to internal backend if FormSubmit is blocked or unavailable
+      try {
+        const res = await api.post('/contact', form);
+        setStatus('success');
+        setServerMsg(res.data?.message || 'Message sent successfully!');
+        setForm(INITIAL_FORM);
+      } catch {
+        setStatus('error');
+        setServerMsg(err.message || 'Failed to send message. Please try again.');
+      }
     }
   };
 

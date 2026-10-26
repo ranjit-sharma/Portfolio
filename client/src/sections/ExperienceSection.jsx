@@ -307,19 +307,17 @@ export default function ExperienceSection() {
                       borderRadius: '20px',
                       padding: '2rem 2.25rem',
                       boxShadow: 'var(--shadow-md)',
-                      transition: 'border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease',
+                      transition: 'border-color var(--transition-card, 400ms cubic-bezier(0.16, 1, 0.3, 1)), box-shadow var(--transition-card, 400ms cubic-bezier(0.16, 1, 0.3, 1))',
                       position: 'relative',
                       overflow: 'hidden',
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.borderColor = 'var(--accent-border)';
                       e.currentTarget.style.boxShadow = '0 16px 44px -8px var(--accent-glow)';
-                      e.currentTarget.style.transform = 'translateY(-2px)';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.borderColor = 'var(--border)';
                       e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-                      e.currentTarget.style.transform = 'translateY(0)';
                     }}
                   >
                     {/* Header Row: Company badge, Role, Subtitle, Meta, and Employment Pill */}

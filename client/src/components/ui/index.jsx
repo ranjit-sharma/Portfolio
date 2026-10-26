@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useInView } from '../../hooks/useInView';
 
 /**
@@ -94,7 +94,7 @@ export function Card({ children, className = '', style = {}, hover = true, onCli
         borderRadius: 'var(--radius-lg)',
         padding: '1.5rem',
         boxShadow: 'var(--shadow-sm)',
-        transition: 'all var(--transition-base)',
+        transition: 'all var(--transition-card, 400ms cubic-bezier(0.16, 1, 0.3, 1))',
         cursor: onClick ? 'pointer' : 'default',
         ...style,
       }}
@@ -102,6 +102,62 @@ export function Card({ children, className = '', style = {}, hover = true, onCli
     >
       {children}
     </div>
+  );
+}
+
+/**
+ * 3D interactive swing tilt card on cursor motion.
+ */
+export function TiltCard({
+  children,
+  className = '',
+  style = {},
+  maxTilt = 7.5,
+  onClick,
+  ...props
+}) {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const mouseXSpring = useSpring(x, { stiffness: 220, damping: 25, mass: 0.5 });
+  const mouseYSpring = useSpring(y, { stiffness: 220, damping: 25, mass: 0.5 });
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], [`${maxTilt}deg`, `-${maxTilt}deg`]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], [`-${maxTilt}deg`, `${maxTilt}deg`]);
+
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const xPct = (e.clientX - rect.left) / rect.width - 0.5;
+    const yPct = (e.clientY - rect.top) / rect.height - 0.5;
+    x.set(xPct);
+    y.set(yPct);
+    if (props.onMouseMove) props.onMouseMove(e);
+  };
+
+  const handleMouseLeave = (e) => {
+    x.set(0);
+    y.set(0);
+    if (props.onMouseLeave) props.onMouseLeave(e);
+  };
+
+  return (
+    <motion.div
+      className={className}
+      onClick={onClick}
+      style={{
+        transformPerspective: 1000,
+        rotateX,
+        rotateY,
+        transformStyle: 'preserve-3d',
+        ...style,
+      }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      {...props}
+    >
+      {children}
+    </motion.div>
   );
 }
 

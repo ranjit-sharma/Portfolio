@@ -31,6 +31,8 @@
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-card: 400ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: 450ms cubic-bezier(0.16, 1, 0.3, 1);
 
   --navbar-height: 68px;
   --nav-backdrop: rgba(11, 13, 12, 0.85);
@@ -281,24 +283,25 @@ textarea::placeholder {
 
 /* ─── Card Hover & Ambient Glow ──────────────────────────────────────── */
 .card-hover {
-  transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+  transition: transform var(--transition-card), border-color var(--transition-card), box-shadow var(--transition-card);
+  will-change: transform, box-shadow;
+  backface-visibility: hidden;
 }
 .card-hover:hover {
   border-color: var(--accent-border);
-  box-shadow: 0 8px 24px var(--accent-glow);
-  transform: translateY(-2px);
+  box-shadow: 0 12px 32px -6px var(--accent-glow);
+  transform: translateY(-4px);
 }
 
 .card-ambient {
   background: radial-gradient(circle at 12% 10%, var(--accent-dim) 0%, transparent 48%), var(--bg-card);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-md);
-  transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
+  transition: border-color var(--transition-card), box-shadow var(--transition-card);
 }
 .card-ambient:hover {
   border-color: var(--accent-border);
-  box-shadow: 0 16px 44px -8px var(--accent-glow);
-  transform: translateY(-2px);
+  box-shadow: 0 16px 44px -8px var(--accent-glow), var(--shadow-md);
 }
 
 /* ─── Animations ────────────────────────────────────────────────────── */

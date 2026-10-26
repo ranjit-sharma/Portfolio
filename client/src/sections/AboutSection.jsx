@@ -4,6 +4,7 @@ import { useInView } from '../hooks/useInView';
 import { SectionHeading, SkillIcon, RSLogo } from '../components/ui/index';
 import api from '../services/api';
 import { getAssetUrl } from '../utils/assetUrl';
+import { MapPin, GraduationCap, Languages } from 'lucide-react';
 
 const HIGHLIGHTS = [
   {
@@ -19,16 +20,8 @@ const HIGHLIGHTS = [
     desc: 'Designing MongoDB schemas, writing Mongoose models, and working with SQL databases.',
   },
   {
-    title: 'Debugging & Clean Code',
-    desc: 'Writing readable, maintainable code and systematically diagnosing issues at every layer.',
-  },
-  {
     title: 'Problem Solving & DSA',
     desc: 'Practicing algorithmic thinking and optimized data structures to solve complex computational challenges.',
-  },
-  {
-    title: 'API & Performance',
-    desc: 'Engineering high-throughput REST APIs, payload optimization, and seamless client-server state synchronization.',
   },
 ];
 
@@ -42,6 +35,10 @@ export default function AboutSection() {
       .then((res) => setProfile(res.data.data))
       .catch(() => {});
   }, []);
+
+  const bioParagraphs = profile?.bio?.trim()
+    ? profile.bio.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)
+    : [];
 
   return (
     <section id="about" className="section-padding">
@@ -67,153 +64,160 @@ export default function AboutSection() {
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.55 }}
           >
+            {/* Header: Avatar on left, Name & Degree on right */}
             <div
-              className="card-ambient"
               style={{
-                background: 'radial-gradient(circle at 12% 10%, var(--accent-dim) 0%, transparent 48%), var(--bg-card)',
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--radius-xl)',
-                padding: '2rem',
-                boxShadow: 'var(--shadow-md)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1.25rem',
+                marginBottom: '1.5rem',
+                flexWrap: 'wrap',
               }}
             >
-              {/* Header: Avatar on left, Name & Degree on right */}
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '1.25rem',
-                  marginBottom: '1.5rem',
-                  flexWrap: 'wrap',
-                }}
-              >
-                {/* Avatar */}
-                {profile?.avatarUrl ? (
-                  <img
-                    src={getAssetUrl(profile.avatarUrl)}
-                    alt={profile.name || 'Ranjit Sharma'}
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
-                    style={{
-                      width: 96,
-                      height: 96,
-                      borderRadius: 'var(--radius-xl, 20px)',
-                      objectFit: 'cover',
-                      border: '2px solid var(--accent)',
-                      boxShadow: '0 0 24px var(--accent-glow), 0 4px 12px rgba(0,0,0,0.2)',
-                      flexShrink: 0,
-                    }}
-                  />
-                ) : (
-                  <div
-                    style={{
-                      width: 96,
-                      height: 96,
-                      borderRadius: 'var(--radius-xl, 20px)',
-                      background: 'var(--accent-dim)',
-                      border: '2px solid var(--accent)',
-                      boxShadow: '0 0 24px var(--accent-glow)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
-                    }}
-                    aria-label="Ranjit Sharma monogram logo"
-                  >
-                    <RSLogo size={56} color="var(--accent)" glow />
-                  </div>
-                )}
-
-                {/* Right of Avatar: Name & Education */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: 1, minWidth: '220px' }}>
-                  <h3
-                    style={{
-                      fontSize: '1.45rem',
-                      fontWeight: 800,
-                      color: 'var(--text-primary)',
-                      lineHeight: 1.25,
-                      letterSpacing: '-0.01em',
-                    }}
-                  >
-                    {profile?.name || 'Ranjit Sharma'}
-                  </h3>
-                  <p
-                    style={{
-                      color: 'var(--accent)',
-                      fontSize: '0.92rem',
-                      fontWeight: 500,
-                      lineHeight: 1.5,
-                      margin: 0,
-                    }}
-                  >
-                    B.Tech in Computer Science · Trident Academy of Technology, Bhubaneswar
-                  </p>
+              {/* Avatar */}
+              {profile?.avatarUrl ? (
+                <img
+                  src={getAssetUrl(profile.avatarUrl)}
+                  alt={profile.name || 'Ranjit Sharma'}
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                  style={{
+                    width: 96,
+                    height: 96,
+                    borderRadius: 'var(--radius-xl, 20px)',
+                    objectFit: 'cover',
+                    border: '2px solid var(--accent)',
+                    boxShadow: '0 0 24px var(--accent-glow), 0 4px 12px rgba(0,0,0,0.2)',
+                    flexShrink: 0,
+                  }}
+                />
+              ) : (
+                <div
+                  style={{
+                    width: 96,
+                    height: 96,
+                    borderRadius: 'var(--radius-xl, 20px)',
+                    background: 'var(--accent-dim)',
+                    border: '2px solid var(--accent)',
+                    boxShadow: '0 0 24px var(--accent-glow)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                  aria-label="Ranjit Sharma monogram logo"
+                >
+                  <RSLogo size={56} color="var(--accent)" glow />
                 </div>
-              </div>
+              )}
 
+              {/* Right of Avatar: Name & Education */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: 1, minWidth: '220px' }}>
+                <h3
+                  style={{
+                    fontSize: '1.45rem',
+                    fontWeight: 800,
+                    color: 'var(--text-primary)',
+                    lineHeight: 1.25,
+                    letterSpacing: '-0.01em',
+                  }}
+                >
+                  {profile?.name || 'Ranjit Sharma'}
+                </h3>
+                <p
+                  style={{
+                    color: 'var(--accent)',
+                    fontSize: '0.92rem',
+                    fontWeight: 500,
+                    lineHeight: 1.5,
+                    margin: 0,
+                  }}
+                >
+                  {profile?.headline || 'B.Tech in Computer Science · Trident Academy of Technology, Bhubaneswar'}
+                </p>
+              </div>
+            </div>
+
+            {bioParagraphs.length > 0 && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-                {[
-                  'Holding a B.Tech in Computer Science, I specialize in building full-stack web applications — from designing user interfaces to architecting backend systems and integrating databases.',
-                  'My core interest lies in the MERN stack. I have worked on projects involving REST APIs, JWT authentication, MongoDB schema design, and server-side rendering with EJS.',
-                  'I approach engineering problems methodically: understand the requirement, plan the solution, write clean and testable code, and iterate based on feedback.',
-                  'Outside coursework, I pursue certifications and contribute to open-source tools to stay current with the technologies that matter most.',
-                ].map((para, i) => (
+                {bioParagraphs.map((para, i) => (
                   <p
                     key={i}
                     style={{
                       color: 'var(--text-secondary)',
                       fontSize: '0.95rem',
                       lineHeight: 1.75,
+                      whiteSpace: 'pre-line',
                     }}
                   >
                     {para}
                   </p>
                 ))}
               </div>
+            )}
 
-              {/* Quick facts */}
+            {/* Quick badges */}
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '0.65rem',
+                marginTop: bioParagraphs.length > 0 ? '1.5rem' : '0.75rem',
+              }}
+            >
               <div
                 style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: '0.75rem',
-                  marginTop: '1.5rem',
-                  paddingTop: '1.25rem',
-                  borderTop: '1px solid var(--border)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.45rem 1rem',
+                  borderRadius: 'var(--radius-pill, 9999px)',
+                  background: 'var(--bg-elevated)',
+                  border: '1px solid var(--border)',
+                  fontSize: '0.85rem',
+                  color: 'var(--text-secondary)',
+                  fontWeight: 500,
                 }}
               >
-                {[
-                  { label: 'Degree', value: 'B.Tech in Computer Science' },
-                  { label: 'Institution', value: 'Trident Academy of Technology' },
-                  { label: 'Location', value: profile?.location || 'Bhubaneswar, Odisha' },
-                  { label: 'Email', value: profile?.email || 'ranjitsharma76088@gmail.com' },
-                ].map((fact) => (
-                  <div key={fact.label}>
-                    <div
-                      style={{
-                        fontSize: '0.72rem',
-                        fontWeight: 600,
-                        color: 'var(--text-muted)',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.07em',
-                        marginBottom: '0.2rem',
-                      }}
-                    >
-                      {fact.label}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: '0.85rem',
-                        color: 'var(--text-primary)',
-                        fontWeight: 500,
-                        wordBreak: 'break-word',
-                      }}
-                    >
-                      {fact.value}
-                    </div>
-                  </div>
-                ))}
+                <MapPin size={15} style={{ color: 'var(--accent)', flexShrink: 0 }} />
+                <span>{profile?.location || 'Bhubaneswar, India'}</span>
+              </div>
+
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.45rem 1rem',
+                  borderRadius: 'var(--radius-pill, 9999px)',
+                  background: 'var(--bg-elevated)',
+                  border: '1px solid var(--border)',
+                  fontSize: '0.85rem',
+                  color: 'var(--text-secondary)',
+                  fontWeight: 500,
+                }}
+              >
+                <GraduationCap size={15} style={{ color: 'var(--accent)', flexShrink: 0 }} />
+                <span>B.Tech CS · 2027</span>
+              </div>
+
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.45rem 1rem',
+                  borderRadius: 'var(--radius-pill, 9999px)',
+                  background: 'var(--bg-elevated)',
+                  border: '1px solid var(--border)',
+                  fontSize: '0.85rem',
+                  color: 'var(--text-secondary)',
+                  fontWeight: 500,
+                }}
+              >
+                <Languages size={15} style={{ color: 'var(--accent)', flexShrink: 0 }} />
+                <span>{profile?.languages || 'English, Hindi, Odia'}</span>
               </div>
             </div>
           </motion.div>
@@ -235,17 +239,15 @@ export default function AboutSection() {
                   gap: '1rem',
                   alignItems: 'flex-start',
                   boxShadow: 'var(--shadow-sm)',
-                  transition: 'all var(--transition-fast)',
+                  transition: 'border-color var(--transition-card, 400ms cubic-bezier(0.16, 1, 0.3, 1)), box-shadow var(--transition-card, 400ms cubic-bezier(0.16, 1, 0.3, 1))',
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.borderColor = 'var(--accent-border)';
-                  e.currentTarget.style.boxShadow = '0 6px 24px var(--accent-glow)';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 10px 28px -6px var(--accent-glow)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.borderColor = 'var(--border)';
                   e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
-                  e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
                 <div

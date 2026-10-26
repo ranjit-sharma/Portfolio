@@ -8,6 +8,7 @@ const profileSchema = new mongoose.Schema(
     email: { type: String, default: 'ranjitsharma76088@gmail.com' },
     phone: { type: String, default: '' },
     location: { type: String, default: 'Bhubaneswar, Odisha, India' },
+    languages: { type: String, default: 'English, Hindi, Odia' },
     githubUrl: { type: String, default: '' },
     linkedinUrl: { type: String, default: '' },
     leetcodeUrl: { type: String, default: '' },

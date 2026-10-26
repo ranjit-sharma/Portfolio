@@ -1,7 +1,8 @@
 import { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from '../hooks/useInView';
-import { Trophy, Briefcase, CheckCircle2, ArrowUpRight, X, ExternalLink, Award, FileText } from 'lucide-react';
+import { Trophy, Briefcase, CheckCircle2, X, ExternalLink, Award, FileText } from 'lucide-react';
+import { TiltCard } from '../components/ui/index';
 import api from '../services/api';
 import { getAssetUrl } from '../utils/assetUrl';
 
@@ -334,36 +335,50 @@ export default function CertificationsSection() {
             grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
           }
         }
-        @media (max-width: 600px) {
+        /* Mobile stack flow */
+        @media (max-width: 640px) {
           .cert-grid {
-            grid-template-columns: 1fr !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 0 !important;
+            position: relative !important;
+            padding-bottom: 16px !important;
+          }
+
+          .cert-grid > div:not(.cert-card-interactive) {
+            margin-bottom: 1rem;
+          }
+
+          .cert-card-interactive {
+            position: sticky !important;
+            top: calc(75px + var(--stack-offset-mob, 0px)) !important;
+            z-index: var(--stack-z, 1) !important;
+            margin-bottom: 24px !important;
+            transform: none !important;
+            transform-style: flat !important;
+            backface-visibility: visible !important;
+            background: var(--bg-card) !important;
+            background-image: radial-gradient(circle at 12% 10%, var(--accent-dim) 0%, transparent 48%), linear-gradient(var(--bg-card), var(--bg-card)) !important;
+            box-shadow: 0 10px 32px -6px rgba(0, 0, 0, 0.6), 0 0 1px var(--border) !important;
+          }
+
+          .cert-card-interactive:last-child {
+            margin-bottom: 0 !important;
           }
         }
 
         /* Card transition matching site-wide project and experience cards */
         .cert-card-interactive {
-          transition: transform var(--transition-base, 250ms cubic-bezier(0.4, 0, 0.2, 1)),
-                      box-shadow var(--transition-base, 250ms cubic-bezier(0.4, 0, 0.2, 1)),
-                      border-color var(--transition-base, 250ms cubic-bezier(0.4, 0, 0.2, 1)),
-                      background-color var(--transition-base, 250ms cubic-bezier(0.4, 0, 0.2, 1));
+          transition: box-shadow var(--transition-card, 400ms cubic-bezier(0.16, 1, 0.3, 1)),
+                      border-color var(--transition-card, 400ms cubic-bezier(0.16, 1, 0.3, 1)),
+                      background-color var(--transition-card, 400ms cubic-bezier(0.16, 1, 0.3, 1));
+          will-change: transform, box-shadow;
+          backface-visibility: hidden;
         }
 
         .cert-card-interactive:hover {
-          transform: translateY(-3px) !important;
           border-color: var(--accent-border) !important;
-          box-shadow: 0 10px 28px -6px var(--accent-glow) !important;
-        }
-
-        /* Hover animation: Corner arrow button illuminates with accent container */
-        .cert-card-interactive:hover .cert-arrow-box {
-          background: var(--accent-dim) !important;
-          border-color: var(--accent-border) !important;
-          color: var(--accent) !important;
-        }
-
-        /* Subtle tactile micro-scale on preview image */
-        .cert-card-interactive:hover .cert-preview-img {
-          transform: scale(1.025) !important;
+          box-shadow: 0 16px 36px -8px var(--accent-glow) !important;
         }
 
         /* Title color shift */
@@ -522,7 +537,7 @@ export default function CertificationsSection() {
           <motion.div layout className="cert-grid">
             <AnimatePresence>
               {filteredItems.map((cert, i) => (
-                <motion.div
+                <TiltCard
                   key={cert._id || i}
                   layout
                   initial={{ opacity: 0, y: 20, scale: 0.98 }}
@@ -531,6 +546,7 @@ export default function CertificationsSection() {
                   transition={{ duration: 0.35, delay: i * 0.04 }}
                   className="cert-card-interactive card-ambient"
                   onClick={() => setSelectedCert(cert)}
+                  maxTilt={8}
                   style={{
                     background: 'radial-gradient(circle at 12% 10%, var(--accent-dim) 0%, transparent 48%), var(--bg-card)',
                     border: '1px solid var(--border)',
@@ -541,6 +557,8 @@ export default function CertificationsSection() {
                     flexDirection: 'column',
                     position: 'relative',
                     boxShadow: 'var(--shadow-md)',
+                    '--stack-offset-mob': `${i * 20}px`,
+                    '--stack-z': i + 1,
                   }}
                 >
                   {/* macOS Window Mockup Frame */}
@@ -580,31 +598,11 @@ export default function CertificationsSection() {
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
-                            maxWidth: 135,
+                            maxWidth: 160,
                           }}
                         >
                           {cert.windowTitle || cert.issuer}
                         </span>
-                      </div>
-
-                      {/* Right: Corner arrow button (turns accent container on card hover) */}
-                      <div
-                        className="cert-arrow-box"
-                        style={{
-                          width: 22,
-                          height: 22,
-                          borderRadius: '5px',
-                          background: 'var(--bg-surface)',
-                          border: '1px solid var(--border)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: 'var(--text-muted)',
-                          transition: 'all 0.22s ease',
-                          flexShrink: 0,
-                        }}
-                      >
-                        <ArrowUpRight size={12} strokeWidth={2.2} />
                       </div>
                     </div>
 
@@ -761,7 +759,7 @@ export default function CertificationsSection() {
                       {cert.issuer}
                     </p>
                   </div>
-                </motion.div>
+                </TiltCard>
               ))}
             </AnimatePresence>
           </motion.div>

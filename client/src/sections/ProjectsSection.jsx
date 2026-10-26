@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FolderGit2, ArrowUpRight, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { Folder, FolderGit2, ExternalLink } from 'lucide-react';
 import { SiGithub } from 'react-icons/si';
 import { useInView } from '../hooks/useInView';
 import { SectionHeading, SkeletonCard } from '../components/ui/index';
@@ -116,11 +116,57 @@ function getProjectMeta(proj) {
   return category.toUpperCase();
 }
 
+function TiltBrowserMockup({ children }) {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  // Smooth physical spring physics for swing tilt motion on cursor move
+  const mouseXSpring = useSpring(x, { stiffness: 220, damping: 25, mass: 0.5 });
+  const mouseYSpring = useSpring(y, { stiffness: 220, damping: 25, mass: 0.5 });
+
+  // 3D swing tilt angles
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ['8.5deg', '-8.5deg']);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-8.5deg', '8.5deg']);
+
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const xPct = (e.clientX - rect.left) / rect.width - 0.5;
+    const yPct = (e.clientY - rect.top) / rect.height - 0.5;
+    x.set(xPct);
+    y.set(yPct);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <div
+      className="project-stack-visual"
+      style={{ perspective: 1000 }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      <motion.div
+        className="project-browser-frame"
+        style={{
+          rotateX,
+          rotateY,
+          transformStyle: 'preserve-3d',
+        }}
+      >
+        {children}
+      </motion.div>
+    </div>
+  );
+}
+
 export default function ProjectsSection() {
   const { ref, inView } = useInView();
   const [projects, setProjects] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     api
@@ -134,80 +180,367 @@ export default function ProjectsSection() {
   }, []);
 
   const items = projects || FALLBACK_PROJECTS;
-  const featuredItems = items.slice(0, 3);
-  const extraItems = items.slice(3);
 
   return (
     <section id="projects" className="section-padding">
       <style>{`
-        .projects-container {
-          width: 100%;
-        }
-
-        .project-showcase-row {
-          display: grid;
-          grid-template-columns: minmax(300px, 480px) 1fr;
-          gap: 3rem;
-          align-items: center;
-        }
-
-        .project-showcase-row.reversed {
-          grid-template-columns: 1fr minmax(300px, 480px);
-        }
-
-        .project-visual-card {
+        /* Stacking cards container */
+        .projects-stack-container {
           position: relative;
           width: 100%;
-          max-width: 480px;
-          background: radial-gradient(circle at 14% 14%, var(--accent-dim) 0%, transparent 55%), var(--bg-card);
+          display: flex;
+          flex-direction: column;
+          padding-bottom: 0;
+        }
+
+        /* Each folder-styled card sticks on scroll */
+        .project-folder-card {
+          position: sticky;
+          top: calc(85px + var(--stack-offset, 0px));
+          z-index: var(--stack-z, 1);
+          display: flex;
+          flex-direction: column;
+          margin-bottom: min(10vh, 60px);
+          will-change: transform;
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
+        }
+
+        .project-folder-card:last-child {
+          margin-bottom: 0;
+        }
+
+        /* Protruding Folder Tab */
+        .folder-tab-hanger {
+          display: flex;
+          align-items: flex-end;
+          position: relative;
+          z-index: 3;
+          margin-bottom: -1px;
+        }
+
+        .folder-tab {
+          width: 220px;
+          min-width: 220px;
+          max-width: 220px;
+          height: 36px;
+          box-sizing: border-box;
+          display: inline-flex;
+          align-items: center;
+          justify-content: flex-start;
+          gap: 0.6rem;
+          padding: 0 1rem;
+          background: var(--bg-card);
+          border-top: 1px solid var(--border);
+          border-left: 1px solid var(--border);
+          border-right: none;
+          border-bottom: none;
+          border-top-left-radius: 14px;
+          border-top-right-radius: 0;
+          font-family: monospace;
+          font-size: 0.77rem;
+          font-weight: 700;
+          color: var(--text-primary);
+          margin-left: 0;
+          transition: border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          position: relative;
+        }
+
+        .project-folder-card:hover .folder-tab {
+          border-color: var(--accent-border);
+        }
+
+        .folder-tab-slant {
+          width: 34px;
+          min-width: 34px;
+          height: 36px;
+          position: relative;
+          margin-left: -1px;
+          display: flex;
+          align-items: flex-start;
+          flex-shrink: 0;
+        }
+
+        .folder-slant-stroke {
+          transition: stroke 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .project-folder-card:hover .folder-slant-stroke {
+          stroke: var(--accent-border);
+        }
+
+        .folder-tab-num {
+          color: var(--accent);
+          font-weight: 800;
+          letter-spacing: 0.04em;
+          flex-shrink: 0;
+        }
+
+        .folder-tab-slug {
+          flex: 1;
+          min-width: 0;
+          color: var(--text-secondary);
+          font-size: 0.75rem;
+          letter-spacing: 0.03em;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .folder-tab-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: var(--accent);
+          box-shadow: 0 0 6px var(--accent);
+          margin-left: 0.25rem;
+          flex-shrink: 0;
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .project-folder-card:hover .folder-tab-dot {
+          transform: scale(1.2);
+          box-shadow: 0 0 9px var(--accent);
+        }
+
+        /* Main Folder Body */
+        .folder-body {
+          background: var(--bg-card);
           border: 1px solid var(--border);
-          border-radius: 14px;
-          padding: 1rem 1.15rem;
-          transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+          border-top-left-radius: 0;
+          border-top-right-radius: 16px;
+          border-bottom-left-radius: 20px;
+          border-bottom-right-radius: 20px;
+          padding: 2.25rem 2.5rem;
+          box-shadow: var(--shadow-md);
+          transition: border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                      box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+          overflow: hidden;
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
+          position: relative;
+          z-index: 2;
+        }
+
+        .project-folder-card:hover .folder-body {
+          border-color: var(--accent-border);
+          box-shadow: 0 10px 28px -6px var(--accent-glow);
+        }
+
+        /* Top Dossier Bar inside Folder */
+        .folder-dossier-bar {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          border-bottom: 1px dashed var(--border);
+          padding-bottom: 0.95rem;
+          margin-bottom: 1.75rem;
+          font-size: 0.75rem;
+        }
+
+        .folder-dossier-category {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.55rem;
+          font-weight: 700;
+          color: var(--accent);
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+
+        .folder-dossier-file-tag {
+          font-family: monospace;
+          color: var(--text-muted);
+          font-size: 0.72rem;
+          letter-spacing: 0.04em;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.4rem;
+        }
+
+        /* Inner 2-column Grid */
+        .project-stack-inner {
+          display: grid;
+          grid-template-columns: 1.05fr 0.95fr;
+          gap: 2.75rem;
+          align-items: center;
+          position: relative;
+          z-index: 1;
+        }
+
+        .project-stack-content {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .project-stack-title {
+          font-size: clamp(1.6rem, 2.4vw, 2.25rem);
+          font-weight: 800;
+          color: var(--text-primary);
+          letter-spacing: -0.02em;
+          line-height: 1.15;
+          margin-bottom: 0.85rem;
+        }
+
+        .project-stack-desc {
+          font-size: 0.93rem;
+          line-height: 1.6;
+          color: var(--text-secondary);
+          margin-bottom: 1.25rem;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
           overflow: hidden;
         }
 
-        .project-visual-card:hover {
-          border-color: var(--accent-border);
-          box-shadow: 0 12px 30px -8px var(--accent-glow);
-        }
-
-        .project-visual-card:hover .project-mockup-img {
-          transform: scale(1.02);
-        }
-
-        .project-popout-btn {
-          position: absolute;
-          top: 0.85rem;
-          right: 0.85rem;
-          width: 30px;
-          height: 30px;
-          border-radius: 50%;
-          background: var(--bg-elevated);
+        /* Stats Grid - Recessed Dark Telemetry Console */
+        .project-stats-grid {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 0;
+          margin-bottom: 1.35rem;
+          padding: 0.85rem 0.5rem;
+          background: linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0%, rgba(0, 0, 0, 0.3) 100%), var(--bg-surface);
           border: 1px solid var(--border);
+          border-radius: 12px;
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 2px 8px rgba(0, 0, 0, 0.25);
+        }
+
+        .project-stat-item {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          padding: 0.15rem 1rem;
+          border-right: 1px solid var(--border);
+        }
+
+        .project-stat-item:last-child {
+          border-right: none;
+        }
+
+        .project-stat-value {
+          font-size: 1.25rem;
+          font-weight: 800;
+          color: var(--text-primary);
+          letter-spacing: -0.01em;
+          line-height: 1.2;
+        }
+
+        .project-stat-label {
+          font-size: 0.67rem;
+          font-weight: 700;
           color: var(--text-secondary);
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          margin-top: 0.25rem;
+        }
+
+        /* Tech Stack Pills - Sleek Dark Glass Badges */
+        .project-tech-pills {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.45rem;
+          margin-bottom: 1.35rem;
+          max-height: 74px;
+          overflow: hidden;
+        }
+
+        .project-tech-pill {
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid var(--border);
+          border-radius: var(--radius-pill);
+          padding: 0.26rem 0.78rem;
+          font-size: 0.75rem;
+          font-weight: 500;
+          color: var(--text-primary);
+          transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        }
+
+        .project-tech-pill:hover {
+          border-color: var(--accent);
+          color: var(--accent);
+          background: var(--accent-dim);
+          box-shadow: 0 2px 12px var(--accent-glow);
+        }
+
+        .project-stack-actions {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          flex-wrap: wrap;
+        }
+
+        .project-github-btn {
           display: inline-flex;
           align-items: center;
           justify-content: center;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: var(--bg-card);
+          border: 1px solid var(--border);
+          color: var(--text-primary);
           text-decoration: none;
-          z-index: 5;
-          transition: all 0.2s ease;
+          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .project-popout-btn:hover {
-          background: var(--accent-dim);
+        .project-github-btn:hover {
           border-color: var(--accent-border);
+          background: var(--accent-dim);
           color: var(--accent);
-          transform: scale(1.06);
-          box-shadow: 0 3px 12px var(--accent-glow);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 14px var(--accent-glow);
+        }
+
+        .project-action-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.58rem 1.35rem;
+          border-radius: var(--radius-pill);
+          background: var(--bg-card);
+          border: 1px solid var(--border);
+          color: var(--text-primary);
+          font-size: 0.85rem;
+          font-weight: 600;
+          text-decoration: none;
+          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .project-action-btn:hover {
+          border-color: var(--accent-border);
+          background: var(--accent-dim);
+          color: var(--accent);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 14px var(--accent-glow);
+        }
+
+        .project-action-btn-demo {
+          color: var(--accent);
+          border-color: var(--accent-border);
+        }
+
+        /* Visual Column */
+        .project-stack-visual {
+          position: relative;
+          width: 100%;
         }
 
         .project-browser-frame {
-          border-radius: 9px;
+          position: relative;
+          border-radius: 12px;
           border: 1px solid var(--border);
           background: #090d14;
           overflow: hidden;
-          box-shadow: 0 5px 16px rgba(0, 0, 0, 0.2);
+          box-shadow: var(--shadow-md);
+          will-change: transform;
+          transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .project-stack-visual:hover .project-browser-frame {
+          border-color: var(--accent-border);
+          box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.6), 0 0 20px var(--accent-glow);
         }
 
         .project-browser-header {
@@ -258,6 +591,9 @@ export default function ProjectsSection() {
           aspect-ratio: 1888 / 924;
           overflow: hidden;
           background: #090d14;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .project-mockup-img {
@@ -266,252 +602,65 @@ export default function ProjectsSection() {
           object-fit: cover;
           object-position: top center;
           display: block;
-          transition: transform 0.35s ease;
         }
 
-        .project-tech-pills {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.4rem;
-          margin-top: 0.85rem;
-        }
+        @media (max-width: 960px) {
+          .folder-tab {
+            margin-left: 1rem;
+            width: min(220px, calc(100% - 2rem));
+            min-width: unset;
+          }
 
-        .project-tech-pill {
-          background: var(--bg-elevated);
-          border: 1px solid var(--border);
-          border-radius: var(--radius-pill);
-          padding: 0.22rem 0.75rem;
-          font-size: 0.74rem;
-          font-weight: 600;
-          color: var(--text-secondary);
-          transition: all 0.2s ease;
-        }
+          .folder-body {
+            padding: 1.35rem;
+            border-radius: 16px;
+          }
 
-        .project-tech-pill:hover {
-          border-color: var(--accent-border);
-          color: var(--accent);
-          background: var(--accent-dim);
-        }
-
-        .project-stats-grid {
-          display: grid;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: 1.25rem;
-          margin-bottom: 1.35rem;
-        }
-
-        .project-stat-value {
-          font-size: 1.3rem;
-          font-weight: 800;
-          color: var(--text-primary);
-          letter-spacing: -0.01em;
-          line-height: 1.2;
-        }
-
-        .project-stat-label {
-          font-size: 0.68rem;
-          font-weight: 700;
-          color: var(--text-muted);
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-          margin-top: 0.25rem;
-        }
-
-        .project-github-btn {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 38px;
-          height: 38px;
-          border-radius: 50%;
-          background: var(--bg-card);
-          border: 1px solid var(--border);
-          color: var(--text-primary);
-          text-decoration: none;
-          transition: all 0.2s ease;
-        }
-
-        .project-github-btn:hover {
-          border-color: var(--accent-border);
-          background: var(--accent-dim);
-          color: var(--accent);
-          transform: translateY(-2px);
-          box-shadow: 0 4px 14px var(--accent-glow);
-        }
-
-        .project-action-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0.55rem 1.25rem;
-          border-radius: var(--radius-pill);
-          background: var(--bg-card);
-          border: 1px solid var(--border);
-          color: var(--text-primary);
-          font-size: 0.84rem;
-          font-weight: 600;
-          text-decoration: none;
-          transition: all 0.2s ease;
-        }
-
-        .project-action-btn:hover {
-          border-color: var(--accent-border);
-          background: var(--accent-dim);
-          color: var(--accent);
-          transform: translateY(-2px);
-          box-shadow: 0 4px 14px var(--accent-glow);
-        }
-
-        .project-action-btn-demo {
-          color: var(--accent);
-          border-color: var(--accent-border);
-        }
-
-        .project-divider {
-          height: 1px;
-          background: var(--border);
-          margin: 3rem 0;
-        }
-
-        /* View more button */
-        .project-view-more-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.55rem;
-          padding: 0.75rem 1.85rem;
-          border-radius: var(--radius-pill);
-          background: var(--bg-card);
-          border: 1px solid var(--border);
-          color: var(--text-primary);
-          font-size: 0.9rem;
-          font-weight: 600;
-          cursor: pointer;
-          font-family: inherit;
-          transition: all 0.22s ease;
-          box-shadow: var(--shadow-sm);
-        }
-
-        .project-view-more-btn:hover {
-          background: var(--accent-dim);
-          border-color: var(--accent-border);
-          color: var(--accent);
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px var(--accent-glow);
-        }
-
-        /* Additional projects card grid */
-        .more-projects-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
-          gap: 1.5rem;
-          width: 100%;
-          margin-top: 2.5rem;
-        }
-
-        .project-compact-card {
-          position: relative;
-          background: radial-gradient(circle at 14% 14%, var(--accent-dim) 0%, transparent 55%), var(--bg-card);
-          border: 1px solid var(--border);
-          border-radius: 16px;
-          padding: 1.15rem;
-          display: flex;
-          flex-direction: column;
-          box-shadow: var(--shadow-sm);
-          transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
-          overflow: hidden;
-        }
-
-        .project-compact-card:hover {
-          border-color: var(--accent-border);
-          box-shadow: 0 16px 36px -8px var(--accent-glow);
-          transform: translateY(-3px);
-        }
-
-        .project-compact-card:hover .project-compact-img {
-          transform: scale(1.025);
-        }
-
-        .project-compact-frame {
-          border-radius: 9px;
-          border: 1px solid var(--border);
-          background: #090d14;
-          overflow: hidden;
-          box-shadow: 0 5px 16px rgba(0, 0, 0, 0.2);
-        }
-
-        .project-compact-viewport {
-          position: relative;
-          width: 100%;
-          aspect-ratio: 1888 / 924;
-          overflow: hidden;
-          background: #090d14;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .project-compact-img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          object-position: top center;
-          display: block;
-          transition: transform 0.35s ease;
-        }
-
-        @media (max-width: 1024px) {
-          .project-showcase-row,
-          .project-showcase-row.reversed {
+          .project-stack-inner {
             grid-template-columns: 1fr;
             gap: 1.75rem;
           }
 
-          .project-visual-card {
-            max-width: 100%;
+          .project-folder-card {
+            top: calc(75px + var(--stack-offset-mob, 0px));
+            margin-bottom: 2rem;
           }
 
-          .project-visual-col {
-            order: 1 !important;
+          .project-folder-card:last-child {
+            margin-bottom: 0;
           }
 
-          .project-content-col {
-            order: 2 !important;
+          .project-stack-visual {
+            order: 1;
           }
 
-          .project-divider {
-            margin: 2.5rem 0;
+          .project-stack-content {
+            order: 2;
           }
 
           .project-stats-grid {
             gap: 0.85rem;
           }
-
-          .project-stat-value {
-            font-size: 1.2rem;
-          }
         }
 
-        @media (max-width: 640px) {
-          .project-visual-card {
-            padding: 0.85rem;
-            border-radius: 12px;
+        @media (max-width: 580px) {
+          .folder-tab {
+            width: min(200px, 58vw);
+            min-width: min(200px, 58vw);
+            max-width: min(200px, 58vw);
+            padding: 0 0.75rem;
           }
-
-          .project-popout-btn {
-            top: 0.7rem;
-            right: 0.7rem;
-            width: 28px;
-            height: 28px;
-          }
-
           .project-stats-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 1rem;
+            gap: 0.75rem;
+            padding: 0.85rem 1rem;
           }
-
-          .more-projects-grid {
-            grid-template-columns: 1fr;
-            gap: 1.25rem;
+          .project-stat-item {
+            border-right: none;
+            padding: 0;
+          }
+          .folder-body {
+            padding: 1.15rem;
           }
         }
       `}</style>
@@ -526,460 +675,236 @@ export default function ProjectsSection() {
         {loading ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             {[...Array(2)].map((_, i) => (
-              <SkeletonCard key={i} height={280} />
+              <SkeletonCard key={i} height={320} />
             ))}
           </div>
         ) : (
-          <div ref={ref} className="projects-container">
-            {/* Featured Projects (Top 3) in Flagship Showcase Format */}
-            {featuredItems.map((proj, i) => {
-              const isEven = i % 2 === 0;
-              const metaText = getProjectMeta(proj);
-              const stats = getProjectStats(proj);
-              const displayUrl = getDisplayUrl(proj.liveDemoUrl, proj.slug);
-              const primaryLink = proj.liveDemoUrl || proj.githubUrl || '#';
+          <div ref={ref} className="projects-stack-container">
+            <AnimatePresence>
+              {items.map((proj, i) => {
+                const metaText = getProjectMeta(proj);
+                const stats = getProjectStats(proj);
+                const displayUrl = getDisplayUrl(proj.liveDemoUrl, proj.slug);
+                const primaryLink = proj.liveDemoUrl || proj.githubUrl || '#';
+                const slugText = proj.slug || proj.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
-              // Visual column (compact macOS frame + tech pills)
-              const VisualColumn = (
-                <div className="project-visual-col">
-                  <div className="project-visual-card">
-                    {/* Top-right popout link */}
-                    {primaryLink !== '#' && (
-                      <a
-                        href={primaryLink}
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label={`Open ${proj.title} in new tab`}
-                        title="Open Live Site"
-                        className="project-popout-btn"
-                      >
-                        <ArrowUpRight size={15} />
-                      </a>
-                    )}
-
-                    {/* Compact macOS Browser Mockup */}
-                    <div className="project-browser-frame">
-                      <div className="project-browser-header">
-                        <div className="project-traffic-dots">
-                          <span
-                            className="project-traffic-dot"
-                            style={{ background: '#ff5f56' }}
-                          />
-                          <span
-                            className="project-traffic-dot"
-                            style={{ background: '#ffbd2e' }}
-                          />
-                          <span
-                            className="project-traffic-dot"
-                            style={{ background: '#27c93f' }}
-                          />
-                        </div>
-
-                        <div className="project-address-pill">
-                          {displayUrl}
-                        </div>
-                      </div>
-
-                      <div className="project-browser-viewport">
-                        {proj.image ? (
-                          <a
-                            href={primaryLink}
-                            target="_blank"
-                            rel="noreferrer"
-                            style={{
-                              display: 'block',
-                              width: '100%',
-                              height: '100%',
-                            }}
-                          >
-                            <img
-                              src={getAssetUrl(proj.image)}
-                              alt={`${proj.title} preview`}
-                              className="project-mockup-img"
-                              loading="lazy"
-                            />
-                          </a>
-                        ) : (
-                          <div
-                            style={{
-                              width: '100%',
-                              height: '100%',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              background: 'var(--bg-elevated)',
-                              color: 'var(--text-muted)',
-                              fontSize: '0.85rem',
-                            }}
-                          >
-                            Preview Unavailable
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Tech pills beneath browser mockup */}
-                    {Array.isArray(proj.technologies) && proj.technologies.length > 0 && (
-                      <div className="project-tech-pills">
-                        {proj.technologies.map((tech) => (
-                          <span key={tech} className="project-tech-pill">
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-
-              // Content column (Meta, Title, Description, Stats, Action buttons)
-              const ContentColumn = (
-                <div className="project-content-col">
-                  {/* Meta tag: Icon + Category */}
-                  <div
+                return (
+                  <article
+                    key={proj._id || proj.slug || i}
+                    className="project-folder-card"
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
-                      fontSize: '0.76rem',
-                      fontWeight: 700,
-                      color: 'var(--accent)',
-                      letterSpacing: '0.08em',
-                      textTransform: 'uppercase',
-                      marginBottom: '0.6rem',
+                      '--stack-offset': `${i * 24}px`,
+                      '--stack-offset-mob': `${i * 20}px`,
+                      '--stack-z': i + 1,
                     }}
                   >
-                    <FolderGit2 size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} />
-                    <span>{metaText}</span>
-                  </div>
-
-                  {/* Title */}
-                  <h3
-                    style={{
-                      fontSize: 'clamp(1.65rem, 2.5vw, 2.25rem)',
-                      fontWeight: 800,
-                      color: 'var(--text-primary)',
-                      letterSpacing: '-0.02em',
-                      lineHeight: 1.15,
-                      marginBottom: '0.85rem',
-                    }}
-                  >
-                    {proj.title}
-                  </h3>
-
-                  {/* Description */}
-                  <p
-                    style={{
-                      fontSize: '0.94rem',
-                      lineHeight: 1.65,
-                      color: 'var(--text-secondary)',
-                      marginBottom: '1.25rem',
-                    }}
-                  >
-                    {proj.shortDescription || proj.fullDescription}
-                  </p>
-
-                  {/* 3 Stats in a row */}
-                  <div className="project-stats-grid">
-                    {stats.map((s, idx) => (
-                      <div key={idx}>
-                        <div className="project-stat-value">{s.value}</div>
-                        <div className="project-stat-label">{s.label}</div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Action buttons: GitHub icon only & Live Project */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.75rem',
-                      flexWrap: 'wrap',
-                    }}
-                  >
-                    {proj.githubUrl && (
-                      <a
-                        href={proj.githubUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label={`View ${proj.title} on GitHub`}
-                        title="View GitHub Repository"
-                        className="project-github-btn"
-                      >
-                        <SiGithub size={17} />
-                      </a>
-                    )}
-
-                    {proj.liveDemoUrl && (
-                      <a
-                        href={proj.liveDemoUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="project-action-btn project-action-btn-demo"
-                      >
-                        <ExternalLink size={14} />
-                        <span>Live Project</span>
-                      </a>
-                    )}
-                  </div>
-                </div>
-              );
-
-              return (
-                <div key={proj._id || i}>
-                  <motion.article
-                    initial={{ opacity: 0, y: 24 }}
-                    animate={inView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.45, delay: i * 0.12 }}
-                    className={`project-showcase-row ${!isEven ? 'reversed' : ''}`}
-                  >
-                    {isEven ? (
-                      <>
-                        {VisualColumn}
-                        {ContentColumn}
-                      </>
-                    ) : (
-                      <>
-                        {ContentColumn}
-                        {VisualColumn}
-                      </>
-                    )}
-                  </motion.article>
-
-                  {/* Divider between showcase projects */}
-                  {i < featuredItems.length - 1 && <div className="project-divider" />}
-                </div>
-              );
-            })}
-
-            {/* View More / Additional Projects in Card Format */}
-            {extraItems.length > 0 && (
-              <div style={{ marginTop: '3.5rem' }}>
-                <AnimatePresence>
-                  {showAll && (
                     <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 20 }}
-                      transition={{ duration: 0.4 }}
-                      className="more-projects-grid"
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={inView ? { opacity: 1, y: 0 } : {}}
+                      transition={{ duration: 0.45, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                      style={{ display: 'flex', flexDirection: 'column', width: '100%' }}
                     >
-                      {extraItems.map((proj, idx) => {
-                        const metaText = getProjectMeta(proj);
-                        const displayUrl = getDisplayUrl(proj.liveDemoUrl, proj.slug);
-                        const primaryLink = proj.liveDemoUrl || proj.githubUrl || '#';
+                      {/* Protruding Folder Tab */}
+                      <div className="folder-tab-hanger">
+                        <div className="folder-tab">
+                          <Folder size={13} style={{ color: 'var(--accent)', flexShrink: 0 }} />
+                          <span className="folder-tab-num">0{i + 1}</span>
+                          <span className="folder-tab-slug">{slugText}</span>
+                          <span className="folder-tab-dot" />
+                        </div>
+                        <div className="folder-tab-slant" aria-hidden="true">
+                          <svg
+                            viewBox="0 0 34 36"
+                            width="34"
+                            height="36"
+                            preserveAspectRatio="none"
+                            style={{ display: 'block', overflow: 'visible' }}
+                          >
+                            <path
+                              d="M 0,0 C 14,0 20,36 34,36 L 34,37 L 0,37 Z"
+                              fill="var(--bg-card)"
+                            />
+                            <path
+                              d="M -0.5,0.5 C 14,0.5 20,35.5 34.5,35.5"
+                              fill="none"
+                              stroke="var(--border)"
+                              strokeWidth="1"
+                              strokeLinecap="round"
+                              className="folder-slant-stroke"
+                            />
+                          </svg>
+                        </div>
+                      </div>
 
-                        return (
-                          <div key={proj._id || idx} className="project-compact-card">
-                            {/* Top-right popout link */}
-                            {primaryLink !== '#' && (
-                              <a
-                                href={primaryLink}
-                                target="_blank"
-                                rel="noreferrer"
-                                aria-label={`Open ${proj.title} in new tab`}
-                                title="Open Live Site"
-                                className="project-popout-btn"
-                                style={{ top: '1.25rem', right: '1.25rem' }}
-                              >
-                                <ArrowUpRight size={14} />
-                              </a>
+                      {/* Main Folder Card Body */}
+                      <div className="folder-body">
+                        {/* Ambient glow overlay */}
+                        <div
+                          aria-hidden="true"
+                          style={{
+                            position: 'absolute',
+                            inset: 0,
+                            pointerEvents: 'none',
+                            background:
+                              'radial-gradient(circle at 10% 12%, var(--accent-dim) 0%, transparent 60%)',
+                            zIndex: 0,
+                          }}
+                        />
+
+                        {/* Top Dossier Header Bar */}
+                        <div className="folder-dossier-bar" style={{ position: 'relative', zIndex: 1 }}>
+                          <div className="folder-dossier-category">
+                            <FolderGit2 size={13} style={{ color: 'var(--accent)' }} />
+                            <span>{metaText}</span>
+                          </div>
+                          <div className="folder-dossier-file-tag">
+                            <span>DEPLOYED</span>
+                            <span>•</span>
+                            <span>{displayUrl}</span>
+                          </div>
+                        </div>
+
+                        <div className="project-stack-inner">
+                          {/* Left Column: Project Content */}
+                          <div className="project-stack-content">
+                            {/* Title */}
+                            <h3 className="project-stack-title">{proj.title}</h3>
+
+                            {/* Description */}
+                            <p className="project-stack-desc">
+                              {proj.shortDescription || proj.fullDescription}
+                            </p>
+
+                            {/* 3 Stats Grid */}
+                            {stats.length > 0 && (
+                              <div className="project-stats-grid">
+                                {stats.map((s, idx) => (
+                                  <div key={idx} className="project-stat-item">
+                                    <div className="project-stat-value">{s.value}</div>
+                                    <div className="project-stat-label">{s.label}</div>
+                                  </div>
+                                ))}
+                              </div>
                             )}
 
-                            {/* Inner Framed macOS Browser Window Mockup */}
-                            <div className="project-compact-frame">
-                              <div className="project-browser-header">
-                                <div className="project-traffic-dots">
-                                  <span
-                                    className="project-traffic-dot"
-                                    style={{ background: '#ff5f56' }}
-                                  />
-                                  <span
-                                    className="project-traffic-dot"
-                                    style={{ background: '#ffbd2e' }}
-                                  />
-                                  <span
-                                    className="project-traffic-dot"
-                                    style={{ background: '#27c93f' }}
-                                  />
-                                </div>
-
-                                <div className="project-address-pill">
-                                  {displayUrl}
-                                </div>
+                            {/* Tech Stack Pills */}
+                            {Array.isArray(proj.technologies) && proj.technologies.length > 0 && (
+                              <div className="project-tech-pills">
+                                {proj.technologies.map((tech) => (
+                                  <span key={tech} className="project-tech-pill">
+                                    {tech}
+                                  </span>
+                                ))}
                               </div>
+                            )}
 
-                              <div className="project-compact-viewport">
-                                {proj.image ? (
-                                  <a
-                                    href={primaryLink}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    style={{ display: 'block', width: '100%', height: '100%' }}
-                                  >
-                                    <img
-                                      src={getAssetUrl(proj.image)}
-                                      alt={`${proj.title} preview`}
-                                      className="project-compact-img"
-                                      loading="lazy"
-                                    />
-                                  </a>
-                                ) : (
-                                  <div
-                                    style={{
-                                      width: '100%',
-                                      height: '100%',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                      background: 'var(--bg-elevated)',
-                                      color: 'var(--text-muted)',
-                                      fontSize: '0.82rem',
-                                    }}
-                                  >
-                                    Preview Unavailable
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-
-                            {/* Card Body */}
-                            <div
-                              style={{
-                                marginTop: '1.15rem',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                flex: 1,
-                              }}
-                            >
-                              {/* Meta Tag */}
-                              <div
-                                style={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: '0.45rem',
-                                  fontSize: '0.72rem',
-                                  fontWeight: 700,
-                                  color: 'var(--accent)',
-                                  letterSpacing: '0.08em',
-                                  textTransform: 'uppercase',
-                                  marginBottom: '0.4rem',
-                                }}
-                              >
-                                <FolderGit2 size={13} style={{ color: 'var(--accent)' }} />
-                                <span>{metaText}</span>
-                              </div>
-
-                              {/* Title */}
-                              <h4
-                                style={{
-                                  fontSize: '1.25rem',
-                                  fontWeight: 800,
-                                  color: 'var(--text-primary)',
-                                  margin: '0 0 0.55rem 0',
-                                  lineHeight: 1.25,
-                                }}
-                              >
-                                {proj.title}
-                              </h4>
-
-                              {/* Short Description */}
-                              <p
-                                style={{
-                                  fontSize: '0.88rem',
-                                  lineHeight: 1.6,
-                                  color: 'var(--text-secondary)',
-                                  marginBottom: '1rem',
-                                  flex: 1,
-                                }}
-                              >
-                                {proj.shortDescription}
-                              </p>
-
-                              {/* Tech Stack Pills */}
-                              {Array.isArray(proj.technologies) && proj.technologies.length > 0 && (
-                                <div
-                                  style={{
-                                    display: 'flex',
-                                    flexWrap: 'wrap',
-                                    gap: '0.35rem',
-                                    marginBottom: '1.15rem',
-                                  }}
+                            {/* Action buttons */}
+                            <div className="project-stack-actions">
+                              {proj.githubUrl && (
+                                <a
+                                  href={proj.githubUrl}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  aria-label={`View ${proj.title} on GitHub`}
+                                  title="View GitHub Repository"
+                                  className="project-github-btn"
                                 >
-                                  {proj.technologies.map((tech) => (
-                                    <span
-                                      key={tech}
-                                      className="project-tech-pill"
-                                      style={{ padding: '0.2rem 0.65rem', fontSize: '0.72rem' }}
-                                    >
-                                      {tech}
-                                    </span>
-                                  ))}
-                                </div>
+                                  <SiGithub size={17} />
+                                </a>
                               )}
 
-                              {/* Card Action Footer */}
-                              <div
-                                style={{
-                                  borderTop: '1px solid var(--border)',
-                                  paddingTop: '0.9rem',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'space-between',
-                                }}
-                              >
-                                {proj.githubUrl ? (
-                                  <a
-                                    href={proj.githubUrl}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    aria-label={`View ${proj.title} on GitHub`}
-                                    title="View GitHub Repository"
-                                    className="project-github-btn"
-                                    style={{ width: 34, height: 34 }}
-                                  >
-                                    <SiGithub size={15} />
-                                  </a>
-                                ) : <div />}
-
-                                {proj.liveDemoUrl && (
-                                  <a
-                                    href={proj.liveDemoUrl}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="project-action-btn project-action-btn-demo"
-                                    style={{ padding: '0.45rem 1.1rem', fontSize: '0.82rem' }}
-                                  >
-                                    <ExternalLink size={13} />
-                                    <span>Live Project</span>
-                                  </a>
-                                )}
-                              </div>
+                              {proj.liveDemoUrl && (
+                                <a
+                                  href={proj.liveDemoUrl}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="project-action-btn project-action-btn-demo"
+                                >
+                                  <ExternalLink size={14} />
+                                  <span>Live Project</span>
+                                </a>
+                              )}
                             </div>
                           </div>
-                        );
-                      })}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
 
-                {/* View More / Show Less Toggle Button */}
-                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2.5rem' }}>
-                  <button
-                    type="button"
-                    onClick={() => setShowAll((prev) => !prev)}
-                    className="project-view-more-btn"
-                  >
-                    <span>
-                      {showAll
-                        ? 'Show Less'
-                        : `View More Projects (${extraItems.length})`}
-                    </span>
-                    {showAll ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                  </button>
-                </div>
-              </div>
+                          {/* Right Column: Visual Browser Mockup with 3D Cursor Swing */}
+                          <TiltBrowserMockup>
+                            <div className="project-browser-header">
+                              <div className="project-traffic-dots">
+                                <span
+                                  className="project-traffic-dot"
+                                  style={{ background: '#ff5f56' }}
+                                />
+                                <span
+                                  className="project-traffic-dot"
+                                  style={{ background: '#ffbd2e' }}
+                                />
+                                <span
+                                  className="project-traffic-dot"
+                                  style={{ background: '#27c93f' }}
+                                />
+                              </div>
+
+                              <div className="project-address-pill">
+                                {displayUrl}
+                              </div>
+                            </div>
+
+                            <div className="project-browser-viewport">
+                              {proj.image ? (
+                                <a
+                                  href={primaryLink}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  style={{
+                                    display: 'block',
+                                    width: '100%',
+                                    height: '100%',
+                                  }}
+                                >
+                                  <img
+                                    src={getAssetUrl(proj.image)}
+                                    alt={`${proj.title} preview`}
+                                    className="project-mockup-img"
+                                    loading={i === 0 ? 'eager' : 'lazy'}
+                                    decoding="async"
+                                  />
+                                </a>
+                              ) : (
+                                <div
+                                  style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    background: 'var(--bg-elevated)',
+                                    color: 'var(--text-muted)',
+                                    fontSize: '0.85rem',
+                                  }}
+                                >
+                                  Preview Unavailable
+                                </div>
+                              )}
+                            </div>
+                          </TiltBrowserMockup>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </article>
+                );
+              })}
+            </AnimatePresence>
+
+            {/* Compact runway so the last folder locks smoothly into stack and immediately releases into next section */}
+            {items.length > 1 && (
+              <div
+                aria-hidden="true"
+                style={{
+                  height: 'min(8vh, 60px)',
+                  pointerEvents: 'none',
+                }}
+              />
             )}
           </div>
         )}

@@ -1,0 +1,9 @@
+﻿{
+    "suggestedPrompts":  [
+                             "/ponytail [lite | full | ultra | off]",
+                             "/ponytail-review",
+                             "/ponytail-audit"
+                         ],
+    "description":  "Lazy senior dev mode. Forces the simplest, shortest solution that actually works: YAGNI, stdlib first, no unrequested abstractions.",
+    "name":  "ponytail"
+}
