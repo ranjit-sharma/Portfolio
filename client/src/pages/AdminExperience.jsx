@@ -211,7 +211,7 @@ export default function AdminExperience() {
       {showForm && (
         <div className="admin-card" style={{ marginBottom: '1.75rem' }}>
           <form onSubmit={handleSave} style={{ display: 'grid', gap: '0.85rem' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+            <div className="admin-grid-2">
               <div>
                 <label style={labelSt}>Company Name *</label>
                 <input
@@ -443,7 +443,7 @@ export default function AdminExperience() {
               <label style={{ ...labelSt, marginBottom: '0.6rem' }}>
                 Highlight Stats (Up to 3 numeric/metric counters)
               </label>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', gap: '0.75rem' }}>
                 {[0, 1, 2].map((idx) => (
                   <div
                     key={idx}
@@ -560,15 +560,8 @@ export default function AdminExperience() {
           {items.map((exp) => (
             <div
               key={exp._id}
-              className="admin-card"
-              style={{
-                padding: '1.15rem 1.35rem',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                gap: '1rem',
-                flexWrap: 'wrap',
-              }}
+              className="admin-card admin-list-item"
+              style={{ padding: '1.15rem 1.35rem' }}
             >
               <div>
                 <div style={{ fontWeight: 700, fontSize: '0.98rem', color: 'var(--text-primary)' }}>
@@ -579,7 +572,7 @@ export default function AdminExperience() {
                   {exp.certificateUrl && ' · 📜 Certificate attached'}
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '0.6rem' }}>
+              <div className="admin-list-actions">
                 <button
                   onClick={() => openEdit(exp)}
                   className="admin-btn-secondary"

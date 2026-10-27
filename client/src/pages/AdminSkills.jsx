@@ -333,10 +333,8 @@ export default function AdminSkills() {
 
           <form onSubmit={handleSave}>
             <div
+              className="admin-grid-2"
               style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-                gap: '1rem',
                 marginBottom: '1.25rem',
               }}
             >
@@ -501,7 +499,7 @@ export default function AdminSkills() {
           <Spinner size={32} />
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))', gap: '1.25rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 260px), 1fr))', gap: '1.25rem' }}>
           {allCategories.map((cat) => {
             const catSkills = grouped[cat] || [];
             const isCustom = !DEFAULT_CATEGORIES.includes(cat);

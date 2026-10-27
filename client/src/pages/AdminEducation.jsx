@@ -204,7 +204,7 @@ export default function AdminEducation() {
         </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.25fr) minmax(320px, 0.95fr)', gap: '1.75rem', alignItems: 'start' }}>
+      <div className="admin-education-layout">
         {/* Left Column: Editable Form */}
         <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           {/* Degree Card */}
@@ -222,7 +222,7 @@ export default function AdminEducation() {
               Degree & Academic Progress
             </h2>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+            <div className="admin-grid-2" style={{ marginBottom: '1rem' }}>
               <div>
                 <label style={labelStyle}>
                   <Award size={14} style={{ color: 'var(--accent)' }} />
@@ -254,7 +254,7 @@ export default function AdminEducation() {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+            <div className="admin-grid-2" style={{ marginBottom: '1rem' }}>
               <div>
                 <label style={labelStyle}>Total Semesters</label>
                 <input
@@ -294,7 +294,7 @@ export default function AdminEducation() {
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="admin-grid-2">
               <div>
                 <label style={labelStyle}>Start Year</label>
                 <input
@@ -394,7 +394,7 @@ export default function AdminEducation() {
                     </button>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 0.8fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                  <div className="admin-grid-2" style={{ marginBottom: '0.75rem' }}>
                     <div>
                       <label style={labelStyle}>School / Institution Name *</label>
                       <input
@@ -419,7 +419,7 @@ export default function AdminEducation() {
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                  <div className="admin-grid-2" style={{ marginBottom: '0.75rem' }}>
                     <div>
                       <label style={labelStyle}>Qualification</label>
                       <input
@@ -442,7 +442,7 @@ export default function AdminEducation() {
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr 0.8fr', gap: '0.75rem' }}>
+                  <div className="admin-grid-3">
                     <div>
                       <label style={labelStyle}>Location (City, State)</label>
                       <input
@@ -517,7 +517,7 @@ export default function AdminEducation() {
         </form>
 
         {/* Right Column: Live Interactive Preview */}
-        <div style={{ position: 'sticky', top: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <div className="admin-sticky-sidebar" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           {/* Degree Card Preview */}
           <div
             style={{

@@ -64,18 +64,15 @@ export default function AdminLogin() {
       <div className="admin-bg-glow" style={{ left: 0 }} />
 
       {/* Theme Button (Admin side only) */}
-      <div style={{ position: 'fixed', top: '1.25rem', right: '1.5rem', zIndex: 50 }}>
+      <div style={{ position: 'fixed', top: '1rem', right: '1rem', zIndex: 50 }}>
         <UnifiedThemeToggle align="right" />
       </div>
 
       <div
+        className="admin-card"
         style={{
           width: '100%',
           maxWidth: 400,
-          background: 'var(--bg-surface)',
-          border: '1px solid var(--border)',
-          borderRadius: 'var(--radius-xl)',
-          padding: '2.25rem',
           position: 'relative',
           zIndex: 1,
           boxShadow: '0 20px 45px -15px var(--accent-glow)',

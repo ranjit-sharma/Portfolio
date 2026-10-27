@@ -141,7 +141,7 @@ export default function AdminProjects() {
             {editing ? 'Edit Project' : 'New Project'}
           </h2>
           <form onSubmit={handleSave} style={{ display: 'grid', gap: '0.85rem' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+            <div className="admin-grid-2">
               <div>
                 <label style={labelSt}>Title *</label>
                 <input style={inputSt} value={form.title} onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))} required />
@@ -151,7 +151,7 @@ export default function AdminProjects() {
                 <input style={inputSt} value={form.categoryText} onChange={(e) => setForm(f => ({ ...f, categoryText: e.target.value }))} placeholder="e.g. Full-Stack MERN, Telemetry & SCADA" />
               </div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+            <div className="admin-grid-2">
               <div>
                 <label style={labelSt}>Status</label>
                 <select style={{ ...inputSt, cursor: 'pointer' }} value={form.status} onChange={(e) => setForm(f => ({ ...f, status: e.target.value }))}>
@@ -173,7 +173,7 @@ export default function AdminProjects() {
               <label style={labelSt}>Technologies (comma-separated)</label>
               <input style={inputSt} value={form.technologies} onChange={(e) => setForm(f => ({ ...f, technologies: e.target.value }))} placeholder="React, Node.js, MongoDB" />
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+            <div className="admin-grid-2">
               <div>
                 <label style={labelSt}>GitHub URL</label>
                 <input style={inputSt} type="url" value={form.githubUrl} onChange={(e) => setForm(f => ({ ...f, githubUrl: e.target.value }))} placeholder="https://github.com/..." />
@@ -187,7 +187,7 @@ export default function AdminProjects() {
             {/* 3 Metric Badges / Stats (e.g. 7+ CORE TECHNOLOGIES, 6+ KEY FEATURES, Live DEPLOYED STATUS) */}
             <div>
               <label style={labelSt}>Project Metric Badges / Key Stats (3 Cards)</label>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', gap: '0.75rem' }}>
                 {[0, 1, 2].map((idx) => (
                   <div
                     key={idx}
@@ -368,8 +368,8 @@ export default function AdminProjects() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
           {projects.map((p) => (
-            <div key={p._id} className="admin-card" style={{ padding: '1.15rem 1.35rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1.15rem', flex: 1, minWidth: 260 }}>
+            <div key={p._id} className="admin-card admin-list-item" style={{ padding: '1.15rem 1.35rem' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1.15rem', flex: 1, minWidth: 0, flexWrap: 'wrap' }}>
                 {p.image && (
                   <div
                     style={{
@@ -396,7 +396,7 @@ export default function AdminProjects() {
                     />
                   </div>
                 )}
-                <div style={{ flex: 1 }}>
+                <div style={{ flex: 1, minWidth: 'min(100%, 200px)' }}>
                   <div style={{ fontWeight: 700, fontSize: '0.98rem', marginBottom: '0.2rem', color: 'var(--text-primary)' }}>{p.title}</div>
                   <div style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>{p.shortDescription?.slice(0, 85)}...</div>
                   <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
@@ -410,7 +410,7 @@ export default function AdminProjects() {
                   </div>
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '0.6rem' }}>
+              <div className="admin-list-actions">
                 <button onClick={() => openEdit(p)} className="admin-btn-secondary">
                   Edit
                 </button>

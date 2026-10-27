@@ -99,7 +99,7 @@ export default function AdminCertifications() {
       {showForm && (
         <div className="admin-card" style={{ marginBottom: '1.75rem' }}>
           <form onSubmit={handleSave} style={{ display: 'grid', gap: '0.85rem' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+            <div className="admin-grid-2">
               <div><label style={labelSt}>Name *</label><input style={inputSt} value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required /></div>
               <div><label style={labelSt}>Issuer *</label><input style={inputSt} value={form.issuer} onChange={e => setForm(f => ({ ...f, issuer: e.target.value }))} required /></div>
               <div><label style={labelSt}>Issue Date</label><input type="date" style={inputSt} value={form.issueDate} onChange={e => setForm(f => ({ ...f, issueDate: e.target.value }))} /></div>
@@ -240,17 +240,12 @@ export default function AdminCertifications() {
           {items.map((cert) => (
             <div
               key={cert._id}
-              className="admin-card"
+              className="admin-card admin-list-item"
               style={{
                 padding: '1.15rem 1.35rem',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                gap: '1rem',
-                flexWrap: 'wrap',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, minWidth: 0, flexWrap: 'wrap' }}>
                 {/* Certificate preview thumbnail */}
                 {cert.image ? (
                   cert.image.toLowerCase().endsWith('.pdf') ? (
@@ -347,7 +342,7 @@ export default function AdminCertifications() {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '0.6rem' }}>
+              <div className="admin-list-actions">
                 <button
                   onClick={() => openEdit(cert)}
                   className="admin-btn-secondary"

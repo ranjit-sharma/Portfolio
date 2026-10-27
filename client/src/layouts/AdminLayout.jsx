@@ -307,11 +307,14 @@ export default function AdminLayout() {
           left: 0,
           bottom: 0,
           width: 270,
+          maxWidth: '85vw',
           background: 'var(--bg-surface)',
           borderRight: '1px solid var(--border)',
           zIndex: 999,
           transform: mobileSidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
           transition: 'transform var(--transition-base)',
+          overflowY: 'auto',
+          WebkitOverflowScrolling: 'touch',
         }}
         id="admin-mobile-drawer"
       >
@@ -323,7 +326,7 @@ export default function AdminLayout() {
         {/* Top Header Bar */}
         <header className="admin-top-bar">
           {/* Left: Mobile Menu Trigger + Breadcrumb */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', minWidth: 0 }}>
             <button
               type="button"
               onClick={() => setMobileSidebarOpen(true)}
@@ -337,26 +340,38 @@ export default function AdminLayout() {
                 color: 'var(--text-primary)',
                 cursor: 'pointer',
                 display: 'none',
+                flexShrink: 0,
               }}
             >
               <Menu size={18} />
             </button>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', minWidth: 0, overflow: 'hidden' }}>
               <div
+                className="admin-breadcrumb-prefix"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.4rem',
+                  gap: '0.35rem',
                   fontSize: '0.85rem',
                   color: 'var(--text-muted)',
+                  flexShrink: 0,
                 }}
               >
                 <Terminal size={14} style={{ color: 'var(--accent)' }} />
                 <span>Console</span>
                 <ChevronRight size={13} />
               </div>
-              <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)' }}>
+              <span
+                style={{
+                  fontWeight: 700,
+                  fontSize: '0.95rem',
+                  color: 'var(--text-primary)',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
                 {currentNav.label}
               </span>
               <span
@@ -368,6 +383,7 @@ export default function AdminLayout() {
                   border: '1px solid var(--accent-border)',
                   padding: '1px 6px',
                   borderRadius: '4px',
+                  flexShrink: 0,
                 }}
               >
                 SYS.{currentNav.code}
@@ -376,11 +392,11 @@ export default function AdminLayout() {
           </div>
 
           {/* Right: Live Status + THEME TOGGLE (Admin only!) + Live Site */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexShrink: 0 }}>
             {/* Database & System Connection Status */}
-            <div className="admin-status-badge">
+            <div className="admin-status-badge" title="Live MongoDB Atlas Connected">
               <span className="admin-status-dot" />
-              <span>LIVE MONGODB</span>
+              <span className="admin-status-text">LIVE MONGODB</span>
             </div>
 
             {/* THEME TOGGLE BUTTON (Placed ONLY in admin side) */}
@@ -389,15 +405,15 @@ export default function AdminLayout() {
             </div>
 
             {/* Quick Live Site Link */}
-            <Link to="/" target="_blank" rel="noopener noreferrer" className="admin-portal-link">
-              <span>View Site</span>
+            <Link to="/" target="_blank" rel="noopener noreferrer" className="admin-portal-link" title="View Live Portfolio">
+              <span className="admin-portal-text">View Site</span>
               <ExternalLink size={13} />
             </Link>
           </div>
         </header>
 
         {/* Page Body Viewport */}
-        <main style={{ flex: 1, padding: '2rem', maxWidth: 1400, width: '100%', margin: '0 auto' }}>
+        <main className="admin-main-content">
           <Outlet />
         </main>
       </div>

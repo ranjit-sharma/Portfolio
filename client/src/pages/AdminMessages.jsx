@@ -59,7 +59,7 @@ export default function AdminMessages() {
             Review feedback, project inquiries, and hire requests submitted from the portfolio.
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '0.4rem', background: 'var(--bg-elevated)', padding: '0.25rem', borderRadius: 'var(--radius-pill)', border: '1px solid var(--border)' }}>
+        <div className="admin-filter-bar">
           {['', 'unread', 'read', 'replied'].map((s) => (
             <button
               key={s}
@@ -72,6 +72,8 @@ export default function AdminMessages() {
                 border: 'none',
                 cursor: 'pointer',
                 fontFamily: 'inherit',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
                 background: filter === s ? 'var(--accent)' : 'transparent',
                 color: filter === s ? 'var(--accent-contrast)' : 'var(--text-secondary)',
                 transition: 'all var(--transition-fast)',
@@ -104,7 +106,7 @@ export default function AdminMessages() {
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', marginBottom: '0.35rem', flexWrap: 'wrap' }}>
                     <span style={{ fontWeight: m.status === 'unread' ? 700 : 600, fontSize: '0.95rem', color: 'var(--text-primary)' }}>{m.name}</span>
-                    <span style={{ color: 'var(--text-muted)', fontSize: '0.82rem', fontFamily: 'JetBrains Mono, monospace' }}>&lt;{m.email}&gt;</span>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.82rem', fontFamily: 'JetBrains Mono, monospace', wordBreak: 'break-all' }}>&lt;{m.email}&gt;</span>
                     <span style={{ fontSize: '0.7rem', padding: '0.15rem 0.6rem', borderRadius: '9999px', background: `${statusColors[m.status]}22`, color: statusColors[m.status], fontWeight: 700, fontFamily: 'JetBrains Mono, monospace' }}>
                       {m.status.toUpperCase()}
                     </span>

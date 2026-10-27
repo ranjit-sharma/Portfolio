@@ -146,7 +146,7 @@ export default function AdminDashboard() {
               </span>
             </div>
 
-            <h1 style={{ fontSize: '1.75rem', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '0.4rem', color: 'var(--text-primary)' }}>
+            <h1 style={{ fontSize: 'clamp(1.35rem, 3.5vw, 1.75rem)', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '0.4rem', color: 'var(--text-primary)' }}>
               Developer Command Center
             </h1>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.92rem', maxWidth: 640, lineHeight: 1.6 }}>
@@ -154,7 +154,7 @@ export default function AdminDashboard() {
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', width: 'auto' }}>
             <Link to="/admin/projects" className="admin-btn-primary">
               <PlusCircle size={16} />
               <span>New Project</span>
@@ -173,7 +173,7 @@ export default function AdminDashboard() {
           <Spinner size={32} />
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1.2rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', gap: '1rem' }}>
           {cards.map((card) => {
             const Icon = card.icon;
             return (
@@ -240,7 +240,7 @@ export default function AdminDashboard() {
       )}
 
       {/* Quick Actions & System Info Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '1.25rem' }}>
         {/* Quick Actions */}
         <div className="admin-card">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
@@ -248,7 +248,7 @@ export default function AdminDashboard() {
             <h2 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)' }}>Quick Actions</h2>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '0.75rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 140px), 1fr))', gap: '0.75rem' }}>
             {quickActions.map((action) => {
               const Icon = action.icon;
               return (
@@ -319,6 +319,8 @@ export default function AdminDashboard() {
                     background: 'var(--bg-elevated)',
                     border: '1px solid var(--border)',
                     borderRadius: 'var(--radius-md)',
+                    flexWrap: 'wrap',
+                    gap: '0.5rem',
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
