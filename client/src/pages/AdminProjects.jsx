@@ -7,6 +7,11 @@ import { getAssetUrl } from '../utils/assetUrl';
 const EMPTY_FORM = {
   title: '', categoryText: '', shortDescription: '', technologies: '',
   githubUrl: '', liveDemoUrl: '', image: '',
+  stats: [
+    { value: '', label: '' },
+    { value: '', label: '' },
+    { value: '', label: '' },
+  ],
   status: 'active', displayOrder: 0,
 };
 
@@ -64,6 +69,11 @@ export default function AdminProjects() {
       technologies: (p.technologies || []).join(', '),
       githubUrl: p.githubUrl || '',
       liveDemoUrl: p.liveDemoUrl || '', image: p.image || '',
+      stats: [
+        { value: p.stats?.[0]?.value || '', label: p.stats?.[0]?.label || '' },
+        { value: p.stats?.[1]?.value || '', label: p.stats?.[1]?.label || '' },
+        { value: p.stats?.[2]?.value || '', label: p.stats?.[2]?.label || '' },
+      ],
       status: p.status || 'active', displayOrder: p.displayOrder || 0,
     });
     setEditing(p._id);
@@ -78,6 +88,7 @@ export default function AdminProjects() {
     const payload = {
       ...form,
       technologies: form.technologies.split(',').map((t) => t.trim()).filter(Boolean),
+      stats: (form.stats || []).map((s) => ({ value: (s.value || '').trim(), label: (s.label || '').trim() })),
       displayOrder: parseInt(form.displayOrder) || 0,
     };
     try {
@@ -97,8 +108,12 @@ export default function AdminProjects() {
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this project?')) return;
-    await api.delete(`/admin/projects/${id}`).catch(console.error);
-    load();
+    try {
+      await api.delete(`/admin/projects/${id}`);
+      load();
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || 'Failed to delete project');
+    }
   };
 
   const inputSt = { width: '100%', background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '0.6rem 0.8rem', color: 'var(--text-primary)', fontSize: '0.875rem', fontFamily: 'inherit', outline: 'none' };
@@ -106,16 +121,25 @@ export default function AdminProjects() {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <h1 style={{ fontSize: '1.4rem', fontWeight: 800 }}>Projects</h1>
-        <button onClick={openCreate} style={{ background: 'var(--accent)', color: '#111', border: 'none', borderRadius: 'var(--radius-pill)', padding: '0.55rem 1.25rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.75rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <div>
+          <h1 style={{ fontSize: '1.6rem', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
+            Featured Projects
+          </h1>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem' }}>
+            Manage portfolio showpiece cards, live deployments, repository links, and tech metrics.
+          </p>
+        </div>
+        <button onClick={openCreate} className="admin-btn-primary">
           + Add Project
         </button>
       </div>
 
       {showForm && (
-        <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '1.5rem', marginBottom: '1.5rem' }}>
-          <h2 style={{ fontWeight: 700, fontSize: '1rem', marginBottom: '1rem' }}>{editing ? 'Edit Project' : 'New Project'}</h2>
+        <div className="admin-card" style={{ marginBottom: '1.75rem' }}>
+          <h2 style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: '1.25rem', color: 'var(--text-primary)' }}>
+            {editing ? 'Edit Project' : 'New Project'}
+          </h2>
           <form onSubmit={handleSave} style={{ display: 'grid', gap: '0.85rem' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
               <div>
@@ -157,6 +181,51 @@ export default function AdminProjects() {
               <div>
                 <label style={labelSt}>Live Demo URL</label>
                 <input style={inputSt} type="url" value={form.liveDemoUrl} onChange={(e) => setForm(f => ({ ...f, liveDemoUrl: e.target.value }))} placeholder="https://..." />
+              </div>
+            </div>
+
+            {/* 3 Metric Badges / Stats (e.g. 7+ CORE TECHNOLOGIES, 6+ KEY FEATURES, Live DEPLOYED STATUS) */}
+            <div>
+              <label style={labelSt}>Project Metric Badges / Key Stats (3 Cards)</label>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
+                {[0, 1, 2].map((idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      background: 'var(--bg-elevated)',
+                      border: '1px solid var(--border)',
+                      borderRadius: 'var(--radius-md)',
+                      padding: '0.75rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.4rem',
+                    }}
+                  >
+                    <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--accent)' }}>
+                      Badge 0{idx + 1}
+                    </div>
+                    <input
+                      style={inputSt}
+                      value={form.stats?.[idx]?.value || ''}
+                      onChange={(e) => {
+                        const nextStats = [...(form.stats || [{}, {}, {}])];
+                        nextStats[idx] = { ...nextStats[idx], value: e.target.value };
+                        setForm((f) => ({ ...f, stats: nextStats }));
+                      }}
+                      placeholder={idx === 0 ? 'Value (e.g. 7+ or MERN)' : idx === 1 ? 'Value (e.g. 6+ or CRUD)' : 'Value (e.g. Live)'}
+                    />
+                    <input
+                      style={inputSt}
+                      value={form.stats?.[idx]?.label || ''}
+                      onChange={(e) => {
+                        const nextStats = [...(form.stats || [{}, {}, {}])];
+                        nextStats[idx] = { ...nextStats[idx], label: e.target.value };
+                        setForm((f) => ({ ...f, stats: nextStats }));
+                      }}
+                      placeholder={idx === 0 ? 'Label (e.g. CORE TECHNOLOGIES)' : idx === 1 ? 'Label (e.g. KEY FEATURES)' : 'Label (e.g. DEPLOYED STATUS)'}
+                    />
+                  </div>
+                ))}
               </div>
             </div>
             {/* Project Photo Upload */}
@@ -278,11 +347,11 @@ export default function AdminProjects() {
               </div>
             </div>
             {error && <p style={{ color: '#ef4444', fontSize: '0.85rem' }}>{error}</p>}
-            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
-              <button type="submit" disabled={saving} style={{ background: 'var(--accent)', color: '#111', border: 'none', borderRadius: 'var(--radius-pill)', padding: '0.55rem 1.4rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                {saving ? <><Spinner size={14} color="#111" /> Saving...</> : (editing ? 'Update' : 'Create')}
+            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.75rem' }}>
+              <button type="submit" disabled={saving} className="admin-btn-primary">
+                {saving ? <><Spinner size={14} color="var(--accent-contrast)" /> Saving...</> : (editing ? 'Update Project' : 'Create Project')}
               </button>
-              <button type="button" onClick={() => setShowForm(false)} style={{ background: 'transparent', border: '1px solid var(--border)', borderRadius: 'var(--radius-pill)', padding: '0.55rem 1.2rem', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: 'inherit' }}>
+              <button type="button" onClick={() => setShowForm(false)} className="admin-btn-secondary">
                 Cancel
               </button>
             </div>
@@ -293,20 +362,20 @@ export default function AdminProjects() {
       {loading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem' }}><Spinner size={32} /></div>
       ) : projects.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+        <div className="admin-card" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
           No projects yet. Add your first project above.
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
           {projects.map((p) => (
-            <div key={p._id} style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '1.1rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, minWidth: 260 }}>
+            <div key={p._id} className="admin-card" style={{ padding: '1.15rem 1.35rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1.15rem', flex: 1, minWidth: 260 }}>
                 {p.image && (
                   <div
                     style={{
-                      width: 80,
-                      height: 50,
-                      borderRadius: 'var(--radius-sm)',
+                      width: 86,
+                      height: 54,
+                      borderRadius: 'var(--radius-md)',
                       border: '1px solid var(--border)',
                       background: 'var(--bg-base)',
                       overflow: 'hidden',
@@ -328,20 +397,24 @@ export default function AdminProjects() {
                   </div>
                 )}
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 600, marginBottom: '0.2rem' }}>{p.title}</div>
-                  <div style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>{p.shortDescription?.slice(0, 80)}...</div>
-                  <div style={{ display: 'flex', gap: '0.35rem', marginTop: '0.4rem', flexWrap: 'wrap' }}>
-                    <Badge variant={p.status === 'active' ? 'accent' : 'default'}>{p.status}</Badge>
-                    {p.categoryText && <Badge variant="default">{p.categoryText}</Badge>}
-                    {p.technologies?.slice(0, 3).map((t) => <Badge key={t}>{t}</Badge>)}
+                  <div style={{ fontWeight: 700, fontSize: '0.98rem', marginBottom: '0.2rem', color: 'var(--text-primary)' }}>{p.title}</div>
+                  <div style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>{p.shortDescription?.slice(0, 85)}...</div>
+                  <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+                    <span className="admin-tag-mono" style={{ textTransform: 'uppercase' }}>{p.status}</span>
+                    {p.categoryText && <span className="admin-tag-mono" style={{ background: 'var(--bg-elevated)', color: 'var(--text-secondary)', borderColor: 'var(--border)' }}>{p.categoryText}</span>}
+                    {p.technologies?.slice(0, 3).map((t) => (
+                      <span key={t} className="admin-tag-mono" style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)', borderColor: 'var(--border)' }}>
+                        {t}
+                      </span>
+                    ))}
                   </div>
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <button onClick={() => openEdit(p)} style={{ background: 'transparent', border: '1px solid var(--border)', borderRadius: 'var(--radius-pill)', padding: '0.4rem 0.95rem', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.82rem' }}>
+              <div style={{ display: 'flex', gap: '0.6rem' }}>
+                <button onClick={() => openEdit(p)} className="admin-btn-secondary">
                   Edit
                 </button>
-                <button onClick={() => handleDelete(p._id)} style={{ background: 'transparent', border: '1px solid #ef444440', borderRadius: 'var(--radius-pill)', padding: '0.4rem 0.95rem', color: '#ef4444', cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.82rem' }}>
+                <button onClick={() => handleDelete(p._id)} className="admin-btn-danger">
                   Delete
                 </button>
               </div>

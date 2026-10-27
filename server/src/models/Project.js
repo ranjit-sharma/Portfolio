@@ -9,6 +9,12 @@ const projectSchema = new mongoose.Schema(
     fullDescription: { type: String },
     technologies: [{ type: String }],
     features: [{ type: String }],
+    stats: [
+      {
+        value: { type: String, default: '' },
+        label: { type: String, default: '' },
+      },
+    ],
     image: { type: String, default: '' },
     gallery: [{ type: String }],
     githubUrl: { type: String, default: '' },

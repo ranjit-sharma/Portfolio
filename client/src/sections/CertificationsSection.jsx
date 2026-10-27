@@ -9,65 +9,6 @@ import { getAssetUrl } from '../utils/assetUrl';
 const isPdf = (cert) => !!cert.image && cert.image.toLowerCase().endsWith('.pdf');
 const isImage = (cert) => !!cert.image && !isPdf(cert);
 
-const FALLBACK_CERTS = [
-  {
-    _id: '1',
-    name: 'Oracle Cloud Infrastructure 2025 Certified Generative AI Professional',
-    issuer: 'Oracle University',
-    issueDate: '2025-01-01',
-    credentialUrl: '',
-    image: '/uploads/Screenshot_2026-10-21_132422-1792570047406-5572.png',
-    description: 'Certification covering generative AI fundamentals, OCI AI services, large language models, and practical AI solution development on Oracle Cloud Infrastructure.',
-    category: 'Certifications',
-    windowTitle: 'Oracle University',
-    badge: 'Certified Professional',
-    dateTag: 'Jan 2025',
-    displayOrder: 1,
-  },
-  {
-    _id: '2',
-    name: 'Technical Communication',
-    issuer: 'TCS iON',
-    issueDate: '',
-    credentialUrl: '',
-    image: '',
-    description: 'Certification in technical writing, workplace communication, and professional documentation for technology specialists.',
-    category: 'Certifications',
-    windowTitle: 'TCS iON',
-    badge: 'Certified',
-    dateTag: '2024',
-    displayOrder: 2,
-  },
-  {
-    _id: '3',
-    name: 'Geo-data Sharing and Cyber Security',
-    issuer: 'ISRO / IIRS',
-    issueDate: '',
-    credentialUrl: '',
-    image: '',
-    description: 'Specialized course by ISRO / IIRS covering geospatial data infrastructure, secure data sharing protocols, and cyber security practices.',
-    category: 'Certifications',
-    windowTitle: 'ISRO / IIRS',
-    badge: 'Course Completed',
-    dateTag: '2024',
-    displayOrder: 3,
-  },
-  {
-    _id: '4',
-    name: 'Smart India Hackathon Participant',
-    issuer: 'Ministry of Education, Government of India',
-    issueDate: '',
-    credentialUrl: '',
-    image: '',
-    description: 'Participant in the nationwide Smart India Hackathon initiative organized by the Ministry of Education and AICTE, Government of India.',
-    category: 'Competitions',
-    windowTitle: 'Smart India Hackathon',
-    badge: 'National Finalist',
-    dateTag: '2024',
-    displayOrder: 4,
-  },
-];
-
 /**
  * CertificateDocPreview — Aesthetic credential sheet shown when an image is pending upload.
  * Renders an official certificate canvas with recipient name, institution headers, and seal.
@@ -269,18 +210,14 @@ export default function CertificationsSection() {
     api
       .get('/certifications')
       .then((res) => {
-        const data = res.data.data;
-        if (data && data.length > 0) {
-          setCerts(data);
-        } else {
-          setCerts(FALLBACK_CERTS);
-        }
+        const data = res.data?.data;
+        setCerts(Array.isArray(data) ? data : []);
       })
-      .catch(() => setCerts(FALLBACK_CERTS))
+      .catch(() => setCerts([]))
       .finally(() => setLoading(false));
   }, []);
 
-  const items = certs || FALLBACK_CERTS;
+  const items = Array.isArray(certs) ? certs : [];
 
   // Build filter pills based on categories present in items
   const tabs = useMemo(() => {
@@ -820,21 +757,21 @@ export default function CertificationsSection() {
           /* Empty State */
           <div
             style={{
-              padding: '3rem 2rem',
+              padding: '3.5rem 1.5rem',
               textAlign: 'center',
               background: 'var(--bg-card)',
-              border: '1px solid var(--border)',
-              borderRadius: '1rem',
+              border: '1px dashed var(--border)',
+              borderRadius: 'var(--radius-lg)',
               maxWidth: 520,
               margin: '0 auto',
             }}
           >
-            <Award size={42} style={{ color: 'var(--accent)', margin: '0 auto 1rem', opacity: 0.85 }} />
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.4rem' }}>
-              No Credentials In This Category
+            <Award size={40} style={{ color: 'var(--accent)', margin: '0 auto 0.85rem', opacity: 0.85 }} />
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.4rem' }}>
+              No Credentials Available
             </h3>
-            <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', margin: 0 }}>
-              Credentials uploaded in the admin portal will appear right here.
+            <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.55 }}>
+              Credentials from database are currently unavailable. Ensure the database connection is active.
             </p>
           </div>
         ) : (
@@ -844,8 +781,8 @@ export default function CertificationsSection() {
               <motion.li
                 key={cert._id || cert.name}
                 style={{ '--stack-i': i, zIndex: i + 1 }}
-                initial={reduceMotion ? false : { opacity: 0, y: 20 }}
-                animate={inView || reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                 transition={{ duration: 0.45, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
               >
                 <button
@@ -906,9 +843,9 @@ export default function CertificationsSection() {
             >
               <motion.div
                 className="cert-modal"
-                initial={reduceMotion ? false : { opacity: 0, scale: 0.96, y: 16 }}
+                initial={{ opacity: 0, scale: 0.96, y: 16 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={reduceMotion ? undefined : { opacity: 0, scale: 0.96, y: 16 }}
+                exit={{ opacity: 0, scale: 0.96, y: 16 }}
                 transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                 onClick={(e) => e.stopPropagation()}
               >

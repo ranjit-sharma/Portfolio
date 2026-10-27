@@ -29,17 +29,24 @@ export default function AboutSection() {
   const { ref, inView } = useInView();
   const reduceMotion = useReducedMotion();
   const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     api
       .get('/profile')
-      .then((res) => setProfile(res.data.data))
-      .catch(() => {});
+      .then((res) => setProfile(res.data?.data || null))
+      .catch(() => setProfile(null))
+      .finally(() => setLoading(false));
   }, []);
 
   const bioParagraphs = profile?.bio?.trim()
     ? profile.bio.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)
     : [];
+
+  const highlights =
+    Array.isArray(profile?.aboutHighlights) && profile.aboutHighlights.length > 0 && profile.aboutHighlights.some((h) => h && h.title)
+      ? profile.aboutHighlights.filter((h) => h && (h.title || h.desc))
+      : HIGHLIGHTS;
 
   const facts = [
     { Icon: MapPin, label: 'Location', value: profile?.location || 'Bhubaneswar, India' },
@@ -47,15 +54,11 @@ export default function AboutSection() {
     { Icon: Languages, label: 'Languages', value: profile?.languages || 'English, Hindi, Odia' },
   ];
 
-  // Reduced motion: render in place, no entrance animation
-  const reveal = (hidden, delay = 0) =>
-    reduceMotion
-      ? { initial: false }
-      : {
-          initial: hidden,
-          animate: inView ? { opacity: 1, x: 0, y: 0 } : hidden,
-          transition: { duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] },
-        };
+  const reveal = (hidden, delay = 0) => ({
+    initial: hidden,
+    animate: inView ? { opacity: 1, x: 0, y: 0 } : hidden,
+    transition: { duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] },
+  });
 
   return (
     <section id="about" className="section-padding">
@@ -214,11 +217,19 @@ export default function AboutSection() {
           display: flex;
           align-items: center;
           justify-content: space-between;
+          gap: 0.75rem;
           margin-bottom: 0.75rem;
+        }
+        .about-highlight-header {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          min-width: 0;
         }
         .about-highlight-icon {
           width: 38px;
           height: 38px;
+          flex-shrink: 0;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -227,15 +238,17 @@ export default function AboutSection() {
           border: 1px solid var(--border);
         }
         .about-highlight-num {
+          flex-shrink: 0;
           font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
           font-size: 0.75rem;
           font-weight: 700;
           color: var(--text-muted);
         }
         .about-highlight h4 {
-          margin: 0 0 0.3rem;
+          margin: 0;
           font-size: 0.95rem;
           font-weight: 700;
+          line-height: 1.3;
           color: var(--text-primary);
         }
         .about-highlight p {
@@ -264,7 +277,32 @@ export default function AboutSection() {
           subtitle="A student developer passionate about the full stack"
         />
 
-        <div ref={ref} className="about-grid">
+        {loading ? (
+          <div style={{ height: 320, background: 'var(--bg-card)', borderRadius: 'var(--radius-xl)', border: '1px solid var(--border)' }} />
+        ) : !profile ? (
+          <div
+            style={{
+              padding: '3.5rem 1.5rem',
+              textAlign: 'center',
+              background: 'var(--bg-card)',
+              border: '1px dashed var(--border)',
+              borderRadius: 'var(--radius-lg)',
+              marginTop: '1.5rem',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <RSLogo size={42} color="var(--accent)" glow />
+            <h4 style={{ margin: '0.85rem 0 0.4rem', color: 'var(--text-primary)', fontSize: '1.15rem', fontWeight: 700 }}>
+              Profile Data Unavailable
+            </h4>
+            <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.88rem', maxWidth: '420px', lineHeight: 1.55 }}>
+              Database is currently not connected. Profile information will appear once connection is established.
+            </p>
+          </div>
+        ) : (
+          <div ref={ref} className="about-grid">
           {/* Profile card */}
           <motion.aside className="about-profile" {...reveal({ opacity: 0, x: -24 })}>
             <div className="about-avatar">
@@ -317,16 +355,18 @@ export default function AboutSection() {
             )}
 
             <ul className="about-highlights">
-              {HIGHLIGHTS.map((item, i) => (
-                <motion.li key={item.title} {...reveal({ opacity: 0, y: 20 }, 0.2 + i * 0.08)}>
+              {highlights.map((item, i) => (
+                <motion.li key={item.title || i} {...reveal({ opacity: 0, y: 20 }, 0.2 + i * 0.08)}>
                   <article className="about-card about-highlight card-spotlight">
                     <div className="about-highlight-top">
-                      <span className="about-highlight-icon" aria-hidden="true">
-                        <SkillIcon name={item.title} size={19} />
-                      </span>
+                      <div className="about-highlight-header">
+                        <span className="about-highlight-icon" aria-hidden="true">
+                          <SkillIcon name={item.title} size={19} />
+                        </span>
+                        <h4>{item.title}</h4>
+                      </div>
                       <span className="about-highlight-num">0{i + 1}</span>
                     </div>
-                    <h4>{item.title}</h4>
                     <p>{item.desc}</p>
                   </article>
                 </motion.li>
@@ -334,6 +374,7 @@ export default function AboutSection() {
             </ul>
           </div>
         </div>
+        )}
       </div>
     </section>
   );

@@ -19,13 +19,18 @@ const storage = multer.diskStorage({
   },
 });
 
+const allowedExts = /^(pdf|doc|docx|png|jpg|jpeg|webp|svg|gif)$/i;
+const allowedMimes = /^(application\/pdf|application\/msword|application\/vnd\.openxmlformats-officedocument\.wordprocessingml\.document|image\/png|image\/jpeg|image\/webp|image\/svg\+xml|image\/gif)$/i;
+
 const fileFilter = (req, file, cb) => {
-  const allowed = /pdf|doc|docx|png|jpg|jpeg|webp|svg|gif/;
   const ext = path.extname(file.originalname).toLowerCase().replace('.', '');
-  if (allowed.test(ext)) {
+  const isExtAllowed = allowedExts.test(ext);
+  const isMimeAllowed = allowedMimes.test(file.mimetype);
+
+  if (isExtAllowed && isMimeAllowed) {
     cb(null, true);
   } else {
-    cb(new Error('Unsupported file format. Allowed: PDF, DOC, DOCX, PNG, JPG, WEBP, SVG'));
+    cb(new Error('Unsupported file format. Allowed: PDF, DOC, DOCX, PNG, JPG, WEBP, SVG, GIF'));
   }
 };
 

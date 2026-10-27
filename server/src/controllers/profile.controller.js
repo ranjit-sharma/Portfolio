@@ -4,24 +4,9 @@ const { apiSuccess } = require('../utils/apiResponse');
 
 // GET /api/v1/profile  (public)
 const getProfile = asyncHandler(async (req, res) => {
-  let profile = await Profile.findOne();
+  const profile = await Profile.findOne();
   if (!profile) {
-    // Return defaults if not yet seeded
-    profile = {
-      name: 'Ranjit Sharma',
-      headline: 'Full-Stack Developer',
-      bio: 'B.Tech in Computer Science from Trident Academy of Technology, Bhubaneswar. I enjoy building web applications from frontend to backend using modern technologies.',
-      email: 'ranjitsharma76088@gmail.com',
-      location: 'Bhubaneswar, Odisha, India',
-      githubUrl: '',
-      linkedinUrl: '',
-      leetcodeUrl: '',
-      resumeUrl: '',
-      avatarUrl: '',
-      available: false,
-      availabilityNote: '',
-      views: 0,
-    };
+    return apiSuccess(res, null, 'No profile data found in database');
   }
   return apiSuccess(res, profile);
 });

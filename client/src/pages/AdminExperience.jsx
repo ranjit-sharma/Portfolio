@@ -148,8 +148,12 @@ export default function AdminExperience() {
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this experience?')) return;
-    await api.delete(`/admin/experience/${id}`).catch(console.error);
-    load();
+    try {
+      await api.delete(`/admin/experience/${id}`);
+      load();
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || 'Failed to delete experience');
+    }
   };
 
   const inputSt = {
@@ -178,10 +182,19 @@ export default function AdminExperience() {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: '1.5rem',
+          marginBottom: '1.75rem',
+          flexWrap: 'wrap',
+          gap: '1rem',
         }}
       >
-        <h1 style={{ fontSize: '1.4rem', fontWeight: 800 }}>Experience</h1>
+        <div>
+          <h1 style={{ fontSize: '1.6rem', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
+            Work Experience
+          </h1>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem' }}>
+            Manage career history, internships, roles, company logos, and verified credentials.
+          </p>
+        </div>
         <button
           onClick={() => {
             setForm(EMPTY);
@@ -189,31 +202,14 @@ export default function AdminExperience() {
             setShowForm(true);
             setError('');
           }}
-          style={{
-            background: 'var(--accent)',
-            color: '#111',
-            border: 'none',
-            borderRadius: 'var(--radius-md)',
-            padding: '0.55rem 1.1rem',
-            fontWeight: 600,
-            cursor: 'pointer',
-            fontFamily: 'inherit',
-          }}
+          className="admin-btn-primary"
         >
           + Add Experience
         </button>
       </div>
 
       {showForm && (
-        <div
-          style={{
-            background: 'var(--bg-surface)',
-            border: '1px solid var(--border)',
-            borderRadius: 'var(--radius-lg)',
-            padding: '1.5rem',
-            marginBottom: '1.5rem',
-          }}
-        >
+        <div className="admin-card" style={{ marginBottom: '1.75rem' }}>
           <form onSubmit={handleSave} style={{ display: 'grid', gap: '0.85rem' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
               <div>
@@ -542,15 +538,7 @@ export default function AdminExperience() {
               <button
                 type="button"
                 onClick={() => setShowForm(false)}
-                style={{
-                  background: 'transparent',
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-md)',
-                  padding: '0.55rem 1rem',
-                  color: 'var(--text-secondary)',
-                  cursor: 'pointer',
-                  fontFamily: 'inherit',
-                }}
+                className="admin-btn-secondary"
               >
                 Cancel
               </button>
@@ -564,19 +552,17 @@ export default function AdminExperience() {
           <Spinner size={32} />
         </div>
       ) : items.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+        <div className="admin-card" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
           No experience entries yet.
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
           {items.map((exp) => (
             <div
               key={exp._id}
+              className="admin-card"
               style={{
-                background: 'var(--bg-surface)',
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '1.1rem 1.25rem',
+                padding: '1.15rem 1.35rem',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
@@ -585,42 +571,24 @@ export default function AdminExperience() {
               }}
             >
               <div>
-                <div style={{ fontWeight: 600 }}>
-                  {exp.role} @ {exp.company}
+                <div style={{ fontWeight: 700, fontSize: '0.98rem', color: 'var(--text-primary)' }}>
+                  {exp.role} <span style={{ color: 'var(--accent)' }}>@ {exp.company}</span>
                 </div>
-                <div style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.82rem', marginTop: '0.2rem' }}>
                   {exp.employmentType} · {exp.location || 'Location not specified'}
                   {exp.certificateUrl && ' · 📜 Certificate attached'}
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', gap: '0.6rem' }}>
                 <button
                   onClick={() => openEdit(exp)}
-                  style={{
-                    background: 'transparent',
-                    border: '1px solid var(--border)',
-                    borderRadius: 'var(--radius-md)',
-                    padding: '0.4rem 0.8rem',
-                    color: 'var(--text-secondary)',
-                    cursor: 'pointer',
-                    fontFamily: 'inherit',
-                    fontSize: '0.82rem',
-                  }}
+                  className="admin-btn-secondary"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => handleDelete(exp._id)}
-                  style={{
-                    background: 'transparent',
-                    border: '1px solid #ef444440',
-                    borderRadius: 'var(--radius-md)',
-                    padding: '0.4rem 0.8rem',
-                    color: '#ef4444',
-                    cursor: 'pointer',
-                    fontFamily: 'inherit',
-                    fontSize: '0.82rem',
-                  }}
+                  className="admin-btn-danger"
                 >
                   Delete
                 </button>

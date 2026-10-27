@@ -5,12 +5,12 @@ import { useEffect, useRef, useState } from 'react';
  * Relies on IntersectionObserver, with a fallback for reduced-motion.
  */
 export function useInView(options = {}) {
-  const { threshold = 0.1, rootMargin = '0px 0px -60px 0px' } = options;
+  const { threshold = 0.05, rootMargin = '0px 0px -40px 0px' } = options;
   const ref = useRef(null);
   const [inView, setInView] = useState(() => {
     if (typeof window === 'undefined') return true;
     if (!window.IntersectionObserver) return true;
-    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    return false;
   });
 
   useEffect(() => {

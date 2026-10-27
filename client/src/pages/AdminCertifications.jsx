@@ -69,8 +69,12 @@ export default function AdminCertifications() {
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this certification?')) return;
-    await api.delete(`/admin/certifications/${id}`).catch(console.error);
-    load();
+    try {
+      await api.delete(`/admin/certifications/${id}`);
+      load();
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || 'Failed to delete certification');
+    }
   };
 
   const inputSt = { width: '100%', background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '0.6rem 0.8rem', color: 'var(--text-primary)', fontSize: '0.875rem', fontFamily: 'inherit', outline: 'none' };
@@ -79,14 +83,21 @@ export default function AdminCertifications() {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <h1 style={{ fontSize: '1.4rem', fontWeight: 800 }}>Certifications</h1>
-        <button onClick={() => { setForm(EMPTY); setEditing(null); setShowForm(true); setError(''); }} style={{ background: 'var(--accent)', color: '#111', border: 'none', borderRadius: 'var(--radius-md)', padding: '0.55rem 1.1rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+        <div>
+          <h1 style={{ fontSize: '1.6rem', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
+            Certifications & Badges
+          </h1>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem' }}>
+            Manage certificates, internships, competition awards, credential links, and documents.
+          </p>
+        </div>
+        <button onClick={() => { setForm(EMPTY); setEditing(null); setShowForm(true); setError(''); }} className="admin-btn-primary">
           + Add Certification
         </button>
       </div>
 
       {showForm && (
-        <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '1.5rem', marginBottom: '1.5rem' }}>
+        <div className="admin-card" style={{ marginBottom: '1.75rem' }}>
           <form onSubmit={handleSave} style={{ display: 'grid', gap: '0.85rem' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
               <div><label style={labelSt}>Name *</label><input style={inputSt} value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required /></div>
@@ -229,11 +240,9 @@ export default function AdminCertifications() {
           {items.map((cert) => (
             <div
               key={cert._id}
+              className="admin-card"
               style={{
-                background: 'var(--bg-surface)',
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '1.1rem 1.25rem',
+                padding: '1.15rem 1.35rem',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
@@ -338,35 +347,16 @@ export default function AdminCertifications() {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', gap: '0.6rem' }}>
                 <button
                   onClick={() => openEdit(cert)}
-                  style={{
-                    background: 'var(--bg-elevated)',
-                    border: '1px solid var(--border)',
-                    borderRadius: 'var(--radius-md)',
-                    padding: '0.45rem 0.85rem',
-                    color: 'var(--text-primary)',
-                    cursor: 'pointer',
-                    fontFamily: 'inherit',
-                    fontSize: '0.82rem',
-                    fontWeight: 500,
-                  }}
+                  className="admin-btn-secondary"
                 >
                   {cert.image ? 'Edit' : 'Upload / Edit'}
                 </button>
                 <button
                   onClick={() => handleDelete(cert._id)}
-                  style={{
-                    background: 'transparent',
-                    border: '1px solid #ef444440',
-                    borderRadius: 'var(--radius-md)',
-                    padding: '0.45rem 0.85rem',
-                    color: '#ef4444',
-                    cursor: 'pointer',
-                    fontFamily: 'inherit',
-                    fontSize: '0.82rem',
-                  }}
+                  className="admin-btn-danger"
                 >
                   Delete
                 </button>

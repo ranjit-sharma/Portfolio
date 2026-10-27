@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { MotionConfig } from 'framer-motion';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import RootLayout from './layouts/RootLayout';
@@ -13,6 +14,7 @@ const AdminLayout = lazy(() => import('./layouts/AdminLayout'));
 const AdminLogin = lazy(() => import('./pages/AdminLogin'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const AdminProjects = lazy(() => import('./pages/AdminProjects'));
+const AdminEducation = lazy(() => import('./pages/AdminEducation'));
 const AdminExperience = lazy(() => import('./pages/AdminExperience'));
 const AdminSkills = lazy(() => import('./pages/AdminSkills'));
 const AdminCertifications = lazy(() => import('./pages/AdminCertifications'));
@@ -33,30 +35,33 @@ export default function App() {
       <ThemeProvider>
         <AnimatedCursor />
         <AuthProvider>
-          <Suspense fallback={<RouteLoadingFallback />}>
-            <Routes>
-              {/* Public routes */}
-              <Route element={<RootLayout />}>
-                <Route path="/" element={<Home />} />
-                <Route path="*" element={<NotFound />} />
-              </Route>
+          <MotionConfig reducedMotion="never">
+            <Suspense fallback={<RouteLoadingFallback />}>
+              <Routes>
+                {/* Public routes */}
+                <Route element={<RootLayout />}>
+                  <Route path="/" element={<Home />} />
+                  <Route path="*" element={<NotFound />} />
+                </Route>
 
-              {/* Admin login (no layout) */}
-              <Route path="/admin/login" element={<AdminLogin />} />
+                {/* Admin login (no layout) */}
+                <Route path="/admin/login" element={<AdminLogin />} />
 
-              {/* Admin protected routes */}
-              <Route path="/admin" element={<AdminLayout />}>
-                <Route index element={<Navigate to="/admin/dashboard" replace />} />
-                <Route path="dashboard" element={<AdminDashboard />} />
-                <Route path="projects" element={<AdminProjects />} />
-                <Route path="experience" element={<AdminExperience />} />
-                <Route path="skills" element={<AdminSkills />} />
-                <Route path="certifications" element={<AdminCertifications />} />
-                <Route path="messages" element={<AdminMessages />} />
-                <Route path="settings" element={<AdminSettings />} />
-              </Route>
-            </Routes>
-          </Suspense>
+                {/* Admin protected routes */}
+                <Route path="/admin" element={<AdminLayout />}>
+                  <Route index element={<Navigate to="/admin/dashboard" replace />} />
+                  <Route path="dashboard" element={<AdminDashboard />} />
+                  <Route path="projects" element={<AdminProjects />} />
+                  <Route path="education" element={<AdminEducation />} />
+                  <Route path="experience" element={<AdminExperience />} />
+                  <Route path="skills" element={<AdminSkills />} />
+                  <Route path="certifications" element={<AdminCertifications />} />
+                  <Route path="messages" element={<AdminMessages />} />
+                  <Route path="settings" element={<AdminSettings />} />
+                </Route>
+              </Routes>
+            </Suspense>
+          </MotionConfig>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>

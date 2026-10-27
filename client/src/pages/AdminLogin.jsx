@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { Spinner, RSLogo } from '../components/ui/index';
+import UnifiedThemeToggle from '../components/navigation/UnifiedThemeToggle';
 
 export default function AdminLogin() {
   const { login } = useAuth();
@@ -55,16 +56,29 @@ export default function AdminLogin() {
         justifyContent: 'center',
         background: 'var(--bg-base)',
         padding: '1rem',
+        position: 'relative',
+        overflow: 'hidden',
       }}
     >
+      {/* Background ambient lighting */}
+      <div className="admin-bg-glow" style={{ left: 0 }} />
+
+      {/* Theme Button (Admin side only) */}
+      <div style={{ position: 'fixed', top: '1.25rem', right: '1.5rem', zIndex: 50 }}>
+        <UnifiedThemeToggle align="right" />
+      </div>
+
       <div
         style={{
           width: '100%',
-          maxWidth: 380,
+          maxWidth: 400,
           background: 'var(--bg-surface)',
           border: '1px solid var(--border)',
           borderRadius: 'var(--radius-xl)',
-          padding: '2rem',
+          padding: '2.25rem',
+          position: 'relative',
+          zIndex: 1,
+          boxShadow: '0 20px 45px -15px var(--accent-glow)',
         }}
       >
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>

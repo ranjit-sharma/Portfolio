@@ -17,6 +17,33 @@ const profileSchema = new mongoose.Schema(
     available: { type: Boolean, default: false },
     availabilityNote: { type: String, default: '' },
     views: { type: Number, default: 0 },
+    // Education settings (editable via Admin)
+    educationCgpa: { type: String, default: '7.73' },
+    educationCurrentSemester: { type: Number, default: 7 },
+    educationTotalSemesters: { type: Number, default: 8 },
+    educationDegree: { type: String, default: 'B.Tech in Computer Science & IT' },
+    educationInstitution: { type: String, default: 'Trident Academy of Technology' },
+    educationStartYear: { type: Number, default: 2023 },
+    educationEndYear: { type: Number, default: 2027 },
+    // Prior Schools & Colleges (editable via Admin)
+    educationSchools: [
+      {
+        institution: { type: String, default: '' },
+        qualification: { type: String, default: '' },
+        level: { type: String, default: '' },
+        board: { type: String, default: '' },
+        location: { type: String, default: '' },
+        start: { type: String, default: '' },
+        end: { type: String, default: '' },
+      },
+    ],
+    // About Highlights (editable via Admin)
+    aboutHighlights: [
+      {
+        title: { type: String, default: '' },
+        desc: { type: String, default: '' },
+      },
+    ],
   },
   { timestamps: true }
 );

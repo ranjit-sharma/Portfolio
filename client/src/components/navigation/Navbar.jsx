@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useScrollSpy } from '../../hooks/useScrollSpy';
 import { motion, AnimatePresence } from 'framer-motion';
-import UnifiedThemeToggle from './UnifiedThemeToggle';
 import { RSLogo } from '../ui';
 
 const NAV_LINKS = [
@@ -98,12 +97,12 @@ export default function Navbar() {
             <RSLogo height={36} color="var(--accent)" glow />
           </a>
 
-          {/* Right Corner Group: Nav Links + Theme Controls */}
+          {/* Right Corner Group: Nav Links */}
           <div
+            className="nav-right-group"
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '2rem',
             }}
           >
             {/* Desktop Navigation Links */}
@@ -166,10 +165,8 @@ export default function Navbar() {
               })}
             </nav>
 
-            {/* Controls (Theme Toggle + Mobile Menu Trigger) */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-              <UnifiedThemeToggle align="right" />
-
+            {/* Mobile Menu Trigger (hidden on desktop >=1024px) */}
+            <div className="mobile-menu-wrap" style={{ display: 'flex', alignItems: 'center' }}>
               {/* Mobile hamburger */}
               <button
                 id="mobile-menu-toggle"
@@ -278,9 +275,27 @@ export default function Navbar() {
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <RSLogo height={34} color="var(--accent)" glow />
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <UnifiedThemeToggle align="left" />
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setMobileOpen(false)}
+                  aria-label="Close navigation menu"
+                  style={{
+                    background: 'var(--bg-elevated)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '50%',
+                    width: 34,
+                    height: 34,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'var(--text-secondary)',
+                    cursor: 'pointer',
+                    fontSize: '1rem',
+                    lineHeight: 1,
+                  }}
+                >
+                  ✕
+                </button>
               </div>
 
               {NAV_LINKS.map((link) => {
@@ -320,6 +335,7 @@ export default function Navbar() {
           .nav-desktop-container {
             display: flex !important;
           }
+          .mobile-menu-wrap,
           .mobile-menu-btn {
             display: none !important;
           }

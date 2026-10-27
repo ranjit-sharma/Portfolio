@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
 const mongoSanitize = require('express-mongo-sanitize');
 const path = require('path');
+const mongoose = require('mongoose');
 
 const { generalLimiter } = require('./middleware/rateLimiter');
 const errorHandler = require('./middleware/errorHandler');
@@ -75,6 +76,18 @@ if (process.env.NODE_ENV !== 'test') {
 
 // General rate limit
 app.use('/api', generalLimiter);
+
+// Database connection check - do not serve requests or dummy data if DB is disconnected
+app.use('/api', (req, res, next) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({
+      success: false,
+      message: 'Database connection is currently unavailable. No data can be retrieved.',
+      data: null,
+    });
+  }
+  next();
+});
 
 // Routes
 app.use('/api/v1', publicRoutes);

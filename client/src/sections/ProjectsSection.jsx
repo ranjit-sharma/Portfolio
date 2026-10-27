@@ -7,66 +7,8 @@ import { SectionHeading, SkeletonCard, SkillIcon } from '../components/ui/index'
 import api from '../services/api';
 import { getAssetUrl } from '../utils/assetUrl';
 
-const FALLBACK_PROJECTS = [
-  {
-    _id: '1',
-    title: 'WonderLust',
-    slug: 'wonderlust',
-    categoryText: 'Full-Stack MERN Platform',
-    shortDescription:
-      'A full-stack property-listing web application featuring listing management, RESTful routes, server-side rendering, database integration, input validation, reusable middleware, session-based functionality, and asynchronous error handling.',
-    technologies: [
-      'Node.js',
-      'Express.js',
-      'EJS',
-      'MongoDB',
-      'Mongoose',
-      'Joi',
-      'Bootstrap',
-      'Passport.js',
-    ],
-    stats: [
-      { value: 'MERN', label: 'FULL-STACK ARCH' },
-      { value: 'CRUD', label: 'LISTING WORKFLOW' },
-      { value: 'Cloudinary', label: 'MEDIA PIPELINE' },
-    ],
-    githubUrl: 'https://github.com/ranjit-sharma/MajorProject',
-    liveDemoUrl: 'https://wonderlust-yppn.onrender.com/listings',
-    image: '/uploads/Screenshot_2026-10-21_132158-1792569132383-2161.png',
-    featured: true,
-    status: 'active',
-  },
-  {
-    _id: '2',
-    title: 'DRDO UASS Monitoring & Visualization System',
-    slug: 'drdo-uass-monitoring-visualization-system',
-    categoryText: 'Telemetry & SCADA System',
-    shortDescription:
-      'Real-time monitoring and visualization system for upper-air sounding and meteorological telemetry, featuring sensor data processing and interactive graphical visualization.',
-    technologies: [
-      'JavaScript',
-      'Node.js',
-      'React',
-      'TCP/UDP Sockets',
-      'Binary Protocol Parsing',
-      'Chart.js',
-      'LAN Networking',
-    ],
-    stats: [
-      { value: '5+', label: 'TELEMETRY STREAMS' },
-      { value: 'TCP/UDP', label: 'SOCKET PIPELINE' },
-      { value: 'Real-time', label: 'SENSOR PARSING' },
-    ],
-    githubUrl: 'https://github.com/ranjit-sharma/UASS-Monitoring-System',
-    liveDemoUrl: 'https://uass-monitoring-system.onrender.com/',
-    image: '/uploads/Screenshot_2026-10-21_131931-1792568982980-6259.png',
-    featured: true,
-    status: 'active',
-  },
-];
-
 function getDisplayUrl(url, fallbackSlug) {
-  if (!url) return `${fallbackSlug || 'project'}.onrender.com`;
+  if (!url) return '';
   try {
     const parsed = new URL(url);
     return parsed.hostname;
@@ -76,8 +18,8 @@ function getDisplayUrl(url, fallbackSlug) {
 }
 
 function getProjectStats(proj) {
-  if (Array.isArray(proj.stats) && proj.stats.length >= 3) {
-    return proj.stats.slice(0, 3);
+  if (Array.isArray(proj.stats) && proj.stats.length > 0 && proj.stats.some((s) => s && s.value)) {
+    return proj.stats.filter((s) => s && (s.value || s.label)).slice(0, 3);
   }
   const slug = (proj.slug || proj.title || '').toLowerCase();
   if (slug.includes('wonderlust')) {
@@ -117,7 +59,6 @@ function getProjectMeta(proj) {
 }
 
 function TiltBrowserMockup({ children }) {
-  const reduceMotion = useReducedMotion();
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
@@ -130,7 +71,6 @@ function TiltBrowserMockup({ children }) {
   const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-8.5deg', '8.5deg']);
 
   const handleMouseMove = (e) => {
-    if (reduceMotion) return;
     const rect = e.currentTarget.getBoundingClientRect();
     if (!rect.width || !rect.height) return;
     const xPct = (e.clientX - rect.left) / rect.width - 0.5;
@@ -174,14 +114,14 @@ export default function ProjectsSection() {
     api
       .get('/projects')
       .then((res) => {
-        const data = res.data.data;
-        setProjects(data && data.length > 0 ? data : FALLBACK_PROJECTS);
+        const data = res.data?.data;
+        setProjects(Array.isArray(data) ? data : []);
       })
-      .catch(() => setProjects(FALLBACK_PROJECTS))
+      .catch(() => setProjects([]))
       .finally(() => setLoading(false));
   }, []);
 
-  const items = projects || FALLBACK_PROJECTS;
+  const items = Array.isArray(projects) ? projects : [];
 
   return (
     <section id="projects" className="section-padding">
@@ -338,6 +278,7 @@ export default function ProjectsSection() {
           padding-bottom: 0.95rem;
           margin-bottom: 1.75rem;
           font-size: 0.75rem;
+          gap: 0.75rem;
         }
 
         .folder-dossier-category {
@@ -348,6 +289,7 @@ export default function ProjectsSection() {
           color: var(--accent);
           letter-spacing: 0.08em;
           text-transform: uppercase;
+          flex-shrink: 0;
         }
 
         .folder-dossier-file-tag {
@@ -358,6 +300,10 @@ export default function ProjectsSection() {
           display: inline-flex;
           align-items: center;
           gap: 0.4rem;
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
         /* Inner 2-column Grid */
@@ -377,7 +323,7 @@ export default function ProjectsSection() {
 
         .project-stack-title {
           position: relative;
-          font-size: clamp(1.6rem, 2.4vw, 2.25rem);
+          font-size: clamp(1.4rem, 2.4vw, 2.25rem);
           font-weight: 800;
           color: var(--text-primary);
           letter-spacing: -0.02em;
@@ -403,10 +349,6 @@ export default function ProjectsSection() {
           line-height: 1.75;
           color: var(--text-secondary);
           margin-bottom: 1.35rem;
-          display: -webkit-box;
-          -webkit-line-clamp: 3;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
         }
 
         /* Stats - three separate mini cards */
@@ -729,29 +671,9 @@ export default function ProjectsSection() {
         }
 
         @media (max-width: 960px) {
-          .folder-tab {
-            margin-left: 1rem;
-            width: min(220px, calc(100% - 2rem));
-            min-width: unset;
-          }
-
-          .folder-body {
-            padding: 1.35rem;
-            border-radius: 1rem;
-          }
-
           .project-stack-inner {
             grid-template-columns: 1fr;
-            gap: 1.75rem;
-          }
-
-          .project-folder-card {
-            top: calc(75px + var(--stack-offset-mob, 0px));
-            margin-bottom: 2rem;
-          }
-
-          .project-folder-card:last-child {
-            margin-bottom: 0;
+            gap: 1.5rem;
           }
 
           .project-stack-visual {
@@ -761,21 +683,120 @@ export default function ProjectsSection() {
           .project-stack-content {
             order: 2;
           }
-
         }
 
-        @media (max-width: 580px) {
+        /* Mobile Viewport Refinements (< 768px) */
+        @media (max-width: 768px) {
+          /* Stack View for Mobile: Cards stick cleanly as you scroll down */
+          .project-folder-card {
+            position: sticky !important;
+            top: calc(75px + var(--stack-offset-mob, 0px)) !important;
+            margin-bottom: min(10vh, 50px) !important;
+            will-change: transform;
+          }
+
+          .project-folder-card:last-child {
+            margin-bottom: 0 !important;
+          }
+
+          /* Remove stats boxes, short description text, tech stack pills, and 3 traffic dots from mobile view; preserved on desktop */
+          .project-stats-grid,
+          .project-stack-desc,
+          .project-tech-wrapper,
+          .project-tech-label,
+          .project-tech-pills,
+          .project-traffic-dots {
+            display: none !important;
+          }
+
+          /* Folder tab alignment: flush with left border of folder body */
           .folder-tab {
+            margin-left: 0 !important;
             width: min(200px, 58vw);
             min-width: min(200px, 58vw);
             max-width: min(200px, 58vw);
-            padding: 0 0.75rem;
+            height: 36px;
+            padding: 0 0.85rem;
+            font-size: 0.74rem;
           }
-          .project-stats-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+
+          .folder-tab-slant {
+            width: 34px;
+            min-width: 34px;
+            height: 36px;
+            margin-left: -1px;
           }
+
           .folder-body {
-            padding: 1.15rem;
+            padding: 1.25rem 1rem;
+            border-top-left-radius: 0;
+            border-top-right-radius: 14px;
+            border-bottom-left-radius: 14px;
+            border-bottom-right-radius: 14px;
+          }
+
+          .folder-dossier-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px dashed var(--border);
+          }
+
+          .folder-dossier-category {
+            font-size: 0.72rem;
+            gap: 0.4rem;
+            word-break: break-word;
+          }
+
+          .folder-dossier-file-tag {
+            font-size: 0.7rem;
+            max-width: 100%;
+          }
+
+          .project-stack-inner {
+            gap: 1.15rem;
+          }
+
+          .project-stack-title {
+            font-size: 1.35rem;
+            line-height: 1.25;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+          }
+
+          .project-stack-actions {
+            display: flex;
+            width: 100%;
+            gap: 0.65rem;
+            margin-top: 0.15rem;
+          }
+
+          .project-action-btn {
+            flex: 1;
+            justify-content: center;
+            padding: 0.65rem 0.85rem;
+            font-size: 0.82rem;
+          }
+
+          .project-github-btn {
+            width: 42px;
+            height: 42px;
+            flex-shrink: 0;
+          }
+        }
+            justify-content: center;
+            padding: 0.65rem 0.85rem;
+            font-size: 0.82rem;
+          }
+
+          .project-github-btn {
+            width: 42px;
+            height: 42px;
+            flex-shrink: 0;
           }
         }
       `}</style>
@@ -794,6 +815,28 @@ export default function ProjectsSection() {
               <SkeletonCard key={i} height={320} />
             ))}
           </div>
+        ) : items.length === 0 ? (
+          <div
+            style={{
+              padding: '3.5rem 1.5rem',
+              textAlign: 'center',
+              background: 'var(--bg-card)',
+              border: '1px dashed var(--border)',
+              borderRadius: 'var(--radius-lg)',
+              marginTop: '1.5rem',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <FolderGit2 size={40} style={{ color: 'var(--accent)', opacity: 0.85, marginBottom: '0.85rem' }} />
+            <h4 style={{ margin: '0 0 0.4rem', color: 'var(--text-primary)', fontSize: '1.15rem', fontWeight: 700 }}>
+              No Projects Available
+            </h4>
+            <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.88rem', maxWidth: '420px', lineHeight: 1.55 }}>
+              Database connection unavailable or no projects published yet. Please ensure the backend is connected to the database.
+            </p>
+          </div>
         ) : (
           <div ref={ref} className="projects-stack-container">
             <AnimatePresence>
@@ -810,13 +853,13 @@ export default function ProjectsSection() {
                     className="project-folder-card"
                     style={{
                       '--stack-offset': `${i * 24}px`,
-                      '--stack-offset-mob': `${i * 20}px`,
+                      '--stack-offset-mob': `${i * 16}px`,
                       '--stack-z': i + 1,
                     }}
                   >
                     <motion.div
                       initial={{ opacity: 0, y: 16 }}
-                      animate={inView ? { opacity: 1, y: 0 } : {}}
+                      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
                       transition={{ duration: 0.45, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
                       style={{ display: 'flex', flexDirection: 'column', width: '100%' }}
                     >
@@ -905,7 +948,7 @@ export default function ProjectsSection() {
 
                             {/* Tech Stack Pills */}
                             {Array.isArray(proj.technologies) && proj.technologies.length > 0 && (
-                              <div>
+                              <div className="project-tech-wrapper">
                                 <div className="project-tech-label">Tech stack</div>
                                 <ul className="project-tech-pills">
                                   {proj.technologies.map((tech) => (

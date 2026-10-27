@@ -1,7 +1,9 @@
+import { useState, useEffect } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { GraduationCap, School, MapPin, CalendarDays, Check } from 'lucide-react';
 import { useInView } from '../hooks/useInView';
 import { SectionHeading } from '../components/ui/index';
+import api from '../services/api';
 
 const DEGREE = {
   institution: 'Trident Academy of Technology',
@@ -10,7 +12,7 @@ const DEGREE = {
   qualification: 'B.Tech in Computer Science & IT',
   start: 2023,
   end: 2027,
-  cgpa: '7.73',
+  cgpa: '',
   totalSemesters: 8,
   // Update each semester
   currentSemester: 7,
@@ -40,18 +42,47 @@ const SCHOOLS = [
 export default function EducationSection() {
   const { ref, inView } = useInView();
   const reduceMotion = useReducedMotion();
-  const semesters = Array.from({ length: DEGREE.totalSemesters }, (_, i) => i + 1);
-  const completed = DEGREE.currentSemester - 1;
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Reduced motion: render in place, no entrance animation
-  const reveal = (delay) =>
-    reduceMotion
-      ? { initial: false }
-      : {
-          initial: { opacity: 0, y: 24 },
-          animate: inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 },
-          transition: { duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] },
-        };
+  useEffect(() => {
+    api
+      .get('/profile')
+      .then((res) => setProfile(res.data?.data || null))
+      .catch(() => setProfile(null))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const currentSemester =
+    profile?.educationCurrentSemester !== undefined && profile?.educationCurrentSemester !== null
+      ? Number(profile.educationCurrentSemester)
+      : DEGREE.currentSemester;
+  const rawCgpa =
+    profile?.educationCgpa !== undefined && profile?.educationCgpa !== null
+      ? String(profile.educationCgpa).trim()
+      : (profile ? '' : (DEGREE.cgpa || ''));
+  const numCgpa = parseFloat(rawCgpa);
+  const hasCgpa = Boolean(rawCgpa && !isNaN(numCgpa) && numCgpa > 0);
+  const cgpa = hasCgpa ? rawCgpa : '';
+  const totalSemesters = Number(profile?.educationTotalSemesters) || DEGREE.totalSemesters;
+  const qualification = profile?.educationDegree || DEGREE.qualification;
+  const institution = profile?.educationInstitution || DEGREE.institution;
+  const startYear = profile?.educationStartYear || DEGREE.start;
+  const endYear = profile?.educationEndYear || DEGREE.end;
+
+  const schools =
+    Array.isArray(profile?.educationSchools) && profile.educationSchools.length > 0
+      ? profile.educationSchools.filter((s) => s && s.institution)
+      : SCHOOLS;
+
+  const semesters = Array.from({ length: totalSemesters }, (_, i) => i + 1);
+  const completed = Math.max(0, currentSemester - 1);
+
+  const reveal = (delay) => ({
+    initial: { opacity: 0, y: 24 },
+    animate: inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 },
+    transition: { duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] },
+  });
 
   return (
     <section id="education" className="section-padding">
@@ -84,10 +115,10 @@ export default function EducationSection() {
         }
         .edu-watermark {
           position: absolute;
-          right: -24px;
-          top: -28px;
+          right: 220px;
+          top: -12px;
           color: var(--accent);
-          opacity: 0.06;
+          opacity: 0.08;
           pointer-events: none;
         }
         .edu-head {
@@ -366,7 +397,6 @@ export default function EducationSection() {
         .edu-school-qualification span {
           color: var(--text-secondary);
           font-weight: 500;
-          font-style: italic;
         }
         .edu-years {
           margin-left: auto;
@@ -380,12 +410,17 @@ export default function EducationSection() {
           border-radius: 8px;
           padding: 0.25rem 0.55rem;
         }
-        @media (max-width: 720px) {
+        @media (max-width: 768px) {
           .edu-grid {
             grid-template-columns: minmax(0, 1fr);
           }
           .edu-degree {
             padding: 1.25rem;
+          }
+          /* Keep watermark background design at right corner in mobile view only */
+          .edu-watermark {
+            right: -12px;
+            top: -12px;
           }
           .edu-head {
             flex-wrap: wrap;
@@ -428,7 +463,32 @@ export default function EducationSection() {
             subtitle="Where I built my foundations in computer science"
           />
 
-          <div ref={ref} className="edu-grid">
+          {loading ? (
+            <div style={{ height: 340, background: 'var(--bg-card)', borderRadius: 'var(--radius-xl)', border: '1px solid var(--border)' }} />
+          ) : !profile ? (
+            <div
+              style={{
+                padding: '3.5rem 1.5rem',
+                textAlign: 'center',
+                background: 'var(--bg-card)',
+                border: '1px dashed var(--border)',
+                borderRadius: 'var(--radius-lg)',
+                marginTop: '1.5rem',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}
+            >
+              <GraduationCap size={40} style={{ color: 'var(--accent)', opacity: 0.85, marginBottom: '0.85rem' }} />
+              <h4 style={{ margin: '0 0 0.4rem', color: 'var(--text-primary)', fontSize: '1.15rem', fontWeight: 700 }}>
+                Education Details Unavailable
+              </h4>
+              <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.88rem', maxWidth: '420px', lineHeight: 1.55 }}>
+                Database is currently not connected. Academic progress and records will be shown once connected.
+              </p>
+            </div>
+          ) : (
+            <div ref={ref} className="edu-grid">
             {/* Current degree */}
             <motion.article className="edu-card edu-degree card-spotlight" {...reveal(0)}>
               <GraduationCap size={190} strokeWidth={1.1} className="edu-watermark" aria-hidden="true" />
@@ -444,8 +504,8 @@ export default function EducationSection() {
                     </span>
                     <span className="edu-tag">{DEGREE.affiliation}</span>
                   </div>
-                  <h3 className="edu-qualification">{DEGREE.qualification}</h3>
-                  <p className="edu-institution">{DEGREE.institution}</p>
+                  <h3 className="edu-qualification">{qualification}</h3>
+                  <p className="edu-institution">{institution}</p>
                   <div className="edu-meta">
                     <span>
                       <MapPin size={14} aria-hidden="true" />
@@ -453,50 +513,52 @@ export default function EducationSection() {
                     </span>
                     <span>
                       <CalendarDays size={14} aria-hidden="true" />
-                      {DEGREE.start} – {DEGREE.end}
+                      {startYear} – {endYear}
                     </span>
                   </div>
                 </div>
 
-                <div className="edu-score" role="img" aria-label={`CGPA ${DEGREE.cgpa} out of 10`}>
-                  <svg viewBox="0 0 100 100" className="edu-ring" aria-hidden="true">
-                    <circle cx="50" cy="50" r="44" className="edu-ring-track" />
-                    {/* pathLength=1 lets the dash offset be the unfilled share of the ring */}
-                    <motion.circle
-                      cx="50"
-                      cy="50"
-                      r="44"
-                      className="edu-ring-fill"
-                      pathLength="1"
-                      strokeDasharray="1"
-                      initial={reduceMotion ? false : { strokeDashoffset: 1 }}
-                      animate={{ strokeDashoffset: inView || reduceMotion ? 1 - DEGREE.cgpa / 10 : 1 }}
-                      transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                    />
-                  </svg>
-                  <div className="edu-ring-center" aria-hidden="true">
-                    <strong>{DEGREE.cgpa}</strong>
-                    <span>CGPA</span>
+                {hasCgpa && (
+                  <div className="edu-score" role="img" aria-label={`CGPA ${cgpa} out of 10`}>
+                    <svg viewBox="0 0 100 100" className="edu-ring" aria-hidden="true">
+                      <circle cx="50" cy="50" r="44" className="edu-ring-track" />
+                      {/* pathLength=1 lets the dash offset be the unfilled share of the ring */}
+                      <motion.circle
+                        cx="50"
+                        cy="50"
+                        r="44"
+                        className="edu-ring-fill"
+                        pathLength="1"
+                        strokeDasharray="1"
+                        initial={{ strokeDashoffset: 1 }}
+                        animate={{ strokeDashoffset: inView ? Math.max(0, 1 - numCgpa / 10) : 1 }}
+                        transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                      />
+                    </svg>
+                    <div className="edu-ring-center" aria-hidden="true">
+                      <strong>{cgpa}</strong>
+                      <span>CGPA</span>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
               <div className="edu-progress">
                 <div className="edu-progress-head">
                   <span className="edu-progress-label">Degree progress</span>
                   <span className="edu-progress-value">
-                    Semester <strong>{DEGREE.currentSemester}</strong> of {DEGREE.totalSemesters}
+                    Semester <strong>{currentSemester}</strong> of {totalSemesters}
                   </span>
                 </div>
                 <div
                   role="img"
-                  aria-label={`${completed} of ${DEGREE.totalSemesters} semesters completed, currently in semester ${DEGREE.currentSemester}`}
+                  aria-label={`${completed} of ${totalSemesters} semesters completed, currently in semester ${currentSemester}`}
                 >
                   <div className="edu-years-row" aria-hidden="true">
-                    {Array.from({ length: DEGREE.totalSemesters / 2 }, (_, y) => (
+                    {Array.from({ length: Math.ceil(totalSemesters / 2) }, (_, y) => (
                       <span
                         key={y}
-                        className={`edu-year${y + 1 === Math.ceil(DEGREE.currentSemester / 2) ? ' edu-year-current' : ''}`}
+                        className={`edu-year${y + 1 === Math.ceil(currentSemester / 2) ? ' edu-year-current' : ''}`}
                       >
                         <span>Year </span>
                         {y + 1}
@@ -509,18 +571,18 @@ export default function EducationSection() {
                     {/* Fills from the first dot up to the current one */}
                     <motion.span
                       className="edu-track-fill"
-                      initial={reduceMotion ? false : { scaleX: 0 }}
-                      animate={{ scaleX: inView || reduceMotion ? completed / (DEGREE.totalSemesters - 1) : 0 }}
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: inView ? completed / Math.max(1, totalSemesters - 1) : 0 }}
                       transition={{ duration: 1.1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
                     />
                     {semesters.map((n) => {
-                      const state = n <= completed ? 'done' : n === DEGREE.currentSemester ? 'current' : 'next';
+                      const state = n <= completed ? 'done' : n === currentSemester ? 'current' : 'next';
                       return (
                         <motion.div
                           key={n}
                           className={`edu-step edu-step-${state}`}
-                          initial={reduceMotion ? false : { opacity: 0, scale: 0.6 }}
-                          animate={inView || reduceMotion ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.6 }}
+                          initial={{ opacity: 0, scale: 0.6 }}
+                          animate={inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.6 }}
                           transition={{ duration: 0.35, delay: 0.3 + n * 0.11, ease: [0.16, 1, 0.3, 1] }}
                         >
                           <span className="edu-step-dot">
@@ -539,12 +601,12 @@ export default function EducationSection() {
             </motion.article>
 
             {/* Schooling */}
-            {SCHOOLS.map((school, i) => (
+            {schools.map((school, i) => (
               <motion.article
-                key={school.institution}
+                key={school._id || school.institution || i}
                 className="edu-card edu-school card-spotlight"
                 {...reveal(0.15 + i * 0.1)}
-                whileHover={reduceMotion ? undefined : { y: -3 }}
+                whileHover={{ y: -3 }}
               >
                 <div className="edu-head">
                   <span className="edu-icon edu-icon-sm" aria-hidden="true">
@@ -572,6 +634,7 @@ export default function EducationSection() {
               </motion.article>
             ))}
           </div>
+          )}
         </div>
       </div>
     </section>

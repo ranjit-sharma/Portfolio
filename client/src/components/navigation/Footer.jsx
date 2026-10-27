@@ -51,20 +51,19 @@ export default function Footer() {
           background: linear-gradient(180deg, transparent, var(--bg-surface) 40%);
           border-top: 1px solid var(--border);
         }
-        /* Call-to-action band */
+        /* Call-to-action banner (seamless without card style) */
         .ft-cta {
           display: flex;
           align-items: center;
           justify-content: space-between;
           gap: 1.5rem;
           flex-wrap: wrap;
-          margin: 3rem 0 3rem;
-          padding: 1.75rem 2rem;
-          border: 1px solid var(--accent-border);
-          border-radius: 1rem;
-          background:
-            radial-gradient(circle at 0% 0%, var(--accent-dim) 0%, transparent 55%),
-            var(--bg-card);
+          margin: 2.75rem 0 3rem;
+          padding: 0 0 2.5rem;
+          border: none;
+          border-bottom: 1px solid var(--border);
+          border-radius: 0;
+          background: none;
         }
         .ft-cta-title {
           margin: 0;
@@ -264,7 +263,7 @@ export default function Footer() {
         }
         @media (max-width: 560px) {
           .ft-cta {
-            padding: 1.35rem;
+            padding: 0 0 2rem;
           }
           .ft-main {
             grid-template-columns: minmax(0, 1fr);

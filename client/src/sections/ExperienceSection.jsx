@@ -7,68 +7,6 @@ import { SectionHeading, SkeletonCard } from '../components/ui/index';
 import api from '../services/api';
 import { getAssetUrl } from '../utils/assetUrl';
 
-const FALLBACK_EXPERIENCE = [
-  {
-    _id: '1',
-    company: 'DRDO PXE',
-    companyShort: 'DRDO',
-    companySub: 'DRDO — PXE Chandipur',
-    role: 'Software Engineering Intern',
-    employmentType: 'Internship',
-    location: 'Chandipur, Odisha',
-    startDate: '2026-06-01',
-    endDate: '2026-07-31',
-    current: false,
-    durationText: '1 month',
-    projectTitle: 'Upper Air Sounding System (UASS)',
-    repoUrl: 'https://github.com/ranjit-sharma',
-    certificateUrl: '/uploads/cert_5_drdo.png',
-    stats: [
-      { value: '5+', label: 'TELEMETRY STREAMS' },
-      { value: '100%', label: 'REAL-TIME SENSORS' },
-      { value: 'TCP/UDP', label: 'LAN ARCHITECTURE' },
-    ],
-    description:
-      'Worked on the Upper Air Sounding System (UASS) — a ground station terminal for real-time meteorological data acquisition and visualization.',
-    responsibilities: [
-      'Owned real-time telemetry processing and data acquisition for the Upper Air Sounding System (UASS) ground station terminal.',
-      'Developed functionality for processing and decoding binary telemetry frames from weather sounding equipment.',
-      'Built real-time monitoring interfaces for live GPS tracking and meteorological sensor data visualization.',
-      'Implemented robust TCP/UDP socket communication for LAN-based data acquisition and verified with telemetry streams.',
-    ],
-    technologies: ['React', 'Node.js', 'JavaScript', 'TCP/UDP', 'Binary Data Processing', 'Data Visualization'],
-  },
-  {
-    _id: '2',
-    company: 'Cognifyz Technologies',
-    companyShort: 'CT',
-    companySub: 'Cognifyz Technologies — Remote',
-    role: 'Java Development Intern',
-    employmentType: 'Internship',
-    location: 'Remote',
-    startDate: '2024-12-15',
-    endDate: '2025-01-15',
-    current: false,
-    durationText: '1 month',
-    projectTitle: 'Core Java & OOP Architecture',
-    repoUrl: 'https://github.com/ranjit-sharma',
-    certificateUrl: '',
-    stats: [
-      { value: '15+', label: 'PROGRAMS BUILT' },
-      { value: '100%', label: 'OOP ARCHITECTURE' },
-      { value: 'DSA', label: 'OPTIMIZED CODE' },
-    ],
-    description:
-      'Completed a structured Java development internship, working on programming tasks and strengthening core Java skills.',
-    responsibilities: [
-      'Implemented robust Java programs covering core object-oriented programming concepts and design patterns.',
-      'Developed data structure manipulation logic and practical algorithms for problem-solving exercises.',
-      'Applied clean code standards, exception handling, and modular component design.',
-    ],
-    technologies: ['Java', 'OOP', 'Data Structures', 'Problem Solving'],
-  },
-];
-
 function formatRailDate(startStr, endStr, isCurrent) {
   const parseMthYr = (str) => {
     if (!str) return '';
@@ -112,10 +50,10 @@ export default function ExperienceSection() {
     api
       .get('/experience')
       .then((res) => {
-        const data = res.data.data;
-        setExperiences(data && data.length > 0 ? data : FALLBACK_EXPERIENCE);
+        const data = res.data?.data;
+        setExperiences(Array.isArray(data) ? data : []);
       })
-      .catch(() => setExperiences(FALLBACK_EXPERIENCE))
+      .catch(() => setExperiences([]))
       .finally(() => setLoading(false));
   }, []);
 
@@ -131,7 +69,7 @@ export default function ExperienceSection() {
     }
   }, [activeCertModal, handleKeyDown]);
 
-  const items = experiences || FALLBACK_EXPERIENCE;
+  const items = Array.isArray(experiences) ? experiences : [];
 
   return (
     <section id="experience" className="section-padding">
@@ -183,6 +121,28 @@ export default function ExperienceSection() {
               <SkeletonCard key={i} height={260} />
             ))}
           </div>
+        ) : items.length === 0 ? (
+          <div
+            style={{
+              padding: '3.5rem 1.5rem',
+              textAlign: 'center',
+              background: 'var(--bg-card)',
+              border: '1px dashed var(--border)',
+              borderRadius: 'var(--radius-lg)',
+              marginTop: '1.5rem',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <Award size={38} style={{ color: 'var(--accent)', opacity: 0.85, marginBottom: '0.85rem' }} />
+            <h4 style={{ margin: '0 0 0.4rem', color: 'var(--text-primary)', fontSize: '1.15rem', fontWeight: 700 }}>
+              No Experience Records
+            </h4>
+            <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.88rem', maxWidth: '420px', lineHeight: 1.55 }}>
+              Experience data from database is currently unavailable. Ensure the database connection is active.
+            </p>
+          </div>
         ) : (
           <div ref={ref} style={{ display: 'flex', flexDirection: 'column', gap: '2.75rem' }}>
             {items.map((exp, i) => {
@@ -207,7 +167,7 @@ export default function ExperienceSection() {
                 <motion.div
                   key={exp._id || i}
                   initial={{ opacity: 0, y: 28 }}
-                  animate={inView ? { opacity: 1, y: 0 } : {}}
+                  animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 28 }}
                   transition={{ duration: 0.5, delay: i * 0.12 }}
                   className="experience-timeline-row"
                 >

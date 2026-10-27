@@ -1,7 +1,26 @@
 import { useEffect, useState, useRef } from 'react';
 import api from '../services/api';
 import { Spinner } from '../components/ui/index';
-import { Upload, FileText, Image, Check, ExternalLink, Trash2 } from 'lucide-react';
+import { Upload, FileText, Image, Check, ExternalLink, Trash2, Sparkles } from 'lucide-react';
+
+const DEFAULT_HIGHLIGHTS = [
+  {
+    title: 'Full-Stack Development',
+    desc: 'Building web applications end-to-end — from responsive frontends to RESTful backend APIs.',
+  },
+  {
+    title: 'Auth & Security',
+    desc: 'Implementing JWT authentication, authorization, input validation, and secure middleware patterns.',
+  },
+  {
+    title: 'Database Integration',
+    desc: 'Designing MongoDB schemas, writing Mongoose models, and working with SQL databases.',
+  },
+  {
+    title: 'Problem Solving & DSA',
+    desc: 'Practicing algorithmic thinking and optimized data structures to solve complex computational challenges.',
+  },
+];
 import { getAssetUrl } from '../utils/assetUrl';
 
 export default function AdminSettings() {
@@ -107,9 +126,11 @@ export default function AdminSettings() {
   return (
     <div>
       <div style={{ marginBottom: '1.75rem' }}>
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Profile & Settings</h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-          Manage your personal details, direct file uploads for your resume and avatar, and links.
+        <h1 style={{ fontSize: '1.6rem', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
+          Profile & System Settings
+        </h1>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem' }}>
+          Configure personal bio, avatar photo, resume document, social handles, and site metadata.
         </p>
       </div>
 
@@ -350,6 +371,75 @@ export default function AdminSettings() {
           </div>
         </div>
 
+
+
+        {/* About Highlights / Core Competencies */}
+        <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '1.5rem', boxShadow: 'var(--shadow-sm)' }}>
+          <h2 style={{ fontWeight: 700, fontSize: '1rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Sparkles size={18} style={{ color: 'var(--accent)' }} />
+            About Section Highlights (01 - 04 Competency Cards)
+          </h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', margin: '0 0 1rem' }}>
+            Customize the 4 core focus / competency cards displayed on your public About section.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+            {[0, 1, 2, 3].map((idx) => {
+              const currentHighlights =
+                Array.isArray(profile?.aboutHighlights) && profile.aboutHighlights.length === 4
+                  ? profile.aboutHighlights
+                  : DEFAULT_HIGHLIGHTS;
+              const item = currentHighlights[idx] || DEFAULT_HIGHLIGHTS[idx];
+
+              return (
+                <div
+                  key={idx}
+                  style={{
+                    background: 'var(--bg-card)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '1rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.5rem',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--accent)' }}>
+                      Highlight 0{idx + 1}
+                    </span>
+                  </div>
+                  <div>
+                    <label style={{ ...labelSt, fontSize: '0.74rem' }}>Card Title</label>
+                    <input
+                      style={inputSt}
+                      value={item.title}
+                      onChange={(e) => {
+                        const next = [...currentHighlights];
+                        next[idx] = { ...item, title: e.target.value };
+                        set('aboutHighlights', next);
+                      }}
+                      placeholder={`Title 0${idx + 1}`}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ ...labelSt, fontSize: '0.74rem' }}>Description</label>
+                    <textarea
+                      style={{ ...inputSt, resize: 'vertical', minHeight: 70, fontSize: '0.8rem' }}
+                      value={item.desc}
+                      onChange={(e) => {
+                        const next = [...currentHighlights];
+                        next[idx] = { ...item, desc: e.target.value };
+                        set('aboutHighlights', next);
+                      }}
+                      placeholder={`Description for highlight 0${idx + 1}`}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Social & Coding Links */}
         <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '1.5rem', boxShadow: 'var(--shadow-sm)' }}>
           <h2 style={{ fontWeight: 700, fontSize: '1rem', marginBottom: '1rem' }}>Social & Coding Profiles</h2>
@@ -385,36 +475,8 @@ export default function AdminSettings() {
         <button
           type="submit"
           disabled={saving}
-          style={{
-            background: 'var(--accent)',
-            color: 'var(--accent-contrast)',
-            border: '1px solid var(--accent)',
-            boxShadow: '0 2px 10px var(--accent-glow)',
-            borderRadius: 'var(--radius-md)',
-            padding: '0.75rem 1.75rem',
-            fontWeight: 700,
-            cursor: saving ? 'not-allowed' : 'pointer',
-            fontFamily: 'inherit',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            width: 'fit-content',
-            transition: 'all var(--transition-fast)',
-          }}
-          onMouseEnter={(e) => {
-            if (!saving) {
-              e.currentTarget.style.background = 'var(--accent-hover)';
-              e.currentTarget.style.boxShadow = '0 0 16px var(--accent-glow)';
-              e.currentTarget.style.transform = 'translateY(-1px)';
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!saving) {
-              e.currentTarget.style.background = 'var(--accent)';
-              e.currentTarget.style.boxShadow = '0 2px 10px var(--accent-glow)';
-              e.currentTarget.style.transform = 'translateY(0)';
-            }
-          }}
+          className="admin-btn-primary"
+          style={{ width: 'fit-content' }}
         >
           {saving ? <><Spinner size={16} color="var(--accent-contrast)" /> Saving...</> : 'Save Settings'}
         </button>

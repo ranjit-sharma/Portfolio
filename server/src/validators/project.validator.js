@@ -7,6 +7,15 @@ const projectSchema = z.object({
   fullDescription: z.string().optional().default(''),
   technologies: z.array(z.string()).optional().default([]),
   features: z.array(z.string()).optional().default([]),
+  stats: z
+    .array(
+      z.object({
+        value: z.string().optional().default(''),
+        label: z.string().optional().default(''),
+      })
+    )
+    .optional()
+    .default([]),
   image: z.string().optional().default(''),
   gallery: z.array(z.string()).optional().default([]),
   githubUrl: z.string().optional().default(''),

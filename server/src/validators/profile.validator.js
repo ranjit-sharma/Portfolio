@@ -16,6 +16,34 @@ const profileSchema = z.object({
   available: z.boolean().optional(),
   availabilityNote: z.string().optional(),
   views: z.number().optional(),
+  educationCgpa: z.union([z.string(), z.number()]).optional().nullable(),
+  educationCurrentSemester: z.coerce.number().optional(),
+  educationTotalSemesters: z.coerce.number().optional(),
+  educationDegree: z.string().optional(),
+  educationInstitution: z.string().optional(),
+  educationStartYear: z.coerce.number().optional(),
+  educationEndYear: z.coerce.number().optional(),
+  educationSchools: z
+    .array(
+      z.object({
+        institution: z.string().optional().default(''),
+        qualification: z.string().optional().default(''),
+        level: z.string().optional().default(''),
+        board: z.string().optional().default(''),
+        location: z.string().optional().default(''),
+        start: z.union([z.string(), z.number()]).optional().default(''),
+        end: z.union([z.string(), z.number()]).optional().default(''),
+      })
+    )
+    .optional(),
+  aboutHighlights: z
+    .array(
+      z.object({
+        title: z.string().optional().default(''),
+        desc: z.string().optional().default(''),
+      })
+    )
+    .optional(),
 });
 
 module.exports = { profileSchema };

@@ -11,7 +11,7 @@ export function SectionHeading({ eyebrow, title, subtitle, centered = false, ind
     <motion.div
       ref={ref}
       initial={{ opacity: 0, y: 24 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
+      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
       transition={{ duration: 0.5 }}
       className={`section-heading${centered ? ' section-heading-centered' : ''}`}
     >
@@ -87,7 +87,6 @@ export function TiltCard({
   onClick,
   ...props
 }) {
-  const reduceMotion = useReducedMotion();
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
@@ -99,7 +98,6 @@ export function TiltCard({
 
   const handleMouseMove = (e) => {
     if (props.onMouseMove) props.onMouseMove(e);
-    if (reduceMotion) return;
     const rect = e.currentTarget.getBoundingClientRect();
     if (!rect.width || !rect.height) return;
     const xPct = (e.clientX - rect.left) / rect.width - 0.5;
@@ -118,7 +116,7 @@ export function TiltCard({
     <motion.div
       className={`card-spotlight ${className}`}
       onClick={onClick}
-      whileTap={onClick && !reduceMotion ? { scale: 0.98 } : undefined}
+      whileTap={onClick ? { scale: 0.98 } : undefined}
       style={{
         transformPerspective: 1000,
         rotateX,

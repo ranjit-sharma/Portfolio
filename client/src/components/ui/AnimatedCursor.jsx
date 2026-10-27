@@ -193,15 +193,15 @@ export default function AnimatedCursor() {
               initial={{
                 scale: 0.4,
                 opacity: 0,
-                x: p.x,
-                y: p.y,
+                x: p.x - 11,
+                y: p.y - 11,
                 rotate: p.rot - 8,
               }}
               animate={{
                 scale: [0.4, 1.1, 0.9, 0.25],
                 opacity: [0, 0.95, 0.9, 0],
-                x: p.x + p.dx,
-                y: p.y + p.dy,
+                x: p.x + p.dx - 11,
+                y: p.y + p.dy - 11,
                 rotate: [p.rot - 8, p.rot, p.rot + p.rotDelta],
               }}
               exit={{ opacity: 0, scale: 0 }}
@@ -214,8 +214,6 @@ export default function AnimatedCursor() {
                 position: 'fixed',
                 top: 0,
                 left: 0,
-                translateX: '-50%',
-                translateY: '-50%',
                 pointerEvents: 'none',
                 display: 'flex',
                 alignItems: 'center',

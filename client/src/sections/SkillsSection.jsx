@@ -7,21 +7,18 @@ import {
   TbCode,
   TbBinaryTree,
   TbTools,
+  TbCloud,
+  TbBrain,
+  TbDeviceMobile,
+  TbShieldLock,
+  TbCpu,
+  TbTerminal2,
 } from 'react-icons/tb';
 import { useInView } from '../hooks/useInView';
 import { SectionHeading, SkeletonCard, SkillIcon } from '../components/ui/index';
 import api from '../services/api';
 
-const FALLBACK_SKILLS = {
-  Frontend: ['HTML5', 'CSS3', 'JavaScript', 'React.js', 'Tailwind CSS', 'Bootstrap', 'EJS'],
-  Backend: ['Node.js', 'Express.js', 'REST APIs', 'Authentication & Authorization', 'Middleware', 'Input Validation', 'Error Handling'],
-  Database: ['MongoDB', 'Mongoose', 'MySQL'],
-  Language: ['JavaScript', 'C++', 'Java', 'SQL'],
-  'CS Fundamentals': ['Data Structures & Algorithms', 'OOP', 'DBMS', 'Operating Systems', 'Computer Networks'],
-  Tools: ['Git', 'GitHub', 'VS Code', 'Postman'],
-};
-
-// Modern developer icon pack for categories
+// Modern developer icon pack for categories with dynamic fallback for custom categories
 const CATEGORY_ICONS = {
   Frontend: TbLayout,
   Backend: TbServer,
@@ -30,6 +27,18 @@ const CATEGORY_ICONS = {
   'CS Fundamentals': TbBinaryTree,
   Tools: TbTools,
 };
+
+function getCategoryIcon(catName) {
+  if (CATEGORY_ICONS[catName]) return CATEGORY_ICONS[catName];
+  const c = (catName || '').toLowerCase();
+  if (c.includes('cloud') || c.includes('aws') || c.includes('azure') || c.includes('devops')) return TbCloud;
+  if (c.includes('ai') || c.includes('ml') || c.includes('machine') || c.includes('data science') || c.includes('deep')) return TbBrain;
+  if (c.includes('mob') || c.includes('app') || c.includes('android') || c.includes('ios') || c.includes('flutter')) return TbDeviceMobile;
+  if (c.includes('sec') || c.includes('cyber') || c.includes('auth')) return TbShieldLock;
+  if (c.includes('sys') || c.includes('os') || c.includes('hardware') || c.includes('iot')) return TbCpu;
+  if (c.includes('test') || c.includes('qa') || c.includes('script')) return TbTerminal2;
+  return TbCode;
+}
 
 // Each scrolling strip needs enough chips to be wider than its row before it can loop
 const MIN_CHIPS_PER_COPY = 8;
@@ -55,7 +64,7 @@ export default function SkillsSection() {
       .then((res) => {
         const raw = res.data?.data;
         if (!raw || raw.length === 0) {
-          setSkillsMap(FALLBACK_SKILLS);
+          setSkillsMap({});
           return;
         }
         const grouped = {};
@@ -65,11 +74,11 @@ export default function SkillsSection() {
         });
         setSkillsMap(grouped);
       })
-      .catch(() => setSkillsMap(FALLBACK_SKILLS))
+      .catch(() => setSkillsMap({}))
       .finally(() => setLoading(false));
   }, []);
 
-  const entries = Object.entries(skillsMap || FALLBACK_SKILLS);
+  const entries = Object.entries(skillsMap || {});
 
   return (
     <section id="skills" className="section-padding">
@@ -201,10 +210,32 @@ export default function SkillsSection() {
 
           {loading ? (
             <SkeletonCard height={420} />
+          ) : entries.length === 0 ? (
+            <div
+              style={{
+                padding: '3.5rem 1.5rem',
+                textAlign: 'center',
+                background: 'var(--bg-card)',
+                border: '1px dashed var(--border)',
+                borderRadius: 'var(--radius-lg)',
+                marginTop: '1.5rem',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}
+            >
+              <TbTools size={38} style={{ color: 'var(--accent)', opacity: 0.85, marginBottom: '0.85rem' }} />
+              <h4 style={{ margin: '0 0 0.4rem', color: 'var(--text-primary)', fontSize: '1.15rem', fontWeight: 700 }}>
+                No Skills Available
+              </h4>
+              <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.88rem', maxWidth: '420px', lineHeight: 1.55 }}>
+                Skills from database are currently unavailable. Ensure the database connection is active.
+              </p>
+            </div>
           ) : (
-            <ul ref={ref} className={`skr-rows${reduceMotion ? ' skr-static' : ''}`}>
+            <ul ref={ref} className="skr-rows">
               {entries.map(([category, skills], ci) => {
-                const CatIcon = CATEGORY_ICONS[category] || TbCode;
+                const CatIcon = getCategoryIcon(category);
                 // Repeat short lists so one copy is wide enough to fill the row
                 const copy = Array.from(
                   { length: Math.ceil(MIN_CHIPS_PER_COPY / skills.length) },
@@ -214,8 +245,8 @@ export default function SkillsSection() {
                   <motion.li
                     key={category}
                     className={`skr-row${ci % 2 ? ' skr-row-reverse' : ''}`}
-                    initial={reduceMotion ? false : { opacity: 0, y: 16 }}
-                    animate={inView || reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
                     transition={{ duration: 0.45, delay: ci * 0.07, ease: [0.16, 1, 0.3, 1] }}
                   >
                     <div className="skr-label">
@@ -237,8 +268,14 @@ export default function SkillsSection() {
                       ))}
                     </ul>
                     <div className="skr-strip" aria-hidden="true">
-                      <div className="skr-track" style={{ '--skr-duration': `${copy.length * 3.5}s` }}>
-                        {(reduceMotion ? [skills] : [copy, copy]).map((list, k) => (
+                      <div
+                        className="skr-track"
+                        style={{
+                          '--skr-duration': `${copy.length * 3.5}s`,
+                          animationDuration: `${copy.length * 3.5}s`,
+                        }}
+                      >
+                        {[copy, copy].map((list, k) => (
                           <div key={k} className="skr-copy">
                             {list.map((skill, j) => (
                               <SkillChip key={`${skill}-${j}`} skill={skill} />

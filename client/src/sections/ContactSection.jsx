@@ -128,11 +128,11 @@ export default function ContactSection() {
   const availability =
     profile?.availabilityNote || (profile?.available ? 'Open to full-time roles and internships' : 'Available for opportunities');
 
-  // Reduced motion: render in place, no entrance animation
-  const reveal = (hidden, delay = 0) =>
-    reduceMotion
-      ? { initial: false }
-      : { initial: hidden, animate: inView ? { opacity: 1, x: 0, y: 0 } : hidden, transition: { duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] } };
+  const reveal = (hidden, delay = 0) => ({
+    initial: hidden,
+    animate: inView ? { opacity: 1, x: 0, y: 0 } : hidden,
+    transition: { duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] },
+  });
 
   const renderField = (name) => {
     const f = FIELDS[name];
@@ -560,7 +560,7 @@ export default function ContactSection() {
                 <div className="contact-success" role="status">
                   <motion.span
                     className="contact-success-icon"
-                    initial={reduceMotion ? false : { scale: 0, rotate: -45 }}
+                    initial={{ scale: 0, rotate: -45 }}
                     animate={{ scale: 1, rotate: 0 }}
                     transition={{ type: 'spring', stiffness: 260, damping: 16 }}
                   >

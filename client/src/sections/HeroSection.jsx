@@ -98,8 +98,8 @@ export default function HeroSection() {
             {/* Availability & Views badges */}
             <motion.div
               initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
+              animate={introDone ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
+              transition={{ duration: 0.45 }}
               style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}
             >
               <span
@@ -131,9 +131,9 @@ export default function HeroSection() {
             {/* Main heading */}
             <motion.h1
               aria-label="Hi, I'm Ranjit Sharma."
-              initial={reduceMotion ? false : 'hidden'}
-              animate={introDone || reduceMotion ? 'visible' : 'hidden'}
-              variants={{ visible: { transition: { staggerChildren: 0.09, delayChildren: 0.3 } } }}
+              initial="hidden"
+              animate={introDone ? 'visible' : 'hidden'}
+              variants={{ visible: { transition: { staggerChildren: 0.09, delayChildren: 0.15 } } }}
               style={{
                 fontSize: 'clamp(2.2rem, 5vw, 4rem)',
                 fontWeight: 900,
@@ -143,21 +143,26 @@ export default function HeroSection() {
               }}
             >
               {HEADING_WORDS.map((word, i) => (
-                <span key={i} aria-hidden="true">
-                  <motion.span variants={HEADING_WORD_VARIANTS} style={{ display: 'inline-block' }}>
-                    <span style={{ color: word.accent ? 'var(--accent)' : undefined }}>{word.text}</span>
-                    {word.after}
-                  </motion.span>
-                  {i < HEADING_WORDS.length - 1 && ' '}
-                </span>
+                <motion.span
+                  key={i}
+                  variants={HEADING_WORD_VARIANTS}
+                  aria-hidden="true"
+                  style={{
+                    display: 'inline-block',
+                    marginRight: i < HEADING_WORDS.length - 1 ? '0.28em' : 0,
+                  }}
+                >
+                  <span style={{ color: word.accent ? 'var(--accent)' : undefined }}>{word.text}</span>
+                  {word.after}
+                </motion.span>
               ))}
             </motion.h1>
 
             {/* Typing effect */}
             <motion.div
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.4, delay: 0.3 }}
+              animate={introDone ? { opacity: 1 } : { opacity: 0 }}
+              transition={{ duration: 0.45, delay: 0.3 }}
               style={{
                 fontSize: 'clamp(1.1rem, 2.5vw, 1.5rem)',
                 fontWeight: 700,
@@ -171,7 +176,7 @@ export default function HeroSection() {
             {/* Description */}
             <motion.p
               initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={introDone ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
               transition={{ duration: 0.5, delay: 0.4 }}
               style={{
                 color: 'var(--text-secondary)',
@@ -187,7 +192,7 @@ export default function HeroSection() {
             {/* CTA Pill Buttons (View Projects & Resume) */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={introDone ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
               transition={{ duration: 0.5, delay: 0.5 }}
               style={{
                 display: 'flex',
@@ -274,8 +279,8 @@ export default function HeroSection() {
             {/* Social Icons Row + Location Divider */}
             <motion.div
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.4, delay: 0.6 }}
+              animate={introDone ? { opacity: 1 } : { opacity: 0 }}
+              transition={{ duration: 0.45, delay: 0.6 }}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -383,8 +388,8 @@ export default function HeroSection() {
           {/* Right — Code panel */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            animate={introDone ? { opacity: 1, x: 0 } : { opacity: 0, x: 40 }}
+            transition={{ duration: 0.6, delay: 0.35 }}
             style={{ display: 'flex', justifyContent: 'center' }}
           >
             <div
