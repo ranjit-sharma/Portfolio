@@ -1,3 +1,5 @@
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 require('dotenv').config();
 const express = require('express');
 const helmet = require('helmet');
@@ -5,7 +7,6 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
 const mongoSanitize = require('express-mongo-sanitize');
-const path = require('path');
 const mongoose = require('mongoose');
 
 const { generalLimiter } = require('./middleware/rateLimiter');
@@ -34,8 +35,13 @@ app.use(
 app.use(helmet());
 
 // CORS
+const clientUrls = (process.env.CLIENT_URL || '')
+  .split(',')
+  .map((u) => u.trim().replace(/\/$/, ''))
+  .filter(Boolean);
+
 const allowedOrigins = [
-  process.env.CLIENT_URL,
+  ...clientUrls,
   'http://localhost:5173',
   'http://localhost:5174',
   'http://localhost:5175',
@@ -97,6 +103,19 @@ app.use('/api/v1/admin', adminRoutes);
 app.use('/api/*', (req, res) => {
   res.status(404).json({ success: false, message: 'API endpoint not found' });
 });
+
+// Serve production client build if client/dist exists (Unified Render Web Service)
+const clientDistPath = path.join(__dirname, '../../client/dist');
+const fs = require('fs');
+if (fs.existsSync(clientDistPath)) {
+  app.use(express.static(clientDistPath));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
+    }
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+}
 
 // Centralized error handler
 app.use(errorHandler);
