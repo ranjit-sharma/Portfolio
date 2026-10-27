@@ -32,7 +32,27 @@ app.use(
 );
 
 // Security headers
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrcAttr: ["'none'"],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+        fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
+        imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
+        connectSrc: ["'self'", 'https:', 'http:'],
+        objectSrc: ["'none'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
+        frameAncestors: ["'self'"],
+      },
+    },
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  })
+);
 
 // CORS
 const clientUrls = (process.env.CLIENT_URL || '')
@@ -42,6 +62,8 @@ const clientUrls = (process.env.CLIENT_URL || '')
 
 const allowedOrigins = [
   ...clientUrls,
+  'https://ranjit-sharma.onrender.com',
+  process.env.RENDER_EXTERNAL_URL,
   'http://localhost:5173',
   'http://localhost:5174',
   'http://localhost:5175',
@@ -52,16 +74,34 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, server-to-server)
+      if (!origin) return callback(null, true);
+
       // Allow any localhost/127.0.0.1 port in non-production
       const isLocalhost =
         process.env.NODE_ENV !== 'production' &&
         /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
 
-      if (!origin || allowedOrigins.includes(origin) || isLocalhost) {
-        callback(null, true);
-      } else {
-        callback(new Error(`CORS blocked: ${origin}`));
+      // Allow Render domains (*.onrender.com)
+      const isRender = /^https:\/\/[a-zA-Z0-9-]+\.onrender\.com$/.test(origin);
+
+      if (allowedOrigins.includes(origin) || isLocalhost || isRender) {
+        return callback(null, true);
       }
+
+      // Check if origin matches host
+      try {
+        const originUrl = new URL(origin);
+        if (
+          process.env.RENDER_EXTERNAL_HOSTNAME &&
+          originUrl.hostname === process.env.RENDER_EXTERNAL_HOSTNAME
+        ) {
+          return callback(null, true);
+        }
+      } catch (e) {}
+
+      // Reject without throwing a 500 server error
+      return callback(null, false);
     },
     credentials: true,
   })
@@ -120,6 +160,7 @@ if (clientDistPath) {
     if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
       return next();
     }
+    res.setHeader('Cache-Control', 'no-cache');
     res.sendFile(path.join(clientDistPath, 'index.html'));
   });
 } else {
