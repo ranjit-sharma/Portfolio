@@ -10,7 +10,6 @@ dist-ssr/
 # Environment files (never commit secrets)
 .env
 .env.*
-.env.example
 **/.env
 **/.env.*
 **/.env.example
@@ -30,8 +29,6 @@ client/public/uploads/*
 !client/public/uploads/.gitkeep
 
 # System & Editor files
-.agents/
-AGENTS.md
 .DS_Store
 Thumbs.db
 .vscode/
