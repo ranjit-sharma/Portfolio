@@ -105,15 +105,50 @@ app.use('/api/*', (req, res) => {
 });
 
 // Serve production client build if client/dist exists (Unified Render Web Service)
-const clientDistPath = path.join(__dirname, '../../client/dist');
 const fs = require('fs');
-if (fs.existsSync(clientDistPath)) {
+const possibleDistPaths = [
+  path.resolve(__dirname, '../../client/dist'),
+  path.resolve(process.cwd(), 'client/dist'),
+  path.resolve(process.cwd(), 'dist'),
+];
+const clientDistPath = possibleDistPaths.find((p) => fs.existsSync(path.join(p, 'index.html')));
+
+if (clientDistPath) {
+  console.log(`📦 Serving static client from: ${clientDistPath}`);
   app.use(express.static(clientDistPath));
   app.get('*', (req, res, next) => {
     if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
       return next();
     }
     res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+} else {
+  console.warn('⚠️  client/dist/index.html not found! Checked locations:', possibleDistPaths);
+  app.get('/', (req, res) => {
+    res.status(200).send(`
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <title>Portfolio API Live</title>
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0B0D0C; color: #F5F7F5; padding: 3rem 1.5rem; text-align: center; }
+            .card { max-width: 580px; margin: 0 auto; background: #151916; border: 1px solid #29342F; border-radius: 16px; padding: 2rem; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+            h1 { color: #00D6A0; margin-top: 0; }
+            code { background: #1B201D; padding: 0.2rem 0.5rem; border-radius: 4px; color: #00D6A0; border: 1px solid #29342F; font-size: 0.95em; }
+            pre { background: #1B201D; padding: 0.85rem; border-radius: 8px; color: #00D6A0; border: 1px solid #29342F; overflow-x: auto; text-align: left; }
+          </style>
+        </head>
+        <body>
+          <div class="card">
+            <h1>🚀 Backend API is Live</h1>
+            <p>Database connected. API endpoints at <code>/api/v1/profile</code>, <code>/api/v1/projects</code>, etc. are responding.</p>
+            <p>To serve the visual portfolio on this domain, update Render's <strong>Build Command</strong> to:</p>
+            <pre>npm install --include=dev && npm run build</pre>
+          </div>
+        </body>
+      </html>
+    `);
   });
 }
 
