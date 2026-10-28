@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowRight, ArrowUp, Mail } from 'lucide-react';
+import { ArrowRight, ArrowUp } from 'lucide-react';
 import { SiGithub } from 'react-icons/si';
 import { FaLinkedinIn, FaWhatsapp, FaInstagram, FaFacebook, FaXTwitter } from 'react-icons/fa6';
 import { RSLogo } from '../ui';
@@ -34,7 +34,6 @@ export default function Footer() {
 
   const scrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  const email = profile?.email || 'ranjitsharma76088@gmail.com';
 
   const socials = [
     profile?.githubUrl?.trim() && {
@@ -112,42 +111,32 @@ export default function Footer() {
         .ft-cta-btn {
           display: inline-flex;
           align-items: center;
-          gap: 0.5rem;
-          padding: 0.75rem 1.4rem;
+          justify-content: center;
+          gap: 0.6rem;
+          padding: 0.85rem 1.85rem;
+          min-width: 175px;
           font: inherit;
-          font-size: 0.9rem;
+          font-size: 0.95rem;
           font-weight: 700;
+          white-space: nowrap;
           color: var(--accent-contrast);
           background: var(--accent);
           border: none;
           border-radius: 9999px;
           box-shadow: 0 6px 20px -6px var(--accent-glow);
           cursor: pointer;
-          transition: background var(--transition-fast), transform var(--transition-fast);
+          transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
         }
         .ft-cta-btn:hover {
           background: var(--accent-hover);
-          transform: translateY(-1px);
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px -4px var(--accent-glow);
         }
         .ft-cta-btn svg {
           transition: transform var(--transition-fast);
         }
         .ft-cta-btn:hover svg {
           transform: translateX(3px);
-        }
-        .ft-email {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.45rem;
-          font-size: 0.88rem;
-          font-weight: 600;
-          color: var(--text-secondary);
-          text-decoration: none;
-          overflow-wrap: anywhere;
-          transition: color var(--transition-fast);
-        }
-        .ft-email:hover {
-          color: var(--accent);
         }
         /* Main columns */
         .ft-main {
@@ -288,9 +277,16 @@ export default function Footer() {
             grid-column: 1 / -1;
           }
         }
-        @media (max-width: 560px) {
+        @media (max-width: 640px) {
           .ft-cta {
             padding: 0 0 2rem;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1.25rem;
+          }
+          .ft-cta-actions,
+          .ft-cta-btn {
+            width: 100%;
           }
           .ft-main {
             grid-template-columns: minmax(0, 1fr);
@@ -307,12 +303,8 @@ export default function Footer() {
           </h2>
           <div className="ft-cta-actions">
             <button type="button" className="ft-cta-btn" onClick={() => scrollTo('#contact')}>
-              Get in touch <ArrowRight size={16} aria-hidden="true" />
+              Get in touch <ArrowRight size={17} aria-hidden="true" />
             </button>
-            <a href={`mailto:${email}`} className="ft-email">
-              <Mail size={15} aria-hidden="true" />
-              {email}
-            </a>
           </div>
         </div>
 
