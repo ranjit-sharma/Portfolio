@@ -126,6 +126,40 @@ export default function HeroSection() {
         padding: '4rem 0',
       }}
     >
+      {/* Background Marquee — "SOFTWARE" Outline typography running left-to-right in all views */}
+      <div className="hero-marquee-wrapper" aria-hidden="true">
+        <div className="hero-marquee-track">
+          <div className="hero-marquee-content">
+            <span className="hero-marquee-text">SOFTWARE</span>
+            <span className="hero-marquee-dot">·</span>
+            <span className="hero-marquee-text">SOFTWARE</span>
+            <span className="hero-marquee-dot">·</span>
+            <span className="hero-marquee-text">SOFTWARE</span>
+            <span className="hero-marquee-dot">·</span>
+            <span className="hero-marquee-text">SOFTWARE</span>
+            <span className="hero-marquee-dot">·</span>
+            <span className="hero-marquee-text">SOFTWARE</span>
+            <span className="hero-marquee-dot">·</span>
+            <span className="hero-marquee-text">SOFTWARE</span>
+            <span className="hero-marquee-dot">·</span>
+          </div>
+          <div className="hero-marquee-content">
+            <span className="hero-marquee-text">SOFTWARE</span>
+            <span className="hero-marquee-dot">·</span>
+            <span className="hero-marquee-text">SOFTWARE</span>
+            <span className="hero-marquee-dot">·</span>
+            <span className="hero-marquee-text">SOFTWARE</span>
+            <span className="hero-marquee-dot">·</span>
+            <span className="hero-marquee-text">SOFTWARE</span>
+            <span className="hero-marquee-dot">·</span>
+            <span className="hero-marquee-text">SOFTWARE</span>
+            <span className="hero-marquee-dot">·</span>
+            <span className="hero-marquee-text">SOFTWARE</span>
+            <span className="hero-marquee-dot">·</span>
+          </div>
+        </div>
+      </div>
+
       <div className="container" style={{ position: 'relative', zIndex: 1 }}>
         <div
           style={{

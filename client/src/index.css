@@ -917,3 +917,69 @@ textarea::placeholder {
   width: clamp(92px, 9.5vw, 156px) !important;
   height: clamp(65px, 6.7vw, 110px) !important;
 }
+
+
+/* ─── Hero Background Marquee (Left to Right Outline Animation) ────── */
+@keyframes hero-marquee-ltr {
+  0% {
+    transform: translate3d(-50%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0%, 0, 0);
+  }
+}
+
+.hero-marquee-wrapper {
+  position: absolute;
+  top: clamp(14%, 20vw, 24%);
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+.hero-marquee-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: hero-marquee-ltr 35s linear infinite;
+}
+
+.hero-marquee-content {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.hero-marquee-text {
+  font-family: inherit;
+  font-size: clamp(4.5rem, 13vw, 11.5rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  text-transform: uppercase;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--text-primary);
+  opacity: 0.16;
+  padding: 0 1.25rem;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.hero-marquee-dot {
+  font-size: clamp(2.5rem, 7vw, 6rem);
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--text-primary);
+  opacity: 0.16;
+  user-select: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-marquee-track {
+    animation-play-state: paused;
+  }
+}
