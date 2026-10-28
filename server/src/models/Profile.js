@@ -12,6 +12,14 @@ const profileSchema = new mongoose.Schema(
     githubUrl: { type: String, default: '' },
     linkedinUrl: { type: String, default: '' },
     leetcodeUrl: { type: String, default: '' },
+    instagramUrl: {
+      type: String,
+      default: 'https://www.instagram.com/_ranjitsharma_?rpxt=MXQ5YzF6cXJnbHVjZA==',
+    },
+    facebookUrl: {
+      type: String,
+      default: 'https://www.facebook.com/share/BvEjChP99D/',
+    },
     resumeUrl: { type: String, default: '' },
     avatarUrl: { type: String, default: '' },
     available: { type: Boolean, default: false },

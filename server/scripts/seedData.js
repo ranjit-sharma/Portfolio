@@ -220,6 +220,8 @@ const PROFILE = {
   location: 'Bhubaneswar, Odisha, India',
   githubUrl: 'https://github.com/Ranjitsharma76088',
   linkedinUrl: 'https://linkedin.com/in/ranjit-sharma',
+  instagramUrl: 'https://www.instagram.com/_ranjitsharma_?rpxt=MXQ5YzF6cXJnbHVjZA==',
+  facebookUrl: 'https://www.facebook.com/share/BvEjChP99D/',
   resumeUrl: '',
   avatarUrl: '',
   available: true,

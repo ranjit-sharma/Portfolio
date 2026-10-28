@@ -38,7 +38,16 @@ export default function AdminSettings() {
   useEffect(() => {
     api
       .get('/profile')
-      .then((r) => setProfile(r.data.data || {}))
+      .then((r) => {
+        const data = r.data.data || {};
+        if (data.instagramUrl === undefined) {
+          data.instagramUrl = 'https://www.instagram.com/_ranjitsharma_?rpxt=MXQ5YzF6cXJnbHVjZA==';
+        }
+        if (data.facebookUrl === undefined) {
+          data.facebookUrl = 'https://www.facebook.com/share/BvEjChP99D/';
+        }
+        setProfile(data);
+      })
       .catch(() => setProfile({}))
       .finally(() => setLoading(false));
   }, []);
@@ -465,6 +474,14 @@ export default function AdminSettings() {
             <div>
               <label style={labelSt}>LeetCode URL</label>
               <input style={inputSt} value={profile?.leetcodeUrl || ''} onChange={(e) => set('leetcodeUrl', e.target.value)} placeholder="https://leetcode.com/u/..." />
+            </div>
+            <div>
+              <label style={labelSt}>Instagram URL (Footer)</label>
+              <input style={inputSt} value={profile?.instagramUrl ?? ''} onChange={(e) => set('instagramUrl', e.target.value)} placeholder="https://www.instagram.com/..." />
+            </div>
+            <div>
+              <label style={labelSt}>Facebook URL (Footer)</label>
+              <input style={inputSt} value={profile?.facebookUrl ?? ''} onChange={(e) => set('facebookUrl', e.target.value)} placeholder="https://www.facebook.com/..." />
             </div>
           </div>
         </div>

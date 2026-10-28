@@ -35,13 +35,24 @@ export default function Footer() {
   const scrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   const email = profile?.email || 'ranjitsharma76088@gmail.com';
+
+  const instagramUrl =
+    profile?.instagramUrl !== undefined
+      ? profile.instagramUrl
+      : 'https://www.instagram.com/_ranjitsharma_?rpxt=MXQ5YzF6cXJnbHVjZA==';
+
+  const facebookUrl =
+    profile?.facebookUrl !== undefined
+      ? profile.facebookUrl
+      : 'https://www.facebook.com/share/BvEjChP99D/';
+
   const socials = [
     { label: 'GitHub', Icon: SiGithub, href: profile?.githubUrl || 'https://github.com/Ranjitsharma76088' },
     { label: 'LinkedIn', Icon: FaLinkedinIn, href: profile?.linkedinUrl || 'https://linkedin.com/in/ranjit-sharma' },
     { label: 'LeetCode', Icon: SiLeetcode, href: profile?.leetcodeUrl || 'https://leetcode.com/u/ranjitsharma/' },
     { label: 'WhatsApp', Icon: FaWhatsapp, href: 'https://wa.me/917482869029' },
-    { label: 'Instagram', Icon: FaInstagram, href: profile?.instagramUrl || 'https://www.instagram.com/_ranjitsharma_?rpxt=MXQ5YzF6cXJnbHVjZA==' },
-    { label: 'Facebook', Icon: FaFacebook, href: profile?.facebookUrl || 'https://www.facebook.com/share/BvEjChP99D/' },
+    ...(instagramUrl ? [{ label: 'Instagram', Icon: FaInstagram, href: instagramUrl }] : []),
+    ...(facebookUrl ? [{ label: 'Facebook', Icon: FaFacebook, href: facebookUrl }] : []),
   ];
 
   return (
