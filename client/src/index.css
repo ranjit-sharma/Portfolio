@@ -933,7 +933,7 @@ textarea::placeholder {
 
 @media (max-width: 768px) {
   .hero-marquee-wrapper {
-    top: calc(0.5rem - 2mm);
+    top: calc(0.5rem - 4mm);
   }
 }
 
