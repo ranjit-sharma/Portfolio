@@ -911,3 +911,9 @@ textarea::placeholder {
   display: none;
 }
 
+
+/* Preloader Responsive Monogram Sizing */
+.preloader-rs-logo {
+  width: clamp(92px, 9.5vw, 156px) !important;
+  height: clamp(65px, 6.7vw, 110px) !important;
+}
