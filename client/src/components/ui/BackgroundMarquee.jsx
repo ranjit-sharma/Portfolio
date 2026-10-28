@@ -18,31 +18,19 @@ export default function BackgroundMarquee() {
       >
         <div className="hero-marquee-content">
           <span className="hero-marquee-text">SOFTWARE DEVELOPER</span>
-          <span className="hero-marquee-dot">·</span>
           <span className="hero-marquee-text">SOFTWARE DEVELOPER</span>
-          <span className="hero-marquee-dot">·</span>
           <span className="hero-marquee-text">SOFTWARE DEVELOPER</span>
-          <span className="hero-marquee-dot">·</span>
           <span className="hero-marquee-text">SOFTWARE DEVELOPER</span>
-          <span className="hero-marquee-dot">·</span>
           <span className="hero-marquee-text">SOFTWARE DEVELOPER</span>
-          <span className="hero-marquee-dot">·</span>
           <span className="hero-marquee-text">SOFTWARE DEVELOPER</span>
-          <span className="hero-marquee-dot">·</span>
         </div>
         <div className="hero-marquee-content">
           <span className="hero-marquee-text">SOFTWARE DEVELOPER</span>
-          <span className="hero-marquee-dot">·</span>
           <span className="hero-marquee-text">SOFTWARE DEVELOPER</span>
-          <span className="hero-marquee-dot">·</span>
           <span className="hero-marquee-text">SOFTWARE DEVELOPER</span>
-          <span className="hero-marquee-dot">·</span>
           <span className="hero-marquee-text">SOFTWARE DEVELOPER</span>
-          <span className="hero-marquee-dot">·</span>
           <span className="hero-marquee-text">SOFTWARE DEVELOPER</span>
-          <span className="hero-marquee-dot">·</span>
           <span className="hero-marquee-text">SOFTWARE DEVELOPER</span>
-          <span className="hero-marquee-dot">·</span>
         </div>
       </motion.div>
     </div>
