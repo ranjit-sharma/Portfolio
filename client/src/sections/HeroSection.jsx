@@ -199,7 +199,7 @@ export default function HeroSection() {
                   aria-hidden="true"
                   style={{
                     display: 'inline-block',
-                    marginRight: '0.28em',
+                    marginRight: i < HEADING_WORDS.length - 1 ? '0.28em' : 0,
                     cursor: 'default',
                     willChange: 'transform, opacity, filter',
                   }}
@@ -214,8 +214,7 @@ export default function HeroSection() {
                 aria-hidden="true"
                 style={{
                   display: 'inline-block',
-                  color: 'var(--accent)',
-                  marginLeft: '-0.2em',
+                  color: 'var(--text-primary)',
                   cursor: 'default',
                   willChange: 'transform, opacity',
                 }}
