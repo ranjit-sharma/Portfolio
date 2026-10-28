@@ -922,7 +922,7 @@ textarea::placeholder {
 /* ─── Hero Background Marquee (Framer Motion Driven, Right to Left) ────── */
 .hero-marquee-wrapper {
   position: absolute;
-  top: calc(clamp(14%, 20vw, 24%) + 96px);
+  top: calc(clamp(14%, 20vw, 24%) + 192px);
   left: 0;
   width: 100%;
   overflow: hidden;
