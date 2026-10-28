@@ -919,19 +919,19 @@ textarea::placeholder {
 }
 
 
-/* ─── Hero Background Marquee (Left to Right Outline Animation) ────── */
-@keyframes hero-marquee-ltr {
+/* ─── Hero Background Marquee (Right to Left Outline Animation) ────── */
+@keyframes hero-marquee-rtl {
   0% {
-    transform: translate3d(-50%, 0, 0);
+    transform: translate3d(0%, 0, 0);
   }
   100% {
-    transform: translate3d(0%, 0, 0);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
 .hero-marquee-wrapper {
   position: absolute;
-  top: clamp(14%, 20vw, 24%);
+  top: calc(clamp(14%, 20vw, 24%) + 96px);
   left: 0;
   width: 100%;
   overflow: hidden;
@@ -944,7 +944,7 @@ textarea::placeholder {
   display: flex;
   width: max-content;
   will-change: transform;
-  animation: hero-marquee-ltr 35s linear infinite;
+  animation: hero-marquee-rtl 42s linear infinite;
 }
 
 .hero-marquee-content {
@@ -962,8 +962,8 @@ textarea::placeholder {
   line-height: 1;
   text-transform: uppercase;
   color: transparent;
-  -webkit-text-stroke: 1.5px var(--text-primary);
-  opacity: 0.16;
+  -webkit-text-stroke: 1px var(--text-primary);
+  opacity: 0.08;
   padding: 0 1.25rem;
   white-space: nowrap;
   user-select: none;
@@ -973,8 +973,8 @@ textarea::placeholder {
   font-size: clamp(2.5rem, 7vw, 6rem);
   line-height: 1;
   color: transparent;
-  -webkit-text-stroke: 1.5px var(--text-primary);
-  opacity: 0.16;
+  -webkit-text-stroke: 1px var(--text-primary);
+  opacity: 0.08;
   user-select: none;
 }
 
