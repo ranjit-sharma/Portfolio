@@ -264,6 +264,28 @@ export default function CertificationsSection() {
     return 'CERTIFICATION';
   };
 
+  const formatIssueDate = (dateVal) => {
+    if (!dateVal) return '';
+    try {
+      const d = new Date(dateVal);
+      if (isNaN(d.getTime())) return '';
+      return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    } catch {
+      return '';
+    }
+  };
+
+  const formatFullIssueDate = (dateVal) => {
+    if (!dateVal) return '';
+    try {
+      const d = new Date(dateVal);
+      if (isNaN(d.getTime())) return '';
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    } catch {
+      return '';
+    }
+  };
+
   return (
     <section id="certifications" className="section-padding">
       <style>{`
@@ -812,7 +834,24 @@ export default function CertificationsSection() {
                     <span className="cert-meta">
                       {getCategoryIcon(cert.category)}
                       <span>{getCategoryLabel(cert.category)}</span>
-                      {cert.dateTag && <span className="cert-meta-date">· {cert.dateTag}</span>}
+                      {(() => {
+                        const issueStr = formatIssueDate(cert.issueDate);
+                        const tagStr = cert.dateTag || '';
+                        if (issueStr && tagStr) {
+                          if (tagStr.toLowerCase() === issueStr.toLowerCase() || tagStr === String(new Date(cert.issueDate).getFullYear())) {
+                            return <span className="cert-meta-date">· {issueStr}</span>;
+                          }
+                          return (
+                            <>
+                              <span className="cert-meta-date">· {issueStr}</span>
+                              <span className="cert-meta-date">· {tagStr}</span>
+                            </>
+                          );
+                        }
+                        if (issueStr) return <span className="cert-meta-date">· {issueStr}</span>;
+                        if (tagStr) return <span className="cert-meta-date">· {tagStr}</span>;
+                        return null;
+                      })()}
                     </span>
                     <span className="cert-card-title">{cert.name}</span>
                     <span className="cert-card-foot">
@@ -887,9 +926,15 @@ export default function CertificationsSection() {
                       <dt>Issued by</dt>
                       <dd>{selectedCert.issuer}</dd>
                     </div>
-                    {selectedCert.dateTag && (
+                    {selectedCert.issueDate && (
                       <div>
-                        <dt>Date</dt>
+                        <dt>Issue Date</dt>
+                        <dd>{formatFullIssueDate(selectedCert.issueDate)}</dd>
+                      </div>
+                    )}
+                    {selectedCert.dateTag && (!selectedCert.issueDate || !selectedCert.dateTag.includes(String(new Date(selectedCert.issueDate).getFullYear()))) && (
+                      <div>
+                        <dt>Duration / Term</dt>
                         <dd>{selectedCert.dateTag}</dd>
                       </div>
                     )}

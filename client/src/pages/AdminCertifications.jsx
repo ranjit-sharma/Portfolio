@@ -328,8 +328,13 @@ export default function AdminCertifications() {
                       </span>
                     )}
                   </div>
-                  <div style={{ color: 'var(--text-muted)', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '0.65rem', marginTop: '0.2rem' }}>
+                  <div style={{ color: 'var(--text-muted)', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '0.65rem', marginTop: '0.2rem', flexWrap: 'wrap' }}>
                     <span>{cert.issuer}</span>
+                    {cert.issueDate && (
+                      <span style={{ color: 'var(--text-secondary)' }}>
+                        · Issue Date: {new Date(cert.issueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </span>
+                    )}
                     {cert.image ? (
                       <a
                         href={cert.image}
