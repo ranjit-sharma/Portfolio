@@ -203,32 +203,39 @@ export default function Footer() {
           padding-left: 4px;
         }
         .ft-socials {
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
+          display: flex;
+          flex-direction: column;
           gap: 0.6rem;
           margin: 0;
           padding: 0;
           list-style: none;
         }
         .ft-social {
-          display: flex;
+          display: inline-flex;
           align-items: center;
-          gap: 0.55rem;
-          padding: 0.55rem 0.75rem;
-          font-size: 0.85rem;
-          font-weight: 600;
+          gap: 0.65rem;
+          padding: 0.15rem 0;
+          font-size: 0.9rem;
+          font-weight: 500;
           color: var(--text-secondary);
           text-decoration: none;
-          background: var(--bg-card);
-          border: 1px solid var(--border);
-          border-radius: 0.75rem;
-          transition: border-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+          background: transparent;
+          border: none;
+          transition: color var(--transition-fast), transform var(--transition-fast);
+        }
+        .ft-social svg {
+          color: var(--text-muted);
+          transition: color var(--transition-fast);
+          flex-shrink: 0;
         }
         .ft-social:hover,
         .ft-social:focus-visible {
           color: var(--accent);
-          border-color: var(--accent-border);
-          transform: translateY(-2px);
+          transform: translateX(4px);
+        }
+        .ft-social:hover svg,
+        .ft-social:focus-visible svg {
+          color: var(--accent);
         }
         /* Bottom bar */
         .ft-bottom {
