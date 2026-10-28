@@ -72,7 +72,7 @@ export default function EntryPreloader({ onComplete }) {
     if (pct < 28) return 'Initializing environment...';
     if (pct < 65) return 'Loading tech stack & assets...';
     if (pct < 98) return 'Compiling portfolio systems...';
-    return 'Ready · Welcome to My Portfolio';
+    return 'Welcome to My Portfolio';
   };
 
   const statusText = getStatusText(progress);
