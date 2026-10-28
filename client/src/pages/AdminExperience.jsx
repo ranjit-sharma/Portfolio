@@ -112,7 +112,12 @@ export default function AdminExperience() {
       const res = await api.post('/admin/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      setForm((f) => ({ ...f, companyLogo: res.data.data.url }));
+      const newLogoUrl = res.data.data.url;
+      setForm((f) => ({ ...f, companyLogo: newLogoUrl }));
+      if (editing) {
+        await api.put(`/admin/experience/${editing}`, { ...form, companyLogo: newLogoUrl });
+        fetchItems();
+      }
       setLogoCropFile(null);
     } catch (err) {
       setError(err.message || 'Company logo upload failed');
@@ -403,13 +408,13 @@ export default function AdminExperience() {
                       justifyContent: 'center',
                       overflow: 'hidden',
                       flexShrink: 0,
-                      padding: '4px',
+                      padding: 0,
                     }}
                   >
                     <img
                       src={getAssetUrl(form.companyLogo)}
                       alt="Company logo preview"
-                      style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px' }}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
                   </div>
                 )}
@@ -723,10 +728,10 @@ export default function AdminExperience() {
                       width: 44,
                       height: 44,
                       borderRadius: '8px',
-                      objectFit: 'contain',
+                      objectFit: 'cover',
                       background: '#ffffff',
                       border: '1px solid var(--border)',
-                      padding: '4px',
+                      padding: 0,
                       flexShrink: 0,
                     }}
                   />

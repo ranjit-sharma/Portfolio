@@ -316,7 +316,7 @@ export default function ExperienceSection() {
                             letterSpacing: '0.04em',
                             flexShrink: 0,
                             overflow: 'hidden',
-                            padding: exp.companyLogo ? '6px' : 0,
+                            padding: 0,
                             marginTop: '2px',
                           }}
                         >
@@ -325,7 +325,7 @@ export default function ExperienceSection() {
                               src={getAssetUrl(exp.companyLogo)}
                               alt={`${exp.company} logo`}
                               loading="lazy"
-                              style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
+                              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                             />
                           ) : (
                             companyInitials

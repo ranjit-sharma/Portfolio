@@ -527,7 +527,7 @@ export default function AdminSettings() {
         isOpen={!!avatarCropFile}
         imageFile={avatarCropFile}
         title="Resize & Adjust Profile Photo"
-        shape="circle"
+        shape="squircle"
         defaultFit="cover"
         uploading={uploadingAvatar}
         onClose={() => setAvatarCropFile(null)}
