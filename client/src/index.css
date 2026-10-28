@@ -919,10 +919,10 @@ textarea::placeholder {
 }
 
 
-/* ─── Hero Background Marquee (Framer Motion Driven, Right to Left) ────── */
+/* ─── Persistent Background Marquee (Framer Motion Driven, Right to Left) ────── */
 .hero-marquee-wrapper {
-  position: absolute;
-  top: calc(clamp(14%, 20vw, 24%) + 336px);
+  position: fixed;
+  top: calc(var(--navbar-height) + clamp(14%, 20vw, 24%) + 336px);
   left: 0;
   width: 100%;
   overflow: hidden;
@@ -933,7 +933,7 @@ textarea::placeholder {
 
 @media (max-width: 768px) {
   .hero-marquee-wrapper {
-    top: calc(0.5rem - 4mm);
+    top: calc(var(--navbar-height) + 0.5rem - 4mm);
   }
 }
 

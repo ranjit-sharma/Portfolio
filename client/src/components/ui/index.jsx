@@ -318,5 +318,6 @@ export { default as RSLogo } from './RSLogo';
 export { default as AnimatedCursor } from './AnimatedCursor';
 export { default as EntryPreloader } from './EntryPreloader';
 export { default as ImageResizeModal } from './ImageResizeModal';
+export { default as BackgroundMarquee } from './BackgroundMarquee';
 
 

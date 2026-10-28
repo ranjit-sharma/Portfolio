@@ -3,7 +3,7 @@ import Footer from '../components/navigation/Footer';
 import { useCallback, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { motion, useScroll, useSpring } from 'framer-motion';
-import { EntryPreloader } from '../components/ui';
+import { EntryPreloader, BackgroundMarquee } from '../components/ui';
 
 export default function RootLayout() {
   const [introDone, setIntroDone] = useState(false);
@@ -21,6 +21,8 @@ export default function RootLayout() {
         <div className="site-bg-blob site-bg-blob-2" />
         
       </div>
+      {/* Persistent site background marquee */}
+      <BackgroundMarquee />
       {/* Scroll progress bar, above the navbar */}
       <motion.div
         aria-hidden="true"
