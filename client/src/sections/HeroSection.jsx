@@ -375,9 +375,9 @@ export default function HeroSection() {
                       </svg>
                     ),
                   },
-                  (profile?.email?.trim() || (!profile && 'ranjitsharma76088@gmail.com')) && {
+                  (profile?.email?.trim() || (!profile && 'ctrl.ranjit@gmail.com')) && {
                     label: 'Email',
-                    href: `mailto:${profile?.email?.trim() || 'ranjitsharma76088@gmail.com'}`,
+                    href: `mailto:${profile?.email?.trim() || 'ctrl.ranjit@gmail.com'}`,
                     icon: <Mail size={19} strokeWidth={2.1} />,
                   },
                   profile?.leetcodeUrl?.trim() && {

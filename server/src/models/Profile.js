@@ -5,7 +5,7 @@ const profileSchema = new mongoose.Schema(
     name: { type: String, default: 'Ranjit Sharma' },
     headline: { type: String, default: 'Full-Stack Developer' },
     bio: { type: String, default: '' },
-    email: { type: String, default: 'ranjitsharma76088@gmail.com' },
+    email: { type: String, default: 'ctrl.ranjit@gmail.com' },
     phone: { type: String, default: '' },
     location: { type: String, default: 'Bhubaneswar, Odisha, India' },
     languages: { type: String, default: 'English, Hindi, Odia' },

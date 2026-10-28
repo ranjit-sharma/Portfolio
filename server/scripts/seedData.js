@@ -216,7 +216,7 @@ const PROFILE = {
   name: 'Ranjit Sharma',
   headline: 'Full-Stack Developer',
   bio: 'B.Tech in Computer Science from Trident Academy of Technology, Bhubaneswar. I build web applications from frontend to backend — designing user interfaces, developing REST APIs, and integrating databases. Passionate about clean code, scalable systems, and continuous learning.',
-  email: 'ranjitsharma76088@gmail.com',
+  email: 'ctrl.ranjit@gmail.com',
   location: 'Bhubaneswar, Odisha, India',
   githubUrl: 'https://github.com/Ranjitsharma76088',
   linkedinUrl: 'https://linkedin.com/in/ranjit-sharma',
