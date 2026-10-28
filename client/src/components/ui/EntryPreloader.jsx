@@ -72,7 +72,7 @@ export default function EntryPreloader({ onComplete }) {
     if (pct < 28) return 'Initializing environment...';
     if (pct < 65) return 'Loading tech stack & assets...';
     if (pct < 98) return 'Compiling portfolio systems...';
-    return 'Welcome to My Portfolio';
+    return 'Ready · Welcome to My Portfolio';
   };
 
   const statusText = getStatusText(progress);
@@ -223,8 +223,9 @@ export default function EntryPreloader({ onComplete }) {
               alignItems: 'center',
               textAlign: 'center',
               zIndex: 2,
-              padding: '0 1.5rem',
-              maxWidth: '92vw',
+              padding: '0 0.85rem',
+              maxWidth: '96vw',
+              width: '100%',
             }}
           >
             {/* Glowing Monogram Emblem — Enlarged for Desktop */}
@@ -340,7 +341,8 @@ export default function EntryPreloader({ onComplete }) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
               style={{
-                width: 'clamp(290px, 32vw, 460px)',
+                width: 'min(92vw, clamp(280px, 34vw, 460px))',
+                maxWidth: '100%',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '0.75rem',
@@ -372,19 +374,21 @@ export default function EntryPreloader({ onComplete }) {
                 />
               </div>
 
-              {/* Status and Percentage Row */}
+              {/* Status and Percentage Row — Single line fit on all screens */}
               <div
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  fontSize: 'clamp(0.82rem, 1vw, 0.95rem)',
+                  gap: '0.4rem',
+                  fontSize: 'clamp(0.68rem, 2vw, 0.92rem)',
                   fontFamily: 'monospace',
                   fontVariantNumeric: 'tabular-nums',
                   minHeight: '1.4em',
+                  width: '100%',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, overflow: 'hidden' }}>
                   <AnimatePresence mode="wait">
                     <motion.span
                       key={statusText}
@@ -394,8 +398,9 @@ export default function EntryPreloader({ onComplete }) {
                       transition={{ duration: 0.22, ease: 'easeOut' }}
                       style={{
                         color: progress === 100 ? 'var(--accent)' : 'var(--text-muted)',
-                        letterSpacing: '0.03em',
+                        letterSpacing: '0.01em',
                         fontWeight: progress === 100 ? 700 : 500,
+                        whiteSpace: 'nowrap',
                         transition: 'color 0.2s ease',
                       }}
                     >
@@ -407,8 +412,10 @@ export default function EntryPreloader({ onComplete }) {
                   style={{
                     color: 'var(--accent)',
                     fontWeight: 800,
-                    letterSpacing: '0.05em',
+                    letterSpacing: '0.04em',
                     textShadow: '0 0 12px var(--accent-glow)',
+                    whiteSpace: 'nowrap',
+                    flexShrink: 0,
                   }}
                 >
                   {progress}%
