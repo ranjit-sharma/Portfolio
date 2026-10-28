@@ -638,32 +638,6 @@ export default function ProjectsSection() {
           transform: scale(1.04);
         }
 
-        .project-visit-pill {
-          position: absolute;
-          left: 50%;
-          bottom: 14px;
-          z-index: 1;
-          display: inline-flex;
-          align-items: center;
-          gap: 0.35rem;
-          padding: 0.4rem 0.9rem;
-          font-size: 0.76rem;
-          font-weight: 700;
-          color: var(--accent-contrast);
-          background: var(--accent);
-          border-radius: 9999px;
-          box-shadow: 0 8px 20px -6px var(--accent-glow);
-          opacity: 0;
-          transform: translate(-50%, 8px);
-          transition: opacity 0.25s ease, transform 0.25s ease;
-        }
-
-        .project-stack-visual:hover .project-visit-pill,
-        .project-browser-viewport a:focus-visible .project-visit-pill {
-          opacity: 1;
-          transform: translate(-50%, 0);
-        }
-
         @media (max-width: 580px) {
           .project-browser-nav {
             display: none;
@@ -844,7 +818,6 @@ export default function ProjectsSection() {
                 const metaText = getProjectMeta(proj);
                 const stats = getProjectStats(proj);
                 const displayUrl = getDisplayUrl(proj.liveDemoUrl, proj.slug);
-                const primaryLink = proj.liveDemoUrl || proj.githubUrl || '#';
                 const slugText = proj.slug || proj.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
                 return (
@@ -1022,27 +995,13 @@ export default function ProjectsSection() {
 
                             <div className="project-browser-viewport">
                               {proj.image ? (
-                                <a
-                                  href={primaryLink}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  style={{
-                                    display: 'block',
-                                    width: '100%',
-                                    height: '100%',
-                                  }}
-                                >
-                                  <img
-                                    src={getAssetUrl(proj.image)}
-                                    alt={`${proj.title} preview`}
-                                    className="project-mockup-img"
-                                    loading={i === 0 ? 'eager' : 'lazy'}
-                                    decoding="async"
-                                  />
-                                  <span className="project-visit-pill" aria-hidden="true">
-                                    Visit live site <ExternalLink size={13} />
-                                  </span>
-                                </a>
+                                <img
+                                  src={getAssetUrl(proj.image)}
+                                  alt={`${proj.title} preview`}
+                                  className="project-mockup-img"
+                                  loading={i === 0 ? 'eager' : 'lazy'}
+                                  decoding="async"
+                                />
                               ) : (
                                 <div
                                   style={{
