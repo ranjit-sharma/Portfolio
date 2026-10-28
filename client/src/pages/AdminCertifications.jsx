@@ -4,7 +4,7 @@ import { Spinner } from '../components/ui/index';
 import { Upload, Trash2 } from 'lucide-react';
 import { getAssetUrl } from '../utils/assetUrl';
 
-const EMPTY = { name: '', issuer: '', issueDate: '', credentialUrl: '', image: '', description: '', category: 'Certifications', windowTitle: '', badge: '', dateTag: '', displayOrder: 0 };
+const EMPTY = { name: '', issuer: '', issueDate: '', credentialUrl: '', image: '', description: '', category: 'Certifications', badge: '', dateTag: '', displayOrder: 0 };
 
 export default function AdminCertifications() {
   const [items, setItems] = useState([]);
@@ -112,7 +112,6 @@ export default function AdminCertifications() {
                   <option value="Competitions">Competitions</option>
                 </select>
               </div>
-              <div><label style={labelSt}>Window Mockup Title</label><input style={inputSt} value={form.windowTitle || ''} onChange={e => setForm(f => ({ ...f, windowTitle: e.target.value }))} placeholder="e.g. Oracle University, NPTEL, DRDO" /></div>
               <div><label style={labelSt}>Badge / Score</label><input style={inputSt} value={form.badge || ''} onChange={e => setForm(f => ({ ...f, badge: e.target.value }))} placeholder="e.g. Valid until Oct 2027, Elite - Silver · 77%" /></div>
               <div><label style={labelSt}>Date / Duration Tag</label><input style={inputSt} value={form.dateTag || ''} onChange={e => setForm(f => ({ ...f, dateTag: e.target.value }))} placeholder="e.g. Oct 2025, Jan-Apr 2025 · 12 weeks" /></div>
             </div>
