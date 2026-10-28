@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, useRef } from 'react';
 import api from '../services/api';
-import { Spinner } from '../components/ui/index';
+import { Spinner, ImageResizeModal } from '../components/ui/index';
 import { Upload, Trash2, ExternalLink } from 'lucide-react';
 import { getAssetUrl } from '../utils/assetUrl';
 
@@ -46,6 +46,7 @@ export default function AdminExperience() {
   const [saving, setSaving] = useState(false);
   const [uploadingCert, setUploadingCert] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [logoCropFile, setLogoCropFile] = useState(null);
   const [error, setError] = useState('');
   const certInputRef = useRef(null);
   const logoInputRef = useRef(null);
@@ -95,11 +96,16 @@ export default function AdminExperience() {
     setError('');
   };
 
-  const handleLogoUpload = async (e) => {
+  const handleLogoUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setLogoCropFile(file);
+    e.target.value = '';
+  };
+
+  const handleLogoCropConfirm = async (croppedFile) => {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('file', croppedFile);
     setUploadingLogo(true);
     setError('');
     try {
@@ -107,11 +113,11 @@ export default function AdminExperience() {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setForm((f) => ({ ...f, companyLogo: res.data.data.url }));
+      setLogoCropFile(null);
     } catch (err) {
       setError(err.message || 'Company logo upload failed');
     } finally {
       setUploadingLogo(false);
-      e.target.value = '';
     }
   };
 
@@ -772,6 +778,17 @@ export default function AdminExperience() {
           ))}
         </div>
       )}
+
+      <ImageResizeModal
+        isOpen={!!logoCropFile}
+        imageFile={logoCropFile}
+        title="Resize & Adjust Company Logo"
+        shape="squircle"
+        defaultFit="contain"
+        uploading={uploadingLogo}
+        onClose={() => setLogoCropFile(null)}
+        onConfirm={handleLogoCropConfirm}
+      />
     </div>
   );
 }

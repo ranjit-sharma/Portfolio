@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import api from '../services/api';
-import { Spinner } from '../components/ui/index';
+import { Spinner, ImageResizeModal } from '../components/ui/index';
 import { Upload, FileText, Image, Check, ExternalLink, Trash2, Sparkles } from 'lucide-react';
 
 const DEFAULT_HIGHLIGHTS = [
@@ -29,6 +29,7 @@ export default function AdminSettings() {
   const [saving, setSaving] = useState(false);
   const [uploadingResume, setUploadingResume] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [avatarCropFile, setAvatarCropFile] = useState(null);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
 
@@ -66,31 +67,49 @@ export default function AdminSettings() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (type === 'avatar') {
+      setAvatarCropFile(file);
+      e.target.value = '';
+      return;
+    }
+
     const formData = new FormData();
     formData.append('file', file);
-
-    if (type === 'resume') setUploadingResume(true);
-    if (type === 'avatar') setUploadingAvatar(true);
+    setUploadingResume(true);
     setError('');
 
     try {
       const res = await api.post('/admin/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      const fileUrl = res.data.data.url;
-      if (type === 'resume') {
-        set('resumeUrl', fileUrl);
-      } else if (type === 'avatar') {
-        set('avatarUrl', fileUrl);
-      }
+      set('resumeUrl', res.data.data.url);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       setError(err.message || 'File upload failed');
     } finally {
-      if (type === 'resume') setUploadingResume(false);
-      if (type === 'avatar') setUploadingAvatar(false);
-      e.target.value = ''; // reset file input
+      setUploadingResume(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleAvatarCropConfirm = async (croppedFile) => {
+    const formData = new FormData();
+    formData.append('file', croppedFile);
+    setUploadingAvatar(true);
+    setError('');
+    try {
+      const res = await api.post('/admin/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      set('avatarUrl', res.data.data.url);
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+      setAvatarCropFile(null);
+    } catch (err) {
+      setError(err.message || 'Avatar upload failed');
+    } finally {
+      setUploadingAvatar(false);
     }
   };
 
@@ -503,6 +522,17 @@ export default function AdminSettings() {
           {saving ? <><Spinner size={16} color="var(--accent-contrast)" /> Saving...</> : 'Save Settings'}
         </button>
       </form>
+
+      <ImageResizeModal
+        isOpen={!!avatarCropFile}
+        imageFile={avatarCropFile}
+        title="Resize & Adjust Profile Photo"
+        shape="circle"
+        defaultFit="cover"
+        uploading={uploadingAvatar}
+        onClose={() => setAvatarCropFile(null)}
+        onConfirm={handleAvatarCropConfirm}
+      />
     </div>
   );
 }

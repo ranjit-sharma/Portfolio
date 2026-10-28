@@ -317,5 +317,6 @@ export { default as LeetCodeIcon } from './LeetCodeIcon';
 export { default as RSLogo } from './RSLogo';
 export { default as AnimatedCursor } from './AnimatedCursor';
 export { default as EntryPreloader } from './EntryPreloader';
+export { default as ImageResizeModal } from './ImageResizeModal';
 
 
