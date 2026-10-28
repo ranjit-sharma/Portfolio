@@ -1,4 +1,5 @@
 const ContactMessage = require('../models/ContactMessage');
+const Profile = require('../models/Profile');
 const asyncHandler = require('../utils/asyncHandler');
 const { apiSuccess } = require('../utils/apiResponse');
 const emailService = require('../services/email.service');
@@ -7,6 +8,7 @@ const emailService = require('../services/email.service');
 const submitContact = asyncHandler(async (req, res) => {
   const { name, email, subject, message } = req.body;
 
+  // 1. Save to MongoDB for admin message dashboard (preserved untouched)
   const doc = await ContactMessage.create({
     name,
     email,
@@ -15,9 +17,20 @@ const submitContact = asyncHandler(async (req, res) => {
     ipAddress: req.ip,
   });
 
-  // Attempt email delivery — fail silently if not configured
+  // 2. Look up the admin email from Profile settings
+  let adminEmail = process.env.CONTACT_RECEIVER_EMAIL || 'ctrl.ranjit@gmail.com';
   try {
-    await emailService.sendContactEmail({ name, email, subject, message });
+    const profile = await Profile.findOne().select('email');
+    if (profile && profile.email && profile.email.trim()) {
+      adminEmail = profile.email.trim();
+    }
+  } catch (err) {
+    console.warn('Could not fetch profile email:', err.message);
+  }
+
+  // 3. Attempt email delivery to the admin's setting email
+  try {
+    await emailService.sendContactEmail({ name, email, subject, message, toEmail: adminEmail });
   } catch (err) {
     console.warn('Email delivery skipped or failed:', err.message);
   }

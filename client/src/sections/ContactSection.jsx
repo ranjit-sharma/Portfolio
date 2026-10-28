@@ -7,7 +7,7 @@ import { SectionHeading, Button, Spinner } from '../components/ui/index';
 import api from '../services/api';
 
 const INITIAL_FORM = { name: '', email: '', subject: '', message: '' };
-const FORMSUBMIT_EMAIL = 'ctrl.ranjit@gmail.com';
+const DEFAULT_EMAIL = 'ctrl.ranjit@gmail.com';
 
 const FIELDS = {
   name: { label: 'Name', type: 'text', placeholder: 'Your name', autoComplete: 'name' },
@@ -64,18 +64,31 @@ export default function ContactSection() {
     setStatus('loading');
     setErrors({});
 
-    // Save to the admin inbox in parallel; never block the visitor on the database
-    const backendSave = api.post('/contact', form);
-    backendSave.catch(() => {});
+    // Target email provided by the admin in Settings (profile.email)
+    const targetEmail = (profile?.email?.trim() || DEFAULT_EMAIL).toLowerCase();
 
+    // 1. Submit to backend API (saves message to MongoDB for admin inbox & triggers backend notification)
+    let backendSuccess = false;
+    let backendMsg = '';
     try {
-      // Submit via FormSubmit AJAX endpoint for direct email delivery
-      const fsRes = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(FORMSUBMIT_EMAIL)}`, {
+      const res = await api.post('/contact', form);
+      backendSuccess = true;
+      backendMsg = res.data?.message || 'Message sent successfully!';
+    } catch (backendErr) {
+      console.warn('Backend /contact submission error:', backendErr);
+    }
+
+    // 2. Submit via FormSubmit AJAX endpoint directly to the admin settings email
+    let fsSuccess = false;
+    try {
+      const fsRes = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(targetEmail)}`, {
         method: 'POST',
-        signal: AbortSignal.timeout(20000),
-        // Form-encoded body keeps this a "simple" CORS request: no slow preflight round trip
-        headers: { Accept: 'application/json' },
-        body: new URLSearchParams({
+        signal: AbortSignal.timeout(15000),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
           name: form.name,
           email: form.email,
           subject: form.subject,
@@ -86,30 +99,26 @@ export default function ContactSection() {
         }),
       });
 
-      // FormSubmit answers 200 with success "false" (e.g. form not activated yet)
       const fsData = await fsRes.json().catch(() => ({}));
-      if (!fsRes.ok || String(fsData.success) !== 'true') {
-        throw new Error(fsData.message || 'Failed to submit via FormSubmit');
+      if (fsRes.ok && (String(fsData.success) === 'true' || fsData.message?.includes('Activation'))) {
+        fsSuccess = true;
       }
+    } catch (fsErr) {
+      console.warn('Client FormSubmit error:', fsErr);
+    }
 
+    // If either the database inbox save or the email dispatch succeeded, confirm success
+    if (backendSuccess || fsSuccess) {
       setStatus('success');
-      setServerMsg('Message sent successfully! I will get back to you soon.');
+      setServerMsg(backendMsg || 'Message sent successfully! I will get back to you soon.');
       setForm(INITIAL_FORM);
-    } catch (err) {
-      // Fallback: the message still counts as sent if it reached the admin inbox
-      try {
-        const res = await backendSave;
-        setStatus('success');
-        setServerMsg(res.data?.message || 'Message sent successfully!');
-        setForm(INITIAL_FORM);
-      } catch {
-        setStatus('error');
-        setServerMsg(err.message || 'Failed to send message. Please try again.');
-      }
+    } else {
+      setStatus('error');
+      setServerMsg('Failed to send message. Please try again.');
     }
   };
 
-  const email = profile?.email || 'ctrl.ranjit@gmail.com';
+    const email = profile?.email || 'ctrl.ranjit@gmail.com';
   const location = profile?.location || 'Bhubaneswar, Odisha, India';
 
   const contactItems = [
