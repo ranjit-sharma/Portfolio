@@ -177,59 +177,73 @@ export default function AdminSettings() {
             Resume & Avatar Uploads
           </h2>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))', gap: '1.25rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '1.25rem' }}>
             {/* Avatar Upload */}
             <div
               style={{
                 background: 'var(--bg-card)',
                 border: '1px solid var(--border)',
-                borderRadius: 'var(--radius-md)',
-                padding: '1.25rem',
+                borderRadius: 'var(--radius-lg)',
+                padding: '1.4rem',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '0.85rem',
+                gap: '1.1rem',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600, fontSize: '0.85rem' }}>
-                <Image size={16} style={{ color: 'var(--accent)' }} />
-                <span>Profile Avatar</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)' }}>
+                  <Image size={17} style={{ color: 'var(--accent)' }} />
+                  <span>Profile Avatar</span>
+                </div>
+                {profile?.avatarUrl && (
+                  <span style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--accent)', background: 'var(--accent-dim)', padding: '0.2rem 0.55rem', borderRadius: '9999px', border: '1px solid var(--accent-border)' }}>
+                    Active
+                  </span>
+                )}
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
                 {profile?.avatarUrl ? (
                   <img
                     src={getAssetUrl(profile.avatarUrl)}
                     alt="Avatar preview"
                     style={{
-                      width: 64,
-                      height: 64,
-                      borderRadius: 'var(--radius-md)',
+                      width: 125,
+                      height: 125,
+                      borderRadius: 'var(--radius-lg)',
                       objectFit: 'cover',
-                      border: '2px solid var(--accent)',
-                      boxShadow: '0 0 12px var(--accent-glow)',
+                      border: '2.5px solid var(--accent)',
+                      boxShadow: '0 4px 18px var(--accent-glow)',
+                      flexShrink: 0,
                     }}
                   />
                 ) : (
                   <div
                     style={{
-                      width: 64,
-                      height: 64,
-                      borderRadius: 'var(--radius-md)',
-                      background: 'var(--accent-dim)',
-                      border: '1px solid var(--accent)',
+                      width: 125,
+                      height: 125,
+                      borderRadius: 'var(--radius-lg)',
+                      background: 'radial-gradient(circle at 35% 35%, var(--accent-dim) 0%, var(--bg-elevated) 70%)',
+                      border: '2px dashed var(--border-strong)',
                       display: 'flex',
+                      flexDirection: 'column',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '1.25rem',
-                      fontWeight: 800,
+                      gap: '0.3rem',
                       color: 'var(--accent)',
+                      flexShrink: 0,
                     }}
                   >
-                    RS
+                    <span style={{ fontSize: '1.6rem', fontWeight: 800 }}>RS</span>
+                    <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>No photo</span>
                   </div>
                 )}
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', flex: 1 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', flex: 1, minWidth: 0 }}>
+                  <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.45 }}>
+                    High-res portrait photo for your Hero section & preview metadata.
+                  </p>
+
                   <input
                     ref={avatarInputRef}
                     type="file"
@@ -237,52 +251,70 @@ export default function AdminSettings() {
                     style={{ display: 'none' }}
                     onChange={(e) => handleFileUpload(e, 'avatar')}
                   />
-                  <button
-                    type="button"
-                    disabled={uploadingAvatar}
-                    onClick={() => avatarInputRef.current?.click()}
-                    style={{
-                      background: 'var(--accent)',
-                      color: 'var(--accent-contrast)',
-                      border: '1px solid var(--accent)',
-                      borderRadius: 'var(--radius-sm)',
-                      padding: '0.45rem 0.85rem',
-                      fontSize: '0.8rem',
-                      fontWeight: 600,
-                      cursor: uploadingAvatar ? 'not-allowed' : 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '0.35rem',
-                      width: 'fit-content',
-                    }}
-                  >
-                    {uploadingAvatar ? <><Spinner size={14} color="var(--accent-contrast)" /> Uploading...</> : <><Upload size={14} /> Upload Avatar</>}
-                  </button>
-                  {profile?.avatarUrl && (
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', alignItems: 'flex-start' }}>
                     <button
                       type="button"
-                      onClick={() => {
-                        if (profile.avatarUrl) {
-                          api.delete('/admin/upload', { data: { url: profile.avatarUrl } }).catch(() => {});
-                        }
-                        set('avatarUrl', '');
-                      }}
+                      disabled={uploadingAvatar}
+                      onClick={() => avatarInputRef.current?.click()}
                       style={{
-                        background: 'transparent',
-                        color: 'var(--text-muted)',
-                        border: 'none',
-                        fontSize: '0.75rem',
-                        cursor: 'pointer',
-                        display: 'flex',
+                        background: 'var(--accent)',
+                        color: 'var(--accent-contrast)',
+                        border: '1px solid var(--accent)',
+                        borderRadius: 'var(--radius-sm)',
+                        padding: '0.52rem 0.95rem',
+                        fontSize: '0.82rem',
+                        fontWeight: 700,
+                        cursor: uploadingAvatar ? 'not-allowed' : 'pointer',
+                        display: 'inline-flex',
                         alignItems: 'center',
-                        gap: '0.25rem',
-                        padding: 0,
+                        justifyContent: 'center',
+                        gap: '0.4rem',
+                        width: 'fit-content',
+                        boxShadow: '0 3px 12px var(--accent-glow)',
+                        transition: 'all var(--transition-fast)',
                       }}
                     >
-                      <Trash2 size={12} /> Remove Photo
+                      {uploadingAvatar ? (
+                        <>
+                          <Spinner size={14} color="var(--accent-contrast)" /> Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <Upload size={14} /> {profile?.avatarUrl ? 'Change Photo' : 'Upload Avatar'}
+                        </>
+                      )}
                     </button>
-                  )}
+
+                    {profile?.avatarUrl && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (profile.avatarUrl) {
+                            api.delete('/admin/upload', { data: { url: profile.avatarUrl } }).catch(() => {});
+                          }
+                          set('avatarUrl', '');
+                        }}
+                        style={{
+                          background: 'transparent',
+                          color: 'var(--text-muted)',
+                          border: 'none',
+                          fontSize: '0.75rem',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.3rem',
+                          padding: '0.15rem 0',
+                          width: 'fit-content',
+                          transition: 'color var(--transition-fast)',
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.color = '#ef4444')}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
+                      >
+                        <Trash2 size={13} /> Remove Photo
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
