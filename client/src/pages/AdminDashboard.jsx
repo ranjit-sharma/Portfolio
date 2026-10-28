@@ -12,7 +12,6 @@ import {
   Award,
   Sliders,
   ArrowUpRight,
-  PlusCircle,
   Database,
   Server,
   Activity,
@@ -98,75 +97,6 @@ export default function AdminDashboard() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      {/* Cyber Hero Banner */}
-      <div
-        className="admin-card"
-        style={{
-          background: 'linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-elevated) 100%)',
-          border: '1px solid var(--border)',
-          overflow: 'hidden',
-          position: 'relative',
-        }}
-      >
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: '2px',
-            background: 'linear-gradient(90deg, transparent, var(--accent), transparent)',
-          }}
-        />
-
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.25rem' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.5rem' }}>
-              <span
-                style={{
-                  fontFamily: 'JetBrains Mono, monospace',
-                  fontSize: '0.72rem',
-                  color: 'var(--accent)',
-                  background: 'var(--accent-dim)',
-                  border: '1px solid var(--accent-border)',
-                  padding: '2px 8px',
-                  borderRadius: '9999px',
-                  fontWeight: 600,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                }}
-              >
-                <Activity size={12} />
-                CONSOLE ACTIVE
-              </span>
-              <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>•</span>
-              <span style={{ color: 'var(--text-muted)', fontSize: '0.82rem', fontFamily: 'JetBrains Mono, monospace' }}>
-                LIVE MONGODB ATLAS
-              </span>
-            </div>
-
-            <h1 style={{ fontSize: 'clamp(1.35rem, 3.5vw, 1.75rem)', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '0.4rem', color: 'var(--text-primary)' }}>
-              Developer Command Center
-            </h1>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.92rem', maxWidth: 640, lineHeight: 1.6 }}>
-              Manage public portfolio content, update technical proficiencies, track inquiries, and control theme appearance in real-time.
-            </p>
-          </div>
-
-          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', width: 'auto' }}>
-            <Link to="/admin/projects" className="admin-btn-primary">
-              <PlusCircle size={16} />
-              <span>New Project</span>
-            </Link>
-            <Link to="/admin/skills" className="admin-btn-secondary">
-              <Cpu size={16} />
-              <span>Manage Skills</span>
-            </Link>
-          </div>
-        </div>
-      </div>
-
       {/* Metrics Cards Grid */}
       {loading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem' }}>
