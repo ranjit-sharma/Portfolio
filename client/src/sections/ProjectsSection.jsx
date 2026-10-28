@@ -957,7 +957,7 @@ export default function ProjectsSection() {
                                   className="project-action-btn project-action-btn-demo"
                                 >
                                   <ExternalLink size={14} />
-                                  <span>Live Project</span>
+                                  <span>View Live Site</span>
                                 </a>
                               )}
                             </div>
