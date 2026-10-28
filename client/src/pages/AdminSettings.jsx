@@ -235,7 +235,12 @@ export default function AdminSettings() {
                   {profile?.avatarUrl && (
                     <button
                       type="button"
-                      onClick={() => set('avatarUrl', '')}
+                      onClick={() => {
+                        if (profile.avatarUrl) {
+                          api.delete('/admin/upload', { data: { url: profile.avatarUrl } }).catch(() => {});
+                        }
+                        set('avatarUrl', '');
+                      }}
                       style={{
                         background: 'transparent',
                         color: 'var(--text-muted)',
@@ -322,7 +327,12 @@ export default function AdminSettings() {
                     </a>
                     <button
                       type="button"
-                      onClick={() => set('resumeUrl', '')}
+                      onClick={() => {
+                        if (profile.resumeUrl) {
+                          api.delete('/admin/upload', { data: { url: profile.resumeUrl } }).catch(() => {});
+                        }
+                        set('resumeUrl', '');
+                      }}
                       style={{
                         background: 'transparent',
                         color: 'var(--text-muted)',

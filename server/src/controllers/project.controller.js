@@ -2,6 +2,7 @@ const Project = require('../models/Project');
 const asyncHandler = require('../utils/asyncHandler');
 const { apiSuccess } = require('../utils/apiResponse');
 const slugify = require('../utils/slugify');
+const { deleteAsset } = require('../config/cloudinary');
 
 // GET /api/v1/projects  (public)
 const getProjects = asyncHandler(async (req, res) => {
@@ -47,11 +48,19 @@ const updateProject = asyncHandler(async (req, res) => {
   if (req.body.title) {
     req.body.slug = slugify(req.body.title);
   }
+
+  const existing = await Project.findById(req.params.id);
+  if (!existing) return res.status(404).json({ success: false, message: 'Project not found' });
+
+  // If image was changed or removed, delete the old image from Cloudinary
+  if (req.body.image !== undefined && req.body.image !== existing.image && existing.image) {
+    deleteAsset(existing.image).catch(() => {});
+  }
+
   const project = await Project.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
   });
-  if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
   return apiSuccess(res, project, 'Project updated');
 });
 
@@ -59,6 +68,12 @@ const updateProject = asyncHandler(async (req, res) => {
 const deleteProject = asyncHandler(async (req, res) => {
   const project = await Project.findByIdAndDelete(req.params.id);
   if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
+
+  // Delete image from Cloudinary/storage
+  if (project.image) {
+    deleteAsset(project.image).catch(() => {});
+  }
+
   return apiSuccess(res, null, 'Project deleted');
 });
 

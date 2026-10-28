@@ -19,15 +19,16 @@ const { getCertifications, createCertification, updateCertification, deleteCerti
 const { getMessages, updateMessageStatus, deleteMessage } = require('../controllers/contact.controller');
 const { updateProfile } = require('../controllers/profile.controller');
 const upload = require('../middleware/upload');
-const { uploadFile } = require('../controllers/upload.controller');
+const { uploadFile, deleteUploadedFile } = require('../controllers/upload.controller');
 
 // Auth routes (no protect needed)
 router.post('/login', authLimiter, validate(loginSchema), login);
 router.post('/logout', logout);
 router.get('/me', protect, getMe);
 
-// File Upload (Resume / Avatar / Images)
+// File Upload & Delete (Resume / Avatar / Images / Certificates)
 router.post('/upload', protect, upload.single('file'), uploadFile);
+router.delete('/upload', protect, deleteUploadedFile);
 
 // Profile
 router.put('/profile', protect, validate(profileSchema), updateProfile);

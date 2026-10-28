@@ -1,6 +1,7 @@
 const Profile = require('../models/Profile');
 const asyncHandler = require('../utils/asyncHandler');
 const { apiSuccess } = require('../utils/apiResponse');
+const { deleteAsset } = require('../config/cloudinary');
 
 // GET /api/v1/profile  (public)
 const getProfile = asyncHandler(async (req, res) => {
@@ -29,6 +30,28 @@ const getViews = asyncHandler(async (req, res) => {
 
 // PUT /api/v1/admin/profile  (admin)
 const updateProfile = asyncHandler(async (req, res) => {
+  const existing = await Profile.findOne();
+
+  // If avatar was replaced or removed, delete the old avatar from Cloudinary
+  if (
+    existing &&
+    req.body.avatarUrl !== undefined &&
+    req.body.avatarUrl !== existing.avatarUrl &&
+    existing.avatarUrl
+  ) {
+    deleteAsset(existing.avatarUrl).catch(() => {});
+  }
+
+  // If resume was replaced or removed, delete the old resume from Cloudinary
+  if (
+    existing &&
+    req.body.resumeUrl !== undefined &&
+    req.body.resumeUrl !== existing.resumeUrl &&
+    existing.resumeUrl
+  ) {
+    deleteAsset(existing.resumeUrl).catch(() => {});
+  }
+
   const profile = await Profile.findOneAndUpdate({}, req.body, {
     new: true,
     upsert: true,

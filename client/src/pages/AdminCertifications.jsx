@@ -174,7 +174,12 @@ export default function AdminCertifications() {
                       </button>
                       <button
                         type="button"
-                        onClick={() => setForm((f) => ({ ...f, image: '' }))}
+                        onClick={() => {
+                          if (form.image) {
+                            api.delete('/admin/upload', { data: { url: form.image } }).catch(() => {});
+                          }
+                          setForm((f) => ({ ...f, image: '' }));
+                        }}
                         style={{
                           background: 'transparent',
                           color: '#ef4444',

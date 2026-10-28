@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const asyncHandler = require('../utils/asyncHandler');
 const { apiSuccess, apiError } = require('../utils/apiResponse');
-const { isCloudinaryConfigured, uploadToCloudinary } = require('../config/cloudinary');
+const { isCloudinaryConfigured, uploadToCloudinary, deleteAsset } = require('../config/cloudinary');
 
 // POST /api/v1/admin/upload
 const uploadFile = asyncHandler(async (req, res) => {
@@ -40,7 +40,6 @@ const uploadFile = asyncHandler(async (req, res) => {
       );
     } catch (cloudErr) {
       console.error('Cloudinary upload failed, falling back to local storage:', cloudErr.message);
-      // If Cloudinary upload failed, fall through to local storage
     }
   }
 
@@ -69,4 +68,15 @@ const uploadFile = asyncHandler(async (req, res) => {
   );
 });
 
-module.exports = { uploadFile };
+// DELETE /api/v1/admin/upload
+const deleteUploadedFile = asyncHandler(async (req, res) => {
+  const url = req.body?.url || req.query?.url;
+  if (!url) {
+    return apiError(res, 400, 'Asset URL is required to delete');
+  }
+
+  await deleteAsset(url);
+  return apiSuccess(res, null, 'Asset deleted successfully');
+});
+
+module.exports = { uploadFile, deleteUploadedFile };

@@ -414,7 +414,12 @@ export default function AdminExperience() {
                     </a>
                     <button
                       type="button"
-                      onClick={() => setForm((f) => ({ ...f, certificateUrl: '' }))}
+                      onClick={() => {
+                        if (form.certificateUrl) {
+                          api.delete('/admin/upload', { data: { url: form.certificateUrl } }).catch(() => {});
+                        }
+                        setForm((f) => ({ ...f, certificateUrl: '' }));
+                      }}
                       style={{
                         background: 'transparent',
                         border: 'none',
