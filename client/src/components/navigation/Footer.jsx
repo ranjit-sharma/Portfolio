@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ArrowRight, ArrowUp, Mail } from 'lucide-react';
-import { SiGithub, SiLeetcode } from 'react-icons/si';
+import { SiGithub } from 'react-icons/si';
 import { FaLinkedinIn, FaWhatsapp, FaInstagram, FaFacebook, FaXTwitter } from 'react-icons/fa6';
 import { RSLogo } from '../ui';
 import api from '../../services/api';
@@ -46,11 +46,6 @@ export default function Footer() {
       label: 'LinkedIn',
       Icon: FaLinkedinIn,
       href: profile.linkedinUrl.trim(),
-    },
-    profile?.leetcodeUrl?.trim() && {
-      label: 'LeetCode',
-      Icon: SiLeetcode,
-      href: profile.leetcodeUrl.trim(),
     },
     (profile?.phone?.trim() || (!profile && '917482869029')) && {
       label: 'WhatsApp',
