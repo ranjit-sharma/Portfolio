@@ -133,8 +133,6 @@ export default function ContactSection() {
       icon: <MapPin size={18} strokeWidth={2.2} />,
       label: 'Location',
       value: location,
-      href: 'https://maps.google.com/?q=Bhubaneswar,+Odisha,+India',
-      hint: 'Based in Odisha, India (IST)',
     },
   ];
 
@@ -268,6 +266,9 @@ export default function ContactSection() {
           color: inherit;
           text-decoration: none;
           transition: border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+        }
+        div.contact-link {
+          cursor: default;
         }
         a.contact-link:hover,
         a.contact-link:focus-visible {
