@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   TbLayout,
   TbServer,
@@ -54,7 +54,6 @@ function SkillChip({ skill }) {
 
 export default function SkillsSection() {
   const { ref, inView } = useInView();
-  const reduceMotion = useReducedMotion();
   const [skillsMap, setSkillsMap] = useState(null);
   const [loading, setLoading] = useState(true);
 

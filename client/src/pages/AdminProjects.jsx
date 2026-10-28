@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, useRef } from 'react';
 import api from '../services/api';
-import { Spinner, Badge } from '../components/ui/index';
+import { Spinner } from '../components/ui/index';
 import { Upload, Trash2 } from 'lucide-react';
 import { getAssetUrl } from '../utils/assetUrl';
 

@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from '../hooks/useInView';
 import { Trophy, Briefcase, CheckCircle2, X, ExternalLink, Award, FileText, ArrowUpRight } from 'lucide-react';
 import { SectionHeading } from '../components/ui/index';
@@ -188,7 +188,6 @@ export default function CertificationsSection() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
   const [selectedCert, setSelectedCert] = useState(null);
-  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
     function handleKeyDown(e) {
@@ -217,7 +216,7 @@ export default function CertificationsSection() {
       .finally(() => setLoading(false));
   }, []);
 
-  const items = Array.isArray(certs) ? certs : [];
+  const items = useMemo(() => (Array.isArray(certs) ? certs : []), [certs]);
 
   // Build filter pills based on categories present in items
   const tabs = useMemo(() => {

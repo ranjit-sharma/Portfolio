@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { SiGithub } from 'react-icons/si';
 import { ArrowUpRight, Check, Mail, MapPin, Send } from 'lucide-react';
 import { useInView } from '../hooks/useInView';
@@ -24,7 +24,6 @@ const LinkedInIcon = () => (
 
 export default function ContactSection() {
   const { ref, inView } = useInView();
-  const reduceMotion = useReducedMotion();
   const [profile, setProfile] = useState(null);
   const [form, setForm] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState({});

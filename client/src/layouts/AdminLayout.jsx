@@ -18,7 +18,6 @@ import {
   X,
   ShieldCheck,
   ChevronRight,
-  Database,
   Terminal,
 } from 'lucide-react';
 

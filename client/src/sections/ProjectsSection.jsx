@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence, useMotionValue, useReducedMotion, useSpring, useTransform } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { Folder, FolderGit2, ExternalLink, ChevronLeft, ChevronRight, RotateCw, Lock } from 'lucide-react';
 import { SiGithub } from 'react-icons/si';
 import { useInView } from '../hooks/useInView';
@@ -7,7 +7,7 @@ import { SectionHeading, SkeletonCard, SkillIcon } from '../components/ui/index'
 import api from '../services/api';
 import { getAssetUrl } from '../utils/assetUrl';
 
-function getDisplayUrl(url, fallbackSlug) {
+function getDisplayUrl(url) {
   if (!url) return '';
   try {
     const parsed = new URL(url);

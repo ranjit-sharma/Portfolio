@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import api from '../services/api';
 import { Spinner, SkillIcon } from '../components/ui/index';
-import { Plus, Trash2, Edit2, X, Check, Layers, Sparkles } from 'lucide-react';
+import { Plus, Trash2, Edit2, X, Layers } from 'lucide-react';
 
 const DEFAULT_CATEGORIES = ['Frontend', 'Backend', 'Database', 'Language', 'CS Fundamentals', 'Tools'];
 const EMPTY_SKILL = { name: '', category: 'Frontend', displayOrder: 0 };

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useInView } from '../hooks/useInView';
 import { SectionHeading, SkillIcon, RSLogo } from '../components/ui/index';
 import api from '../services/api';
@@ -27,7 +27,6 @@ const HIGHLIGHTS = [
 
 export default function AboutSection() {
   const { ref, inView } = useInView();
-  const reduceMotion = useReducedMotion();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 

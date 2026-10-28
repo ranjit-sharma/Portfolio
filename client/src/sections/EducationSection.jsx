@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { GraduationCap, School, MapPin, CalendarDays, Check } from 'lucide-react';
 import { useInView } from '../hooks/useInView';
 import { SectionHeading } from '../components/ui/index';
@@ -41,7 +41,6 @@ const SCHOOLS = [
 
 export default function EducationSection() {
   const { ref, inView } = useInView();
-  const reduceMotion = useReducedMotion();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 

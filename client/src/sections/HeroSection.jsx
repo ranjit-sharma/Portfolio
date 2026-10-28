@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useOutletContext } from 'react-router-dom';
 import { ArrowRight, Download, Mail, MapPin } from 'lucide-react';
 import api from '../services/api';
@@ -102,7 +102,6 @@ function TypingEffect({ words }) {
 }
 
 export default function HeroSection() {
-  const reduceMotion = useReducedMotion();
   const { introDone } = useOutletContext() ?? { introDone: true };
   const [profile, setProfile] = useState(null);
   useViews();
