@@ -30,7 +30,6 @@ export default function RootLayout() {
       <div aria-hidden="true" className="site-bg">
         <div className="site-bg-blob site-bg-blob-1" />
         <div className="site-bg-blob site-bg-blob-2" />
-        <div className="site-bg-blob site-bg-blob-3" />
         {BG_SNIPPETS.map((s) => (
           <span
             key={s.text}

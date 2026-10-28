@@ -361,14 +361,6 @@ textarea::placeholder {
   opacity: 0.1;
   animation: heroDrift2 24s ease-in-out infinite alternate;
 }
-.site-bg-blob-3 {
-  width: 380px;
-  height: 380px;
-  top: 48%;
-  left: 20%;
-  opacity: 0.08;
-  animation: heroDrift1 22s ease-in-out infinite alternate-reverse;
-}
 .site-bg-snippet {
   position: absolute;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -389,61 +381,9 @@ textarea::placeholder {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   50%      { transform: translateY(-12px) rotate(1.5deg); }
 }
-
-@keyframes heroDriftMobile1 {
-  0%   { transform: translate(-50%, 0) scale(1); }
-  100% { transform: translate(-42%, 40px) scale(1.18); }
-}
-@keyframes heroDriftMobile2 {
-  0%   { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(-25px, -30px) scale(1.12); }
-}
-
 @media (max-width: 768px) {
-  /* Dynamic ambient theme gradients wash on mobile */
-  .site-bg {
-    background:
-      radial-gradient(circle at 85% 12%, var(--accent-glow) 0%, transparent 60%),
-      radial-gradient(circle at 15% 82%, var(--accent-glow) 0%, transparent 58%),
-      radial-gradient(circle at 50% 48%, var(--accent-dim) 0%, transparent 65%);
-  }
-  .site-bg-blob {
-    filter: blur(55px);
-  }
-  .site-bg-blob-1 {
-    width: 320px;
-    height: 320px;
-    top: 5%;
-    left: 55%;
-    right: auto;
-    transform: translateX(-50%);
-    opacity: 0.32;
-    animation: heroDriftMobile1 14s ease-in-out infinite alternate;
-  }
-  .site-bg-blob-2 {
-    width: 290px;
-    height: 290px;
-    bottom: 8%;
-    right: -10%;
-    left: auto;
-    opacity: 0.26;
-    animation: heroDriftMobile2 18s ease-in-out infinite alternate;
-  }
-  .site-bg-blob-3 {
-    width: 240px;
-    height: 240px;
-    top: 50%;
-    left: -5%;
-    opacity: 0.2;
-    animation: heroDriftMobile1 16s ease-in-out infinite alternate-reverse;
-  }
   .site-bg-snippet {
-    display: block;
-    font-size: 0.68rem;
-    opacity: 0.18;
-    max-width: 82vw;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    display: none;
   }
 }
 
