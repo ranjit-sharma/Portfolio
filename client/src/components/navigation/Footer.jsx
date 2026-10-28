@@ -36,24 +36,38 @@ export default function Footer() {
 
   const email = profile?.email || 'ranjitsharma76088@gmail.com';
 
-  const instagramUrl =
-    profile?.instagramUrl !== undefined
-      ? profile.instagramUrl
-      : 'https://www.instagram.com/_ranjitsharma_?rpxt=MXQ5YzF6cXJnbHVjZA==';
-
-  const facebookUrl =
-    profile?.facebookUrl !== undefined
-      ? profile.facebookUrl
-      : 'https://www.facebook.com/share/BvEjChP99D/';
-
   const socials = [
-    { label: 'GitHub', Icon: SiGithub, href: profile?.githubUrl || 'https://github.com/Ranjitsharma76088' },
-    { label: 'LinkedIn', Icon: FaLinkedinIn, href: profile?.linkedinUrl || 'https://linkedin.com/in/ranjit-sharma' },
-    { label: 'LeetCode', Icon: SiLeetcode, href: profile?.leetcodeUrl || 'https://leetcode.com/u/ranjitsharma/' },
-    { label: 'WhatsApp', Icon: FaWhatsapp, href: 'https://wa.me/917482869029' },
-    ...(instagramUrl ? [{ label: 'Instagram', Icon: FaInstagram, href: instagramUrl }] : []),
-    ...(facebookUrl ? [{ label: 'Facebook', Icon: FaFacebook, href: facebookUrl }] : []),
-  ];
+    profile?.githubUrl?.trim() && {
+      label: 'GitHub',
+      Icon: SiGithub,
+      href: profile.githubUrl.trim(),
+    },
+    profile?.linkedinUrl?.trim() && {
+      label: 'LinkedIn',
+      Icon: FaLinkedinIn,
+      href: profile.linkedinUrl.trim(),
+    },
+    profile?.leetcodeUrl?.trim() && {
+      label: 'LeetCode',
+      Icon: SiLeetcode,
+      href: profile.leetcodeUrl.trim(),
+    },
+    (profile?.phone?.trim() || (!profile && '917482869029')) && {
+      label: 'WhatsApp',
+      Icon: FaWhatsapp,
+      href: `https://wa.me/${(profile?.phone || '917482869029').replace(/[^0-9]/g, '')}`,
+    },
+    profile?.instagramUrl?.trim() && {
+      label: 'Instagram',
+      Icon: FaInstagram,
+      href: profile.instagramUrl.trim(),
+    },
+    profile?.facebookUrl?.trim() && {
+      label: 'Facebook',
+      Icon: FaFacebook,
+      href: profile.facebookUrl.trim(),
+    },
+  ].filter(Boolean);
 
   return (
     <footer className="site-footer" role="contentinfo">
@@ -337,19 +351,21 @@ export default function Footer() {
           </nav>
 
           {/* Connect */}
-          <div>
-            <h3 className="ft-heading">Connect</h3>
-            <ul className="ft-socials">
-              {socials.map(({ label, Icon, href }) => (
-                <li key={label}>
-                  <a href={href} target="_blank" rel="noopener noreferrer" className="ft-social">
-                    <Icon size={15} aria-hidden="true" />
-                    {label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {socials.length > 0 && (
+            <div>
+              <h3 className="ft-heading">Connect</h3>
+              <ul className="ft-socials">
+                {socials.map(({ label, Icon, href }) => (
+                  <li key={label}>
+                    <a href={href} target="_blank" rel="noopener noreferrer" className="ft-social">
+                      <Icon size={15} aria-hidden="true" />
+                      {label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
 
         {/* Bottom bar */}

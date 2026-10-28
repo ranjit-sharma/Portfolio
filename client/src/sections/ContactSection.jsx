@@ -122,9 +122,17 @@ export default function ContactSection() {
     { icon: <MapPin size={17} />, label: 'Location', value: profile?.location || 'Bhubaneswar, Odisha, India', href: null },
   ];
   const socials = [
-    { label: 'LinkedIn', icon: <LinkedInIcon />, href: profile?.linkedinUrl || 'https://www.linkedin.com/in/ranjitsharma74/' },
-    { label: 'GitHub', icon: <SiGithub size={16} />, href: profile?.githubUrl || 'https://github.com/Ranjitsharma76088' },
-  ];
+    profile?.linkedinUrl?.trim() && {
+      label: 'LinkedIn',
+      icon: <LinkedInIcon />,
+      href: profile.linkedinUrl.trim(),
+    },
+    profile?.githubUrl?.trim() && {
+      label: 'GitHub',
+      icon: <SiGithub size={16} />,
+      href: profile.githubUrl.trim(),
+    },
+  ].filter(Boolean);
   const availability =
     profile?.availabilityNote || (profile?.available ? 'Open to full-time roles and internships' : 'Available for opportunities');
 
@@ -537,14 +545,16 @@ export default function ContactSection() {
                 })}
               </ul>
 
-              <motion.div className="contact-socials" {...reveal({ opacity: 0, y: 12 }, 0.55)}>
-                {socials.map((s) => (
-                  <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="contact-social">
-                    {s.icon}
-                    <span>{s.label}</span>
-                  </a>
-                ))}
-              </motion.div>
+              {socials.length > 0 && (
+                <motion.div className="contact-socials" {...reveal({ opacity: 0, y: 12 }, 0.55)}>
+                  {socials.map((s) => (
+                    <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="contact-social">
+                      {s.icon}
+                      <span>{s.label}</span>
+                    </a>
+                  ))}
+                </motion.div>
+              )}
             </aside>
 
             {/* Right — compose form */}
