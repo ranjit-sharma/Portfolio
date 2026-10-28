@@ -319,9 +319,10 @@ export default function CertificationsSection() {
           overflow: hidden;
         }
         .cert-card-thumb img {
-          max-width: 100%;
-          max-height: 100%;
-          object-fit: contain;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: top center;
           border-radius: 4px;
           box-shadow: 0 10px 22px -10px rgba(0, 0, 0, 0.7);
           transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
