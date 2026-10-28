@@ -50,6 +50,8 @@ async function uploadToCloudinary(filePath, options = {}) {
   const defaultOptions = {
     folder: 'portfolio',
     resource_type: 'auto',
+    type: 'upload',
+    access_mode: 'public',
     use_filename: true,
     unique_filename: true,
   };
