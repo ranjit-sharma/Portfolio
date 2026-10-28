@@ -8,6 +8,7 @@ import { getAssetUrl } from '../utils/assetUrl';
 import { LeetCodeIcon } from '../components/ui/index';
 
 const ROLES = [
+  'Software Developer',
   'Full-Stack Developer',
   'MERN Stack Engineer',
   'Backend Developer',

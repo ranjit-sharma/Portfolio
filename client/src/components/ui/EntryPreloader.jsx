@@ -332,7 +332,7 @@ export default function EntryPreloader({ onComplete }) {
                 willChange: 'transform, opacity, filter, letter-spacing',
               }}
             >
-              Software Engineer
+              Software Developer
             </motion.p>
 
             {/* Enlarged Progress Bar Container */}
