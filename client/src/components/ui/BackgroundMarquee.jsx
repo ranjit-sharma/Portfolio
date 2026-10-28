@@ -11,7 +11,7 @@ export default function BackgroundMarquee() {
           x: {
             repeat: Infinity,
             repeatType: 'loop',
-            duration: 160,
+            duration: 280,
             ease: 'linear',
           },
         }}
