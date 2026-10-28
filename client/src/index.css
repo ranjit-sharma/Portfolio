@@ -919,16 +919,7 @@ textarea::placeholder {
 }
 
 
-/* ─── Hero Background Marquee (Right to Left Outline Animation) ────── */
-@keyframes hero-marquee-rtl {
-  0% {
-    transform: translate3d(0%, 0, 0);
-  }
-  100% {
-    transform: translate3d(-50%, 0, 0);
-  }
-}
-
+/* ─── Hero Background Marquee (Framer Motion Driven, Right to Left) ────── */
 .hero-marquee-wrapper {
   position: absolute;
   top: calc(clamp(14%, 20vw, 24%) + 96px);
@@ -941,10 +932,9 @@ textarea::placeholder {
 }
 
 .hero-marquee-track {
-  display: flex;
-  width: max-content;
+  display: flex !important;
+  width: max-content !important;
   will-change: transform;
-  animation: hero-marquee-rtl 42s linear infinite;
 }
 
 .hero-marquee-content {
@@ -976,10 +966,4 @@ textarea::placeholder {
   -webkit-text-stroke: 1px var(--text-primary);
   opacity: 0.08;
   user-select: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero-marquee-track {
-    animation-play-state: paused;
-  }
 }

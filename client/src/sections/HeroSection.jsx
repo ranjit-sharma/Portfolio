@@ -128,7 +128,19 @@ export default function HeroSection() {
     >
       {/* Background Marquee — "SOFTWARE DEVELOPER" Outline typography running right-to-left in all views */}
       <div className="hero-marquee-wrapper" aria-hidden="true">
-        <div className="hero-marquee-track">
+        <motion.div
+          className="hero-marquee-track"
+          initial={{ x: '0%' }}
+          animate={{ x: ['0%', '-50%'] }}
+          transition={{
+            x: {
+              repeat: Infinity,
+              repeatType: 'loop',
+              duration: 45,
+              ease: 'linear',
+            },
+          }}
+        >
           <div className="hero-marquee-content">
             <span className="hero-marquee-text">SOFTWARE DEVELOPER</span>
             <span className="hero-marquee-dot">·</span>
@@ -157,7 +169,7 @@ export default function HeroSection() {
             <span className="hero-marquee-text">SOFTWARE DEVELOPER</span>
             <span className="hero-marquee-dot">·</span>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       <div className="container" style={{ position: 'relative', zIndex: 1 }}>
