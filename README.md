@@ -1,4 +1,4 @@
-# Ranjit Sharma — Developer Portfolio
+# My Portfolio
 
 Welcome to my personal developer portfolio! This website serves as an interactive showcase of my engineering journey, featured works, technical capabilities, and design philosophy.
 
@@ -10,8 +10,8 @@ Designed and crafted from the ground up, this portfolio provides visitors, recru
 
 ## 🌐 Live Website
 
-> **Live Link:** `<!-- Live link will be provided -->`  
-> 🔗 **[Explore Live Portfolio](https://your-portfolio-link.com)** *(Link to be updated)*
+> **Live Link:**
+> 🔗 **[Explore My Portfolio](https://ranjit-sharma.onrender.com)**
 
 ---
 
