@@ -4,6 +4,7 @@ require('dotenv').config();
 const http = require('http');
 const app = require('./app');
 const connectDB = require('./config/db');
+const { initThemeCache } = require('./utils/themeCache');
 
 const PORT = parseInt(process.env.PORT, 10) || 5000;
 
@@ -11,6 +12,7 @@ const startServer = async () => {
   try {
     // Attempt DB connection with retries
     await connectDB();
+    await initThemeCache();
   } catch (err) {
     console.error('⚠️  Initial MongoDB connection could not be established:', err.message);
     console.log('Server will continue running; background reconnection will retry...');

@@ -13,6 +13,7 @@ const { generalLimiter } = require('./middleware/rateLimiter');
 const errorHandler = require('./middleware/errorHandler');
 const publicRoutes = require('./routes/public.routes');
 const adminRoutes = require('./routes/admin.routes');
+const { getTheme } = require('./utils/themeCache');
 
 const app = express();
 
@@ -155,13 +156,48 @@ const clientDistPath = possibleDistPaths.find((p) => fs.existsSync(path.join(p, 
 
 if (clientDistPath) {
   console.log(`📦 Serving static client from: ${clientDistPath}`);
-  app.use(express.static(clientDistPath));
+  // Use index: false so all root and page HTML requests are injected with active theme attributes
+  app.use(express.static(clientDistPath, { index: false }));
+
+  let cachedIndexHtml = null;
+
   app.get('*', (req, res, next) => {
     if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
       return next();
     }
     res.setHeader('Cache-Control', 'no-cache');
-    res.sendFile(path.join(clientDistPath, 'index.html'));
+
+    try {
+      if (!cachedIndexHtml || process.env.NODE_ENV !== 'production') {
+        cachedIndexHtml = fs.readFileSync(path.join(clientDistPath, 'index.html'), 'utf8');
+      }
+
+      const { themeMode, accentColor } = getTheme();
+      const currentMode = themeMode || 'dark';
+      const currentColor = accentColor || 'emerald';
+
+      let html = cachedIndexHtml;
+
+      // Inject data-theme and data-color directly into <html ...> from the very first byte
+      html = html.replace(/<html([^>]*)>/i, (match, attrs) => {
+        const cleanAttrs = attrs
+          .replace(/\s*data-theme=["'][^"']*["']/gi, '')
+          .replace(/\s*data-color=["'][^"']*["']/gi, '');
+        return `<html${cleanAttrs} data-theme="${currentMode}" data-color="${currentColor}">`;
+      });
+
+      // Inject window.__INITIAL_THEME__ right after <head>
+      const themeScript = `<script>window.__INITIAL_THEME__ = ${JSON.stringify({
+        themeMode: currentMode,
+        accentColor: currentColor,
+      })};</script>`;
+
+      html = html.replace(/<head>/i, `<head>\n    ${themeScript}`);
+
+      res.status(200).contentType('text/html').send(html);
+    } catch (err) {
+      res.sendFile(path.join(clientDistPath, 'index.html'));
+    }
   });
 } else {
   console.warn('⚠️  client/dist/index.html not found! Checked locations:', possibleDistPaths);

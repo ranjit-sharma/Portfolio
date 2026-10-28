@@ -2,6 +2,7 @@ const Profile = require('../models/Profile');
 const asyncHandler = require('../utils/asyncHandler');
 const { apiSuccess } = require('../utils/apiResponse');
 const { deleteAsset } = require('../config/cloudinary');
+const { setTheme } = require('../utils/themeCache');
 
 // GET /api/v1/profile  (public)
 const getProfile = asyncHandler(async (req, res) => {
@@ -57,6 +58,11 @@ const updateProfile = asyncHandler(async (req, res) => {
     upsert: true,
     runValidators: true,
   });
+
+  if (profile && (profile.themeMode || profile.accentColor)) {
+    setTheme(profile.themeMode, profile.accentColor);
+  }
+
   return apiSuccess(res, profile, 'Profile updated');
 });
 

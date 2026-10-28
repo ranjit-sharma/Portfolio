@@ -12,8 +12,13 @@ const COLOR_THEMES = [
 ];
 
 export function ThemeProvider({ children }) {
-  // Initial state reads from localStorage cache for instant zero-flash render
+  const serverTheme = typeof window !== 'undefined' ? window.__INITIAL_THEME__ : null;
+
+  // Initial state reads server-injected theme first, then localStorage cache
   const [theme, setTheme] = useState(() => {
+    if (serverTheme?.themeMode === 'dark' || serverTheme?.themeMode === 'light') {
+      return serverTheme.themeMode;
+    }
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('portfolio-theme');
       if (saved === 'dark' || saved === 'light') return saved;
@@ -22,6 +27,9 @@ export function ThemeProvider({ children }) {
   });
 
   const [colorTheme, setColorTheme] = useState(() => {
+    if (serverTheme?.accentColor && COLOR_THEMES.some((c) => c.id === serverTheme.accentColor)) {
+      return serverTheme.accentColor;
+    }
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('portfolio-color');
       if (saved === 'rose') return 'red';
@@ -34,12 +42,16 @@ export function ThemeProvider({ children }) {
   // Apply DOM attributes & update localStorage cache whenever theme or colorTheme changes
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('portfolio-theme', theme);
+    try {
+      localStorage.setItem('portfolio-theme', theme);
+    } catch {}
   }, [theme]);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-color', colorTheme);
-    localStorage.setItem('portfolio-color', colorTheme);
+    try {
+      localStorage.setItem('portfolio-color', colorTheme);
+    } catch {}
   }, [colorTheme]);
 
   // Fetch admin-configured global theme from backend on load.
@@ -55,12 +67,16 @@ export function ThemeProvider({ children }) {
           if (profile.themeMode && (profile.themeMode === 'dark' || profile.themeMode === 'light')) {
             setTheme(profile.themeMode);
             document.documentElement.setAttribute('data-theme', profile.themeMode);
-            localStorage.setItem('portfolio-theme', profile.themeMode);
+            try {
+              localStorage.setItem('portfolio-theme', profile.themeMode);
+            } catch {}
           }
           if (profile.accentColor && COLOR_THEMES.some((c) => c.id === profile.accentColor)) {
             setColorTheme(profile.accentColor);
             document.documentElement.setAttribute('data-color', profile.accentColor);
-            localStorage.setItem('portfolio-color', profile.accentColor);
+            try {
+              localStorage.setItem('portfolio-color', profile.accentColor);
+            } catch {}
           }
         }
       })
