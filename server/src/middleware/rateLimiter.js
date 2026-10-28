@@ -2,7 +2,7 @@ const rateLimit = require('express-rate-limit');
 
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: process.env.NODE_ENV === 'production' ? 100 : 10000,
+  max: process.env.NODE_ENV === 'production' ? 1000 : 10000,
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, message: 'Too many requests, please try again later.' },
