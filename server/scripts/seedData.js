@@ -227,6 +227,8 @@ const PROFILE = {
   avatarUrl: '',
   available: true,
   availabilityNote: 'Open to full-time roles and internships',
+  themeMode: 'dark',
+  accentColor: 'emerald',
 };
 
 (async () => {

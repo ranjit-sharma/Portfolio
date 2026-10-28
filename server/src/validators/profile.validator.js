@@ -47,6 +47,8 @@ const profileSchema = z.object({
       })
     )
     .optional(),
+  themeMode: z.enum(['dark', 'light']).optional(),
+  accentColor: z.enum(['emerald', 'cyan', 'green', 'amber', 'red', 'lime']).optional(),
 });
 
 module.exports = { profileSchema };

@@ -46,7 +46,7 @@ export default function UnifiedThemeToggle({ align = 'right' }) {
         type="button"
         onClick={() => setOpen((prev) => !prev)}
         aria-label={`Theme & Appearance (${isDark ? 'Dark' : 'Light'} mode, ${currentColor.name} theme)`}
-        title={`Theme: ${currentColor.name} (${isDark ? 'Dark' : 'Light'})`}
+        title={`Global Theme: ${currentColor.name} (${isDark ? 'Dark' : 'Light'})`}
         aria-expanded={open}
         aria-haspopup="true"
         style={{
@@ -101,16 +101,33 @@ export default function UnifiedThemeToggle({ align = 'right' }) {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.4rem',
-              fontSize: '0.8rem',
-              fontWeight: 700,
-              color: 'var(--text-primary)',
-              marginBottom: '0.85rem',
+              justifyContent: 'space-between',
+              marginBottom: '0.35rem',
             }}
           >
-            <Sparkles size={14} style={{ color: 'var(--accent)' }} />
-            <span>Theme & Appearance</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+              <Sparkles size={14} style={{ color: 'var(--accent)' }} />
+              <span>Theme & Appearance</span>
+            </div>
+            <span
+              style={{
+                fontSize: '0.62rem',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                padding: '0.15rem 0.4rem',
+                borderRadius: '9999px',
+                background: 'var(--accent-dim)',
+                color: 'var(--accent)',
+                letterSpacing: '0.04em',
+              }}
+            >
+              Admin Global
+            </span>
           </div>
+
+          <p style={{ fontSize: '0.68rem', color: 'var(--text-muted)', margin: '0 0 0.85rem 0', lineHeight: 1.35 }}>
+            Changes persist globally for all viewers and new visitors.
+          </p>
 
           {/* Section 1: Dark / Light Mode Switch */}
           <div

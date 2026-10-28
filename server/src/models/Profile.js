@@ -47,6 +47,17 @@ const profileSchema = new mongoose.Schema(
         desc: { type: String, default: '' },
       },
     ],
+    // Global Theme & Appearance (set and controlled strictly by Admin)
+    themeMode: {
+      type: String,
+      enum: ['dark', 'light'],
+      default: 'dark',
+    },
+    accentColor: {
+      type: String,
+      enum: ['emerald', 'cyan', 'green', 'amber', 'red', 'lime'],
+      default: 'emerald',
+    },
   },
   { timestamps: true }
 );
