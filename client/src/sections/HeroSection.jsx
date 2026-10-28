@@ -136,7 +136,7 @@ export default function HeroSection() {
             x: {
               repeat: Infinity,
               repeatType: 'loop',
-              duration: 45,
+              duration: 90,
               ease: 'linear',
             },
           }}
