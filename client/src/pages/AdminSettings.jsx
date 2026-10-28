@@ -574,7 +574,7 @@ export default function AdminSettings() {
             <div><label style={labelSt}>Name</label><input style={inputSt} value={profile?.name || ''} onChange={(e) => set('name', e.target.value)} /></div>
             <div><label style={labelSt}>Headline</label><input style={inputSt} value={profile?.headline || ''} onChange={(e) => set('headline', e.target.value)} /></div>
             <div><label style={labelSt}>Email</label><input type="email" style={inputSt} value={profile?.email || ''} onChange={(e) => set('email', e.target.value)} /></div>
-            <div><label style={labelSt}>Phone / WhatsApp</label><input style={inputSt} value={profile?.phone || ''} onChange={(e) => set('phone', e.target.value)} placeholder="+91 7482869029" /></div>
+            <div><label style={labelSt}>Phone Number</label><input style={inputSt} value={profile?.phone || ''} onChange={(e) => set('phone', e.target.value)} placeholder="+91 7482869029" /></div>
             <div><label style={labelSt}>Location</label><input style={inputSt} value={profile?.location || ''} onChange={(e) => set('location', e.target.value)} /></div>
             <div><label style={labelSt}>Languages Known</label><input style={inputSt} value={profile?.languages || ''} onChange={(e) => set('languages', e.target.value)} placeholder="English, Hindi, Odia" /></div>
           </div>
