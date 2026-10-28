@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
 import api from '../services/api';
-import { useTheme } from '../hooks/useTheme';
 import { Spinner, ImageResizeModal } from '../components/ui/index';
 import {
   Upload,
@@ -10,9 +9,6 @@ import {
   ExternalLink,
   Trash2,
   Sparkles,
-  Palette,
-  Moon,
-  Sun,
 } from 'lucide-react';
 
 const DEFAULT_HIGHLIGHTS = [
@@ -36,7 +32,6 @@ const DEFAULT_HIGHLIGHTS = [
 import { getAssetUrl } from '../utils/assetUrl';
 
 export default function AdminSettings() {
-  const { theme, colorTheme, setThemeMode, setColorTheme, availableColors } = useTheme();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -63,12 +58,7 @@ export default function AdminSettings() {
     setError('');
     setSuccess(false);
     try {
-      const payload = {
-        ...profile,
-        themeMode: profile?.themeMode || theme,
-        accentColor: profile?.accentColor || colorTheme,
-      };
-      await api.put('/admin/profile', payload);
+      await api.put('/admin/profile', profile);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
@@ -167,177 +157,11 @@ export default function AdminSettings() {
           Profile & System Settings
         </h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem' }}>
-          Configure personal bio, avatar photo, resume document, social handles, and global theme appearance.
+          Configure personal bio, avatar photo, resume document, social handles, and site metadata.
         </p>
       </div>
 
       <form onSubmit={handleSave} style={{ maxWidth: 750, display: 'grid', gap: '1.25rem' }}>
-        {/* Global Website Theme & Appearance (Admin Controlled) */}
-        <div
-          style={{
-            background: 'var(--bg-surface)',
-            border: '1px solid var(--border)',
-            borderRadius: 'var(--radius-lg)',
-            padding: '1.5rem',
-            boxShadow: 'var(--shadow-sm)',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-            <h2 style={{ fontWeight: 700, fontSize: '1.05rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Palette size={18} style={{ color: 'var(--accent)' }} />
-              Global Website Theme & Appearance
-            </h2>
-            <span
-              style={{
-                fontSize: '0.68rem',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                padding: '0.2rem 0.55rem',
-                borderRadius: '9999px',
-                background: 'var(--accent-dim)',
-                color: 'var(--accent)',
-                letterSpacing: '0.04em',
-              }}
-            >
-              Admin Controlled Only
-            </span>
-          </div>
-
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', margin: '0 0 1.25rem 0', lineHeight: 1.5 }}>
-            The theme mode and accent color you select here are saved globally in the database. Every new visitor and viewer will experience this exact theme. Viewers cannot change it.
-          </p>
-
-          {/* Theme Mode: Dark vs Light */}
-          <div style={{ marginBottom: '1.25rem' }}>
-            <label style={{ ...labelSt, marginBottom: '0.6rem' }}>Theme Mode</label>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '0.75rem' }}>
-              {[
-                { id: 'dark', label: 'Dark Mode (Default)', icon: Moon, desc: 'Deep slate canvas with radiant glows' },
-                { id: 'light', label: 'Light Mode', icon: Sun, desc: 'Clean, bright canvas with crisp contrast' },
-              ].map((m) => {
-                const IconComponent = m.icon;
-                const activeMode = (profile?.themeMode || theme) === m.id;
-                return (
-                  <button
-                    key={m.id}
-                    type="button"
-                    onClick={() => {
-                      set('themeMode', m.id);
-                      setThemeMode(m.id);
-                    }}
-                    style={{
-                      background: activeMode ? 'var(--accent-dim)' : 'var(--bg-card)',
-                      border: `1.5px solid ${activeMode ? 'var(--accent)' : 'var(--border)'}`,
-                      borderRadius: 'var(--radius-md)',
-                      padding: '0.85rem 1rem',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.75rem',
-                      transition: 'all var(--transition-fast)',
-                      boxShadow: activeMode ? '0 0 16px var(--accent-glow)' : 'none',
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: 36,
-                        height: 36,
-                        borderRadius: '50%',
-                        background: activeMode ? 'var(--accent)' : 'var(--bg-elevated)',
-                        color: activeMode ? 'var(--accent-contrast)' : 'var(--text-secondary)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0,
-                      }}
-                    >
-                      <IconComponent size={18} />
-                    </div>
-                    <div>
-                      <div style={{ fontWeight: 700, fontSize: '0.85rem', color: activeMode ? 'var(--accent)' : 'var(--text-primary)' }}>
-                        {m.label}
-                      </div>
-                      <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
-                        {m.desc}
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Accent Color Palette (6 Modes) */}
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.6rem' }}>
-              <label style={{ ...labelSt, margin: 0 }}>Accent Color (6 Modes)</label>
-              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--accent)' }}>
-                Active: {(availableColors.find((c) => c.id === (profile?.accentColor || colorTheme)) || availableColors[0]).name}
-              </span>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 105px), 1fr))', gap: '0.55rem' }}>
-              {availableColors.map((col) => {
-                const activeColor = (profile?.accentColor || colorTheme) === col.id;
-                return (
-                  <button
-                    key={col.id}
-                    type="button"
-                    onClick={() => {
-                      set('accentColor', col.id);
-                      setColorTheme(col.id);
-                    }}
-                    style={{
-                      background: activeColor ? 'var(--accent-dim)' : 'var(--bg-card)',
-                      border: `1.5px solid ${activeColor ? col.preview : 'var(--border)'}`,
-                      borderRadius: 'var(--radius-md)',
-                      padding: '0.75rem 0.5rem',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      gap: '0.4rem',
-                      transition: 'all var(--transition-fast)',
-                      boxShadow: activeColor ? `0 0 16px ${col.preview}40` : 'none',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = col.preview;
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = activeColor ? col.preview : 'var(--border)';
-                      e.currentTarget.style.transform = 'translateY(0)';
-                    }}
-                  >
-                    <span
-                      style={{
-                        width: 24,
-                        height: 24,
-                        borderRadius: '50%',
-                        background: col.preview,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: activeColor ? `0 0 12px ${col.preview}` : 'none',
-                        color:
-                          col.id === 'amber' || col.id === 'lime' || col.id === 'emerald' || col.id === 'cyan'
-                            ? '#0B0D0C'
-                            : '#FFFFFF',
-                      }}
-                    >
-                      {activeColor && <Check size={14} strokeWidth={3} />}
-                    </span>
-                    <span style={{ fontSize: '0.78rem', fontWeight: activeColor ? 700 : 500, color: 'var(--text-primary)' }}>
-                      {col.name}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
         {/* Media & Uploads Section (Avatar & Resume) */}
         <div
           style={{
@@ -574,7 +398,6 @@ export default function AdminSettings() {
             <div><label style={labelSt}>Name</label><input style={inputSt} value={profile?.name || ''} onChange={(e) => set('name', e.target.value)} /></div>
             <div><label style={labelSt}>Headline</label><input style={inputSt} value={profile?.headline || ''} onChange={(e) => set('headline', e.target.value)} /></div>
             <div><label style={labelSt}>Email</label><input type="email" style={inputSt} value={profile?.email || ''} onChange={(e) => set('email', e.target.value)} /></div>
-            <div><label style={labelSt}>Phone Number</label><input style={inputSt} value={profile?.phone || ''} onChange={(e) => set('phone', e.target.value)} placeholder="+91 7482869029" /></div>
             <div><label style={labelSt}>Location</label><input style={inputSt} value={profile?.location || ''} onChange={(e) => set('location', e.target.value)} /></div>
             <div><label style={labelSt}>Languages Known</label><input style={inputSt} value={profile?.languages || ''} onChange={(e) => set('languages', e.target.value)} placeholder="English, Hindi, Odia" /></div>
           </div>
