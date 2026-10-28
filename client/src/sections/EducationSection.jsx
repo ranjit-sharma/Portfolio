@@ -324,9 +324,21 @@ export default function EducationSection() {
           background: var(--border);
         }
         .edu-track-fill {
-          background: var(--accent);
-          box-shadow: 0 0 10px var(--accent-glow);
+          background: linear-gradient(90deg, var(--accent) 0%, var(--accent) 92%, #ffffff 100%);
+          box-shadow: 0 0 12px var(--accent-glow), 0 0 6px var(--accent);
           transform-origin: left;
+        }
+        .edu-track-fill::after {
+          content: '';
+          position: absolute;
+          right: -3px;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #ffffff;
+          box-shadow: 0 0 8px #ffffff, 0 0 16px var(--accent);
         }
         .edu-step {
           position: relative;
@@ -568,31 +580,135 @@ export default function EducationSection() {
 
                   <div className="edu-steps" aria-hidden="true">
                     <span className="edu-track" />
-                    {/* Fills from the first dot up to the current one */}
+                    {/* Fills dynamically from starting semester up to current */}
                     <motion.span
                       className="edu-track-fill"
                       initial={{ scaleX: 0 }}
                       animate={{ scaleX: inView ? completed / Math.max(1, totalSemesters - 1) : 0 }}
-                      transition={{ duration: 1.1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                      transition={{ duration: 1.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
                     />
                     {semesters.map((n) => {
-                      const state = n <= completed ? 'done' : n === currentSemester ? 'current' : 'next';
+                      const isDone = n <= completed;
+                      const isCurrent = n === currentSemester;
+                      const isNext = n > currentSemester;
+
+                      // Staggered timing as the line reaches each semester node
+                      const relFrac = currentSemester > 1 ? Math.min(1, (n - 1) / (currentSemester - 1)) : 1;
+                      const nodeDelay = 0.4 + Math.pow(relFrac, 0.82) * 1.7;
+
                       return (
-                        <motion.div
+                        <div
                           key={n}
-                          className={`edu-step edu-step-${state}`}
-                          initial={{ opacity: 0, scale: 0.6 }}
-                          animate={inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.6 }}
-                          transition={{ duration: 0.35, delay: 0.3 + n * 0.11, ease: [0.16, 1, 0.3, 1] }}
+                          className={`edu-step edu-step-${isDone ? 'done' : isCurrent ? 'current' : 'next'}`}
                         >
-                          <span className="edu-step-dot">
-                            {state === 'done' ? <Check size={15} strokeWidth={3} /> : n}
-                          </span>
-                          <span className="edu-step-label">
+                          {isDone ? (
+                            <motion.span
+                              className="edu-step-dot"
+                              initial={{
+                                scale: 0.8,
+                                backgroundColor: 'var(--bg-elevated)',
+                                borderColor: 'var(--border)',
+                                color: 'var(--text-muted)',
+                              }}
+                              animate={
+                                inView
+                                  ? {
+                                      scale: [0.8, 1.25, 1],
+                                      backgroundColor: 'var(--accent)',
+                                      borderColor: 'var(--accent)',
+                                      color: 'var(--accent-contrast)',
+                                    }
+                                  : {
+                                      scale: 0.8,
+                                      backgroundColor: 'var(--bg-elevated)',
+                                      borderColor: 'var(--border)',
+                                      color: 'var(--text-muted)',
+                                    }
+                              }
+                              transition={{
+                                delay: nodeDelay,
+                                duration: 0.42,
+                                ease: [0.34, 1.56, 0.64, 1],
+                              }}
+                            >
+                              <motion.span
+                                initial={{ scale: 0, opacity: 0, rotate: -45 }}
+                                animate={
+                                  inView
+                                    ? { scale: 1, opacity: 1, rotate: 0 }
+                                    : { scale: 0, opacity: 0 }
+                                }
+                                transition={{
+                                  delay: nodeDelay + 0.08,
+                                  duration: 0.32,
+                                  ease: 'easeOut',
+                                }}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                }}
+                              >
+                                <Check size={15} strokeWidth={3} />
+                              </motion.span>
+                            </motion.span>
+                          ) : isCurrent ? (
+                            <motion.span
+                              className="edu-step-dot"
+                              initial={{
+                                scale: 0.8,
+                                backgroundColor: 'var(--bg-elevated)',
+                                borderColor: 'var(--border)',
+                                color: 'var(--text-muted)',
+                              }}
+                              animate={
+                                inView
+                                  ? {
+                                      scale: [0.8, 1.3, 1],
+                                      backgroundColor: 'var(--bg-base)',
+                                      borderColor: 'var(--accent)',
+                                      color: 'var(--accent)',
+                                    }
+                                  : {
+                                      scale: 0.8,
+                                      backgroundColor: 'var(--bg-elevated)',
+                                      borderColor: 'var(--border)',
+                                      color: 'var(--text-muted)',
+                                    }
+                              }
+                              transition={{
+                                delay: nodeDelay,
+                                duration: 0.48,
+                                ease: [0.34, 1.56, 0.64, 1],
+                              }}
+                            >
+                              <span style={{ fontWeight: 800 }}>{n}</span>
+                            </motion.span>
+                          ) : (
+                            <motion.span
+                              className="edu-step-dot"
+                              initial={{ opacity: 0.5, scale: 0.85 }}
+                              animate={inView ? { opacity: 0.75, scale: 1 } : { opacity: 0.5, scale: 0.85 }}
+                              transition={{ delay: 0.35, duration: 0.35 }}
+                            >
+                              <span>{n}</span>
+                            </motion.span>
+                          )}
+
+                          <motion.span
+                            className="edu-step-label"
+                            initial={{ opacity: 0.35, y: 3 }}
+                            animate={
+                              inView
+                                ? { opacity: isDone || isCurrent ? 1 : 0.6, y: 0 }
+                                : { opacity: 0.35, y: 3 }
+                            }
+                            transition={{ delay: isNext ? 0.35 : nodeDelay, duration: 0.3 }}
+                          >
                             <span>Sem </span>
                             {n}
-                          </span>
-                        </motion.div>
+                          </motion.span>
+                        </div>
                       );
                     })}
                   </div>

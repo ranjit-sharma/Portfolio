@@ -19,12 +19,53 @@ const HEADING_WORDS = [
   { text: 'Hi,' },
   { text: "I'm" },
   { text: 'Ranjit', accent: true },
-  { text: 'Sharma', accent: true, after: '.' },
+  { text: 'Sharma', accent: true },
 ];
 
+const HEADING_CONTAINER_VARIANTS = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.13,
+      delayChildren: 0.15,
+    },
+  },
+};
+
 const HEADING_WORD_VARIANTS = {
-  hidden: { opacity: 0, y: '0.6em', filter: 'blur(8px)' },
-  visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
+  hidden: {
+    opacity: 0,
+    y: 36,
+    scale: 0.88,
+    filter: 'blur(10px)',
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    filter: 'blur(0px)',
+    transition: {
+      type: 'spring',
+      damping: 15,
+      stiffness: 115,
+      mass: 0.6,
+    },
+  },
+};
+
+const DOT_VARIANTS = {
+  hidden: { opacity: 0, scale: 0, filter: 'blur(4px)' },
+  visible: {
+    opacity: 1,
+    scale: [0, 1.5, 1],
+    filter: 'blur(0px)',
+    transition: {
+      delay: 0.72,
+      duration: 0.45,
+      ease: [0.34, 1.56, 0.64, 1],
+    },
+  },
 };
 
 function TypingEffect({ words }) {
@@ -132,31 +173,55 @@ export default function HeroSection() {
             {/* Main heading */}
             <motion.h1
               aria-label="Hi, I'm Ranjit Sharma."
+              variants={HEADING_CONTAINER_VARIANTS}
               initial="hidden"
               animate={introDone ? 'visible' : 'hidden'}
-              variants={{ visible: { transition: { staggerChildren: 0.09, delayChildren: 0.15 } } }}
               style={{
-                fontSize: 'clamp(2.2rem, 5vw, 4rem)',
+                fontSize: 'clamp(2.5rem, 6vw, 4.25rem)',
                 fontWeight: 900,
                 lineHeight: 1.1,
                 letterSpacing: '-0.02em',
                 marginBottom: '0.75rem',
+                display: 'flex',
+                alignItems: 'baseline',
+                flexWrap: 'wrap',
               }}
             >
               {HEADING_WORDS.map((word, i) => (
                 <motion.span
                   key={i}
                   variants={HEADING_WORD_VARIANTS}
+                  whileHover={{
+                    y: -3,
+                    scale: 1.04,
+                    transition: { type: 'spring', stiffness: 350, damping: 12 },
+                  }}
                   aria-hidden="true"
                   style={{
                     display: 'inline-block',
-                    marginRight: i < HEADING_WORDS.length - 1 ? '0.28em' : 0,
+                    marginRight: '0.28em',
+                    cursor: 'default',
+                    willChange: 'transform, opacity, filter',
                   }}
                 >
-                  <span style={{ color: word.accent ? 'var(--accent)' : undefined }}>{word.text}</span>
-                  {word.after}
+                  <span style={{ color: word.accent ? 'var(--accent)' : undefined }}>
+                    {word.text}
+                  </span>
                 </motion.span>
               ))}
+              <motion.span
+                variants={DOT_VARIANTS}
+                aria-hidden="true"
+                style={{
+                  display: 'inline-block',
+                  color: 'var(--accent)',
+                  marginLeft: '-0.2em',
+                  cursor: 'default',
+                  willChange: 'transform, opacity',
+                }}
+              >
+                .
+              </motion.span>
             </motion.h1>
 
             {/* Typing effect */}
