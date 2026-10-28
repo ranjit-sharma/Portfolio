@@ -387,16 +387,17 @@ export default function AdminExperience() {
                 {form.companyLogo && (
                   <div
                     style={{
-                      width: 44,
-                      height: 44,
+                      width: 46,
+                      height: 46,
                       borderRadius: '8px',
-                      background: 'var(--bg-surface)',
+                      background: '#ffffff',
                       border: '1px solid var(--border)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       overflow: 'hidden',
                       flexShrink: 0,
+                      padding: '4px',
                     }}
                   >
                     <img
@@ -713,11 +714,11 @@ export default function AdminExperience() {
                     src={getAssetUrl(exp.companyLogo)}
                     alt={`${exp.company} logo`}
                     style={{
-                      width: 42,
-                      height: 42,
+                      width: 44,
+                      height: 44,
                       borderRadius: '8px',
                       objectFit: 'contain',
-                      background: 'var(--bg-elevated)',
+                      background: '#ffffff',
                       border: '1px solid var(--border)',
                       padding: '4px',
                       flexShrink: 0,

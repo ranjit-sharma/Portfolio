@@ -294,18 +294,19 @@ export default function ExperienceSection() {
                       }}
                     >
                       {/* Left: Avatar + Titles */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '1.1rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1.15rem' }}>
                         {/* Company Badge Squircle */}
                         <div
                           style={{
-                            width: 52,
-                            height: 52,
+                            width: 54,
+                            height: 54,
+                            minWidth: 54,
                             borderRadius: '14px',
                             background: exp.companyLogo
-                              ? 'var(--bg-elevated)'
+                              ? '#ffffff'
                               : 'linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%)',
                             border: exp.companyLogo ? '1px solid var(--border)' : 'none',
-                            boxShadow: '0 8px 24px var(--accent-glow)',
+                            boxShadow: exp.companyLogo ? 'var(--shadow-sm)' : '0 8px 24px var(--accent-glow)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -315,13 +316,16 @@ export default function ExperienceSection() {
                             letterSpacing: '0.04em',
                             flexShrink: 0,
                             overflow: 'hidden',
+                            padding: exp.companyLogo ? '6px' : 0,
+                            marginTop: '2px',
                           }}
                         >
                           {exp.companyLogo ? (
                             <img
                               src={getAssetUrl(exp.companyLogo)}
                               alt={`${exp.company} logo`}
-                              style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '6px' }}
+                              loading="lazy"
+                              style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
                             />
                           ) : (
                             companyInitials

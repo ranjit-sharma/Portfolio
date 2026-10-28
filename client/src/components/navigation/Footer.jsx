@@ -371,7 +371,6 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="ft-bottom">
           <p>© {currentYear} {profile?.name || 'Ranjit Sharma'}. All rights reserved.</p>
-          <p>Built with React &amp; Node.js</p>
           <button type="button" className="ft-top" onClick={scrollTop} aria-label="Back to top">
             <ArrowUp size={17} />
           </button>
