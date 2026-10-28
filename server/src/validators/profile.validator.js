@@ -13,6 +13,7 @@ const profileSchema = z.object({
   leetcodeUrl: z.string().optional(),
   instagramUrl: z.string().optional(),
   facebookUrl: z.string().optional(),
+  twitterUrl: z.string().optional(),
   resumeUrl: z.string().optional(),
   avatarUrl: z.string().optional(),
   available: z.boolean().optional(),

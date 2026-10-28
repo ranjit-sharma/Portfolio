@@ -14,6 +14,7 @@ const profileSchema = new mongoose.Schema(
     leetcodeUrl: { type: String, default: '' },
     instagramUrl: { type: String, default: '' },
     facebookUrl: { type: String, default: '' },
+    twitterUrl: { type: String, default: '' },
     resumeUrl: { type: String, default: '' },
     avatarUrl: { type: String, default: '' },
     available: { type: Boolean, default: false },

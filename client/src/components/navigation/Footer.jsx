@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowRight, ArrowUp, Mail } from 'lucide-react';
 import { SiGithub, SiLeetcode } from 'react-icons/si';
-import { FaLinkedinIn, FaWhatsapp, FaInstagram, FaFacebook } from 'react-icons/fa6';
+import { FaLinkedinIn, FaWhatsapp, FaInstagram, FaFacebook, FaXTwitter } from 'react-icons/fa6';
 import { RSLogo } from '../ui';
 import api from '../../services/api';
 
@@ -66,6 +66,11 @@ export default function Footer() {
       label: 'Facebook',
       Icon: FaFacebook,
       href: profile.facebookUrl.trim(),
+    },
+    profile?.twitterUrl?.trim() && {
+      label: 'Twitter',
+      Icon: FaXTwitter,
+      href: profile.twitterUrl.trim(),
     },
   ].filter(Boolean);
 

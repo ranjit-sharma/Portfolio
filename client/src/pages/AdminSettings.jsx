@@ -474,6 +474,10 @@ export default function AdminSettings() {
               <label style={labelSt}>Facebook URL (Footer)</label>
               <input style={inputSt} value={profile?.facebookUrl || ''} onChange={(e) => set('facebookUrl', e.target.value)} placeholder="https://www.facebook.com/..." />
             </div>
+            <div>
+              <label style={labelSt}>Twitter / X URL (Footer)</label>
+              <input style={inputSt} value={profile?.twitterUrl || ''} onChange={(e) => set('twitterUrl', e.target.value)} placeholder="https://x.com/..." />
+            </div>
           </div>
         </div>
 
