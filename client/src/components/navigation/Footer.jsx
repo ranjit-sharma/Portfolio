@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowRight, ArrowUp, Mail } from 'lucide-react';
 import { SiGithub, SiLeetcode } from 'react-icons/si';
-import { FaLinkedinIn, FaWhatsapp } from 'react-icons/fa6';
+import { FaLinkedinIn, FaWhatsapp, FaInstagram, FaFacebook } from 'react-icons/fa6';
 import { RSLogo } from '../ui';
 import api from '../../services/api';
 
@@ -40,6 +40,8 @@ export default function Footer() {
     { label: 'LinkedIn', Icon: FaLinkedinIn, href: profile?.linkedinUrl || 'https://linkedin.com/in/ranjit-sharma' },
     { label: 'LeetCode', Icon: SiLeetcode, href: profile?.leetcodeUrl || 'https://leetcode.com/u/ranjitsharma/' },
     { label: 'WhatsApp', Icon: FaWhatsapp, href: 'https://wa.me/917482869029' },
+    { label: 'Instagram', Icon: FaInstagram, href: profile?.instagramUrl || 'https://www.instagram.com/_ranjitsharma_?rpxt=MXQ5YzF6cXJnbHVjZA==' },
+    { label: 'Facebook', Icon: FaFacebook, href: profile?.facebookUrl || 'https://www.facebook.com/share/BvEjChP99D/' },
   ];
 
   return (
