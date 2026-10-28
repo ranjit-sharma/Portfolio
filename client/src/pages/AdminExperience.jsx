@@ -7,6 +7,7 @@ import { getAssetUrl } from '../utils/assetUrl';
 const EMPTY = {
   company: '',
   companyShort: '',
+  companyLogo: '',
   companySub: '',
   role: '',
   employmentType: 'Internship',
@@ -44,8 +45,10 @@ export default function AdminExperience() {
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploadingCert, setUploadingCert] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [error, setError] = useState('');
   const certInputRef = useRef(null);
+  const logoInputRef = useRef(null);
 
   const fetchItems = useCallback(() => {
     return api
@@ -75,6 +78,7 @@ export default function AdminExperience() {
     setForm({
       ...exp,
       companyShort: exp.companyShort || '',
+      companyLogo: exp.companyLogo || '',
       companySub: exp.companySub || '',
       durationText: exp.durationText || '',
       projectTitle: exp.projectTitle || '',
@@ -89,6 +93,26 @@ export default function AdminExperience() {
     setEditing(exp._id);
     setShowForm(true);
     setError('');
+  };
+
+  const handleLogoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    setUploadingLogo(true);
+    setError('');
+    try {
+      const res = await api.post('/admin/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setForm((f) => ({ ...f, companyLogo: res.data.data.url }));
+    } catch (err) {
+      setError(err.message || 'Company logo upload failed');
+    } finally {
+      setUploadingLogo(false);
+      e.target.value = '';
+    }
   };
 
   const handleCertificateUpload = async (e) => {
@@ -347,6 +371,121 @@ export default function AdminExperience() {
               Currently working here
             </label>
 
+            {/* Company Logo Upload Field */}
+            <div
+              style={{
+                background: 'var(--bg-elevated)',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--radius-md)',
+                padding: '1rem',
+              }}
+            >
+              <label style={{ ...labelSt, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                Company Logo (Upload or URL)
+              </label>
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                {form.companyLogo && (
+                  <div
+                    style={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: '8px',
+                      background: 'var(--bg-surface)',
+                      border: '1px solid var(--border)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflow: 'hidden',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <img
+                      src={getAssetUrl(form.companyLogo)}
+                      alt="Company logo preview"
+                      style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px' }}
+                    />
+                  </div>
+                )}
+                <input
+                  style={{ ...inputSt, flex: 1, minWidth: '220px' }}
+                  value={form.companyLogo}
+                  onChange={(e) => setForm((f) => ({ ...f, companyLogo: e.target.value }))}
+                  placeholder="e.g. /uploads/logo.png or https://..."
+                />
+                <input
+                  type="file"
+                  ref={logoInputRef}
+                  accept="image/*"
+                  onChange={handleLogoUpload}
+                  style={{ display: 'none' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => logoInputRef.current?.click()}
+                  disabled={uploadingLogo}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    background: 'var(--bg-surface)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '0.6rem 0.9rem',
+                    color: 'var(--text-primary)',
+                    cursor: uploadingLogo ? 'not-allowed' : 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: 600,
+                  }}
+                >
+                  <Upload size={14} />
+                  {uploadingLogo ? 'Uploading...' : 'Upload Logo'}
+                </button>
+                {form.companyLogo && (
+                  <>
+                    <a
+                      href={getAssetUrl(form.companyLogo)}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.3rem',
+                        fontSize: '0.82rem',
+                        color: 'var(--accent)',
+                        textDecoration: 'none',
+                        fontWeight: 600,
+                      }}
+                    >
+                      <ExternalLink size={14} /> View
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (form.companyLogo) {
+                          api.delete('/admin/upload', { data: { url: form.companyLogo } }).catch(() => {});
+                        }
+                        setForm((f) => ({ ...f, companyLogo: '' }));
+                      }}
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        color: '#ef4444',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
+                        fontSize: '0.82rem',
+                        fontWeight: 600,
+                        padding: '0.25rem 0.5rem',
+                      }}
+                    >
+                      <Trash2 size={13} /> Remove
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+
             {/* Certificate Upload Field */}
             <div
               style={{
@@ -568,13 +707,50 @@ export default function AdminExperience() {
               className="admin-card admin-list-item"
               style={{ padding: '1.15rem 1.35rem' }}
             >
-              <div>
-                <div style={{ fontWeight: 700, fontSize: '0.98rem', color: 'var(--text-primary)' }}>
-                  {exp.role} <span style={{ color: 'var(--accent)' }}>@ {exp.company}</span>
-                </div>
-                <div style={{ color: 'var(--text-muted)', fontSize: '0.82rem', marginTop: '0.2rem' }}>
-                  {exp.employmentType} · {exp.location || 'Location not specified'}
-                  {exp.certificateUrl && ' · 📜 Certificate attached'}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
+                {exp.companyLogo ? (
+                  <img
+                    src={getAssetUrl(exp.companyLogo)}
+                    alt={`${exp.company} logo`}
+                    style={{
+                      width: 42,
+                      height: 42,
+                      borderRadius: '8px',
+                      objectFit: 'contain',
+                      background: 'var(--bg-elevated)',
+                      border: '1px solid var(--border)',
+                      padding: '4px',
+                      flexShrink: 0,
+                    }}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      width: 42,
+                      height: 42,
+                      borderRadius: '8px',
+                      background: 'var(--accent-dim)',
+                      color: 'var(--accent)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 800,
+                      fontSize: '0.85rem',
+                      border: '1px solid var(--accent-border)',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {exp.companyShort || (exp.company ? exp.company[0] : 'EXP')}
+                  </div>
+                )}
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '0.98rem', color: 'var(--text-primary)' }}>
+                    {exp.role} <span style={{ color: 'var(--accent)' }}>@ {exp.company}</span>
+                  </div>
+                  <div style={{ color: 'var(--text-muted)', fontSize: '0.82rem', marginTop: '0.2rem' }}>
+                    {exp.employmentType} · {exp.location || 'Location not specified'}
+                    {exp.certificateUrl && ' · 📜 Certificate attached'}
+                  </div>
                 </div>
               </div>
               <div className="admin-list-actions">

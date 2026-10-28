@@ -301,7 +301,10 @@ export default function ExperienceSection() {
                             width: 52,
                             height: 52,
                             borderRadius: '14px',
-                            background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%)',
+                            background: exp.companyLogo
+                              ? 'var(--bg-elevated)'
+                              : 'linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%)',
+                            border: exp.companyLogo ? '1px solid var(--border)' : 'none',
                             boxShadow: '0 8px 24px var(--accent-glow)',
                             display: 'flex',
                             alignItems: 'center',
@@ -311,9 +314,18 @@ export default function ExperienceSection() {
                             color: 'var(--accent-contrast)',
                             letterSpacing: '0.04em',
                             flexShrink: 0,
+                            overflow: 'hidden',
                           }}
                         >
-                          {companyInitials}
+                          {exp.companyLogo ? (
+                            <img
+                              src={getAssetUrl(exp.companyLogo)}
+                              alt={`${exp.company} logo`}
+                              style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '6px' }}
+                            />
+                          ) : (
+                            companyInitials
+                          )}
                         </div>
 
                         <div>

@@ -12,6 +12,7 @@ const experienceSchema = new mongoose.Schema(
   {
     company: { type: String, required: true, trim: true },
     companyShort: { type: String, trim: true, default: '' },
+    companyLogo: { type: String, default: '' },
     companySub: { type: String, trim: true, default: '' },
     role: { type: String, required: true, trim: true },
     employmentType: {

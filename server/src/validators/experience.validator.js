@@ -8,6 +8,7 @@ const statItemSchema = z.object({
 const experienceSchema = z.object({
   company: z.string().trim().min(1, 'Company is required').max(150),
   companyShort: z.string().optional().default(''),
+  companyLogo: z.string().optional().default(''),
   companySub: z.string().optional().default(''),
   role: z.string().trim().min(1, 'Role is required').max(150),
   employmentType: z.enum(['Full-time', 'Part-time', 'Internship', 'Contract', 'Freelance']).default('Internship'),

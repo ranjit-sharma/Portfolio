@@ -35,6 +35,15 @@ const updateExperience = asyncHandler(async (req, res) => {
     deleteAsset(existing.certificateUrl).catch(() => {});
   }
 
+  // If companyLogo was changed or cleared, delete the old file
+  if (
+    req.body.companyLogo !== undefined &&
+    req.body.companyLogo !== existing.companyLogo &&
+    existing.companyLogo
+  ) {
+    deleteAsset(existing.companyLogo).catch(() => {});
+  }
+
   const exp = await Experience.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
@@ -50,6 +59,11 @@ const deleteExperience = asyncHandler(async (req, res) => {
   // Delete certificate file
   if (exp.certificateUrl) {
     deleteAsset(exp.certificateUrl).catch(() => {});
+  }
+
+  // Delete company logo file
+  if (exp.companyLogo) {
+    deleteAsset(exp.companyLogo).catch(() => {});
   }
 
   return apiSuccess(res, null, 'Experience deleted');
