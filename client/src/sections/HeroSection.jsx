@@ -153,7 +153,7 @@ export default function HeroSection() {
                   borderRadius: 'var(--radius-pill)',
                   padding: '0.35rem 0.9rem',
                   fontSize: '0.82rem',
-                  color: 'var(--text-secondary)',
+                  color: (profile?.available ?? true) ? 'var(--text-secondary)' : 'var(--text-muted)',
                 }}
               >
                 <span
@@ -161,11 +161,14 @@ export default function HeroSection() {
                     width: 7,
                     height: 7,
                     borderRadius: '50%',
-                    background: 'var(--accent)',
-                    animation: 'pulse-glow 2s ease infinite',
+                    background: (profile?.available ?? true) ? 'var(--accent)' : 'var(--text-muted)',
+                    animation: (profile?.available ?? true) ? 'pulse-glow 2s ease infinite' : 'none',
                   }}
                 />
-                B.Tech in Computer Science · Open to opportunities
+                {profile?.availabilityNote?.trim() ||
+                  ((profile?.available ?? true)
+                    ? 'B.Tech in Computer Science · Open to opportunities'
+                    : 'Not currently open to opportunities')}
               </span>
             </motion.div>
 
@@ -493,7 +496,7 @@ export default function HeroSection() {
                 { indent: 5, text: <><span style={{color:'var(--accent)', fontWeight: 500}}>"React"</span>, <span style={{color:'var(--accent)', fontWeight: 500}}>"Node.js"</span>],</> },
                 { indent: 2, text: <><span style={{color:'var(--code-key)', fontWeight: 600}}>education</span>: <span style={{color:'var(--accent)', fontWeight: 500}}>"B.Tech in Computer Science"</span>,</> },
                 { indent: 2, text: <><span style={{color:'var(--code-key)', fontWeight: 600}}>leetcode</span>: <span style={{color:'var(--accent)', fontWeight: 500}}>"Problem Solving &amp; DSA"</span>,</> },
-                { indent: 2, text: <><span style={{color:'var(--code-key)', fontWeight: 600}}>available</span>: <span style={{color:'var(--code-boolean)', fontWeight: 600}}>true</span>,</> },
+                { indent: 2, text: <><span style={{color:'var(--code-key)', fontWeight: 600}}>available</span>: <span style={{color:'var(--code-boolean)', fontWeight: 600}}>{profile ? String(profile.available ?? true) : 'true'}</span>,</> },
                 { indent: 0, text: '};' },
                 { indent: 0, text: '' },
                 { indent: 0, text: <><span style={{color:'#a855f7'}}>export default</span> <span style={{color:'#38bdf8'}}>developer</span>;</> },

@@ -537,14 +537,134 @@ export default function AdminSettings() {
           </div>
         </div>
 
-        {/* Availability */}
+        {/* Availability & Hero Badge */}
         <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '1.5rem', boxShadow: 'var(--shadow-sm)' }}>
-          <h2 style={{ fontWeight: 700, fontSize: '1rem', marginBottom: '1rem' }}>Availability Status</h2>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>
-            <input type="checkbox" checked={profile?.available || false} onChange={(e) => set('available', e.target.checked)} />
-            Currently open to opportunities / internships
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
+            <div>
+              <h2 style={{ fontWeight: 700, fontSize: '1rem', margin: 0 }}>Availability Status & Hero Badge</h2>
+              <p style={{ margin: '0.25rem 0 0', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                Control whether you are marked open for work, and customize the text shown on your Hero badge, About section, and Contact section.
+              </p>
+            </div>
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                padding: '0.3rem 0.75rem',
+                borderRadius: 'var(--radius-pill)',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                letterSpacing: '0.03em',
+                background: (profile?.available ?? true) ? 'var(--accent-dim)' : 'var(--bg-elevated)',
+                color: (profile?.available ?? true) ? 'var(--accent)' : 'var(--text-muted)',
+                border: `1px solid ${(profile?.available ?? true) ? 'var(--accent-border)' : 'var(--border)'}`,
+              }}
+            >
+              <span
+                style={{
+                  width: 7,
+                  height: 7,
+                  borderRadius: '50%',
+                  background: (profile?.available ?? true) ? 'var(--accent)' : 'var(--text-muted)',
+                  animation: (profile?.available ?? true) ? 'pulse-glow 2s ease infinite' : 'none',
+                }}
+              />
+              {(profile?.available ?? true) ? 'OPEN FOR OPPORTUNITIES' : 'NOT CURRENTLY AVAILABLE'}
+            </span>
+          </div>
+
+          {/* Toggle Card */}
+          <label
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              cursor: 'pointer',
+              padding: '0.85rem 1rem',
+              background: 'var(--bg-elevated)',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-md)',
+              marginBottom: '1rem',
+              userSelect: 'none',
+            }}
+          >
+            <input
+              type="checkbox"
+              style={{ width: 18, height: 18, cursor: 'pointer', accentColor: 'var(--accent)' }}
+              checked={profile?.available ?? true}
+              onChange={(e) => set('available', e.target.checked)}
+            />
+            <div>
+              <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                Mark as "Open to opportunities / internships"
+              </div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
+                When checked, the pulsing green radar dot is shown, and "available: true" is exported in your code card.
+              </div>
+            </div>
           </label>
-          <div><label style={labelSt}>Availability Note</label><input style={inputSt} value={profile?.availabilityNote || ''} onChange={(e) => set('availabilityNote', e.target.value)} placeholder="e.g. Open to full-time roles and internships" /></div>
+
+          {/* Hero Badge & Status Text Input */}
+          <div style={{ marginBottom: '1rem' }}>
+            <label style={labelSt}>
+              Hero Badge & Status Text (shown in Hero, About, and Contact sections)
+            </label>
+            <input
+              style={inputSt}
+              value={profile?.availabilityNote || ''}
+              onChange={(e) => set('availabilityNote', e.target.value)}
+              placeholder="e.g. B.Tech in Computer Science · Open to opportunities"
+            />
+            <span style={{ display: 'block', fontSize: '0.76rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
+              💡 Leave empty to use default: <em>"{(profile?.available ?? true) ? 'B.Tech in Computer Science · Open to opportunities' : 'Not currently open to opportunities'}"</em>
+            </span>
+          </div>
+
+          {/* Live Preview of Hero Badge */}
+          <div
+            style={{
+              padding: '1rem',
+              background: 'var(--bg-elevated)',
+              borderRadius: 'var(--radius-md)',
+              border: '1px dashed var(--border)',
+            }}
+          >
+            <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', fontWeight: 700, marginBottom: '0.6rem' }}>
+              Live Hero Badge Preview (as seen by visitors):
+            </div>
+            <div style={{ display: 'inline-flex', alignItems: 'center' }}>
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.55rem',
+                  border: '1px solid var(--border)',
+                  background: 'var(--bg-card, var(--bg-surface))',
+                  borderRadius: 'var(--radius-pill)',
+                  padding: '0.35rem 0.9rem',
+                  fontSize: '0.82rem',
+                  fontWeight: 500,
+                  color: (profile?.available ?? true) ? 'var(--text-secondary)' : 'var(--text-muted)',
+                  boxShadow: 'var(--shadow-sm)',
+                }}
+              >
+                <span
+                  style={{
+                    width: 7,
+                    height: 7,
+                    borderRadius: '50%',
+                    background: (profile?.available ?? true) ? 'var(--accent)' : 'var(--text-muted)',
+                    animation: (profile?.available ?? true) ? 'pulse-glow 2s ease infinite' : 'none',
+                  }}
+                />
+                {profile?.availabilityNote?.trim() ||
+                  ((profile?.available ?? true)
+                    ? 'B.Tech in Computer Science · Open to opportunities'
+                    : 'Not currently open to opportunities')}
+              </span>
+            </div>
+          </div>
         </div>
 
         {error && <p style={{ color: '#ef4444', fontSize: '0.85rem' }}>{error}</p>}

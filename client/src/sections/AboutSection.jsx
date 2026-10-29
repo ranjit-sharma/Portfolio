@@ -324,9 +324,30 @@ export default function AboutSection() {
             <p className="about-headline">
               {profile?.headline || 'B.Tech in Computer Science · Trident Academy of Technology, Bhubaneswar'}
             </p>
-            <span className="about-status">
-              <span className="about-status-dot" />
-              Open to opportunities
+            <span
+              className="about-status"
+              style={
+                (profile?.available ?? true)
+                  ? undefined
+                  : {
+                      color: 'var(--text-muted)',
+                      background: 'var(--bg-elevated)',
+                      borderColor: 'var(--border)',
+                    }
+              }
+            >
+              <span
+                className="about-status-dot"
+                style={
+                  (profile?.available ?? true)
+                    ? undefined
+                    : { background: 'var(--text-muted)', animation: 'none' }
+                }
+              />
+              {profile?.availabilityNote?.trim() ||
+                ((profile?.available ?? true)
+                  ? 'Open to opportunities'
+                  : 'Not currently open to opportunities')}
             </span>
 
             <ul className="about-facts">

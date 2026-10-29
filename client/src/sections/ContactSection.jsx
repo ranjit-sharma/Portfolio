@@ -148,8 +148,10 @@ export default function ContactSection() {
     },
   ].filter(Boolean);
 
+  const isAvailable = profile ? (profile.available ?? true) : true;
   const availability =
-    profile?.availabilityNote || (profile?.available ? 'Open to full-time roles and internships' : 'Available for opportunities');
+    profile?.availabilityNote?.trim() ||
+    (isAvailable ? 'Open to full-time roles and internships' : 'Not currently open to opportunities');
 
   const reveal = (hidden, delay = 0) => ({
     initial: hidden,
@@ -543,8 +545,27 @@ export default function ContactSection() {
             {/* Left — intro and direct contact */}
             <aside className="contact-aside">
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                <motion.span className="contact-status" {...reveal({ opacity: 0, x: -16 }, 0.15)}>
-                  <span className="contact-status-dot" />
+                <motion.span
+                  className="contact-status"
+                  style={
+                    isAvailable
+                      ? undefined
+                      : {
+                          color: 'var(--text-muted)',
+                          background: 'var(--bg-elevated)',
+                          borderColor: 'var(--border)',
+                        }
+                  }
+                  {...reveal({ opacity: 0, x: -16 }, 0.15)}
+                >
+                  <span
+                    className="contact-status-dot"
+                    style={
+                      isAvailable
+                        ? undefined
+                        : { background: 'var(--text-muted)', animation: 'none' }
+                    }
+                  />
                   {availability}
                 </motion.span>
 
