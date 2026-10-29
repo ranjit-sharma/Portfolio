@@ -1,5 +1,15 @@
 import { useState, useEffect } from 'react';
-import { ArrowRight, ArrowUp } from 'lucide-react';
+import {
+  ArrowRight,
+  ArrowUp,
+  User,
+  GraduationCap,
+  Code2,
+  Briefcase,
+  FolderGit2,
+  Award,
+  Mail,
+} from 'lucide-react';
 import { SiGithub } from 'react-icons/si';
 import { FaLinkedinIn, FaInstagram, FaFacebook, FaXTwitter } from 'react-icons/fa6';
 import { RSLogo } from '../ui';
@@ -8,13 +18,13 @@ import api from '../../services/api';
 const currentYear = new Date().getFullYear();
 
 const LINKS = [
-  { label: 'About', href: '#about' },
-  { label: 'Education', href: '#education' },
-  { label: 'Skills', href: '#skills' },
-  { label: 'Experience', href: '#experience' },
-  { label: 'Projects', href: '#projects' },
-  { label: 'Certifications', href: '#certifications' },
-  { label: 'Contact', href: '#contact' },
+  { label: 'About', href: '#about', Icon: User },
+  { label: 'Education', href: '#education', Icon: GraduationCap },
+  { label: 'Skills', href: '#skills', Icon: Code2 },
+  { label: 'Experience', href: '#experience', Icon: Briefcase },
+  { label: 'Projects', href: '#projects', Icon: FolderGit2 },
+  { label: 'Certifications', href: '#certifications', Icon: Award },
+  { label: 'Contact', href: '#contact', Icon: Mail },
 ];
 
 export default function Footer() {
@@ -188,21 +198,39 @@ export default function Footer() {
         .ft-links {
           display: grid;
           grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 0.55rem 1rem;
+          gap: 0.6rem 1.25rem;
           margin: 0;
           padding: 0;
           list-style: none;
         }
-        .ft-links a {
+        .ft-link {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.65rem;
+          padding: 0.15rem 0;
           font-size: 0.9rem;
+          font-weight: 500;
+          white-space: nowrap;
           color: var(--text-secondary);
           text-decoration: none;
-          transition: color var(--transition-fast), padding var(--transition-fast);
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          transition: color var(--transition-fast), transform var(--transition-fast);
         }
-        .ft-links a:hover,
-        .ft-links a:focus-visible {
+        .ft-link svg {
+          color: var(--text-muted);
+          transition: color var(--transition-fast);
+          flex-shrink: 0;
+        }
+        .ft-link:hover,
+        .ft-link:focus-visible {
           color: var(--accent);
-          padding-left: 4px;
+          transform: translateX(4px);
+        }
+        .ft-link:hover svg,
+        .ft-link:focus-visible svg {
+          color: var(--accent);
         }
         .ft-socials {
           display: flex;
@@ -219,6 +247,7 @@ export default function Footer() {
           padding: 0.15rem 0;
           font-size: 0.9rem;
           font-weight: 500;
+          white-space: nowrap;
           color: var(--text-secondary);
           text-decoration: none;
           background: transparent;
@@ -351,16 +380,18 @@ export default function Footer() {
           <nav aria-label="Footer navigation">
             <h3 className="ft-heading">Navigate</h3>
             <ul className="ft-links">
-              {LINKS.map((l) => (
-                <li key={l.href}>
+              {LINKS.map(({ label, href, Icon }) => (
+                <li key={href}>
                   <a
-                    href={l.href}
+                    href={href}
+                    className="ft-link"
                     onClick={(e) => {
                       e.preventDefault();
-                      scrollTo(l.href);
+                      scrollTo(href);
                     }}
                   >
-                    {l.label}
+                    <Icon size={15} aria-hidden="true" />
+                    {label}
                   </a>
                 </li>
               ))}
