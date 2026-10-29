@@ -19,6 +19,7 @@ const profileSchema = new mongoose.Schema(
     avatarUrl: { type: String, default: '' },
     available: { type: Boolean, default: false },
     availabilityNote: { type: String, default: '' },
+    aboutEducation: { type: String, default: '' },
     views: { type: Number, default: 0 },
     // Education settings (editable via Admin)
     educationCgpa: { type: String, default: '7.73' },

@@ -18,6 +18,7 @@ const profileSchema = z.object({
   avatarUrl: z.string().optional(),
   available: z.boolean().optional(),
   availabilityNote: z.string().optional(),
+  aboutEducation: z.string().optional(),
   views: z.number().optional(),
   educationCgpa: z.union([z.string(), z.number()]).optional().nullable(),
   educationCurrentSemester: z.coerce.number().optional(),

@@ -9,6 +9,7 @@ import {
   ExternalLink,
   Trash2,
   Sparkles,
+  GraduationCap,
 } from 'lucide-react';
 
 const DEFAULT_HIGHLIGHTS = [
@@ -436,6 +437,86 @@ export default function AdminSettings() {
           <div style={{ marginTop: '0.75rem' }}>
             <label style={labelSt}>Bio</label>
             <textarea style={{ ...inputSt, resize: 'vertical', minHeight: 120 }} value={profile?.bio || ''} onChange={(e) => set('bio', e.target.value)} placeholder="Write your bio paragraphs here (separate paragraphs with blank lines)..." />
+          </div>
+        </div>
+
+        {/* About Section - Sidebar Fact (Education) */}
+        <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '1.5rem', boxShadow: 'var(--shadow-sm)' }}>
+          <h2 style={{ fontWeight: 700, fontSize: '1rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <GraduationCap size={18} style={{ color: 'var(--accent)' }} />
+            About Section — Education Fact Badge
+          </h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', margin: '0 0 1rem' }}>
+            Customize the 🎓 Education badge displayed exclusively in the About section sidebar (independent of the main Education section timeline).
+          </p>
+          <div style={{ maxWidth: 500, marginBottom: '1.25rem' }}>
+            <label style={labelSt}>About Section Education Text</label>
+            <input
+              style={inputSt}
+              value={profile?.aboutEducation ?? 'B.Tech CS · 2027'}
+              onChange={(e) => set('aboutEducation', e.target.value)}
+              placeholder="e.g. B.Tech CS · 2027"
+            />
+            <span style={{ display: 'block', fontSize: '0.76rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
+              💡 When empty, this badge will not reflect on the site.
+            </span>
+          </div>
+
+          {/* Live Preview */}
+          <div
+            style={{
+              padding: '1rem',
+              background: 'var(--bg-elevated)',
+              borderRadius: 'var(--radius-md)',
+              border: '1px dashed var(--border)',
+              display: 'inline-flex',
+              flexDirection: 'column',
+              gap: '0.5rem',
+            }}
+          >
+            <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', fontWeight: 700 }}>
+              Live Preview (About Sidebar):
+            </div>
+            {(profile?.aboutEducation ?? 'B.Tech CS · 2027')?.trim() ? (
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.85rem',
+                  padding: '0.55rem 0.95rem',
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius-md)',
+                }}
+              >
+                <span
+                  style={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: 8,
+                    background: 'var(--accent-dim)',
+                    color: 'var(--accent)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <GraduationCap size={15} />
+                </span>
+                <span style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span style={{ fontSize: '0.68rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>
+                    Education
+                  </span>
+                  <span style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                    {(profile?.aboutEducation ?? 'B.Tech CS · 2027').trim()}
+                  </span>
+                </span>
+              </div>
+            ) : (
+              <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                Hidden (leave empty if you don't want this badge to reflect)
+              </span>
+            )}
           </div>
         </div>
 

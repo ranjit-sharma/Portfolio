@@ -47,9 +47,11 @@ export default function AboutSection() {
       ? profile.aboutHighlights.filter((h) => h && (h.title || h.desc))
       : HIGHLIGHTS;
 
+  const aboutEdu = profile?.aboutEducation !== undefined ? profile.aboutEducation?.trim() : 'B.Tech CS · 2027';
+
   const facts = [
     profile?.location?.trim() && { Icon: MapPin, label: 'Location', value: profile.location.trim() },
-    { Icon: GraduationCap, label: 'Education', value: 'B.Tech CS · 2027' },
+    aboutEdu && { Icon: GraduationCap, label: 'Education', value: aboutEdu },
     profile?.languages?.trim() && { Icon: Languages, label: 'Languages', value: profile.languages.trim() },
   ].filter(Boolean);
 
