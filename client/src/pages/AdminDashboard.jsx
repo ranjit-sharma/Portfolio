@@ -103,7 +103,7 @@ export default function AdminDashboard() {
           <Spinner size={32} />
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', gap: '1rem' }}>
+        <div className="admin-stats-grid">
           {cards.map((card) => {
             const Icon = card.icon;
             return (
@@ -115,15 +115,10 @@ export default function AdminDashboard() {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div
+                    className="admin-stat-icon"
                     style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 'var(--radius-md)',
                       background: `${card.accentColor}18`,
                       border: `1px solid ${card.accentColor}35`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
                       color: card.accentColor,
                     }}
                   >
@@ -131,35 +126,25 @@ export default function AdminDashboard() {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <span
+                      className="admin-stat-badge"
                       style={{
                         fontFamily: 'JetBrains Mono, monospace',
-                        fontSize: '0.68rem',
                         color: card.accentColor,
                         background: `${card.accentColor}15`,
-                        padding: '1px 6px',
-                        borderRadius: '4px',
                         fontWeight: 600,
                       }}
                     >
                       {card.badge}
                     </span>
-                    <ArrowUpRight size={14} style={{ color: 'var(--text-muted)' }} />
+                    <ArrowUpRight size={14} className="admin-stat-arrow" style={{ color: 'var(--text-muted)' }} />
                   </div>
                 </div>
 
-                <div style={{ marginTop: '0.4rem' }}>
-                  <div
-                    style={{
-                      fontSize: '2.2rem',
-                      fontWeight: 800,
-                      fontFamily: 'JetBrains Mono, monospace',
-                      color: 'var(--text-primary)',
-                      lineHeight: 1.1,
-                    }}
-                  >
+                <div className="admin-stat-body">
+                  <div className="admin-stat-value">
                     {card.value ?? '—'}
                   </div>
-                  <div style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', fontWeight: 500, marginTop: '0.2rem' }}>
+                  <div className="admin-stat-label">
                     {card.label}
                   </div>
                 </div>
