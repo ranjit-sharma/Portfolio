@@ -687,7 +687,7 @@ export default function CertificationsSection() {
 
       <div className="container" ref={ref}>
         <SectionHeading
-          index="06"
+          icon={Award}
           eyebrow="Achievements & Certifications"
           title="Recognition & Credentials"
           subtitle="The actual certificates — pick one from the list, or click the preview to view it full size."

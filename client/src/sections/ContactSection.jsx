@@ -535,7 +535,7 @@ export default function ContactSection() {
       <div className="container">
         <div style={{ maxWidth: 1040, margin: '0 auto' }}>
           <SectionHeading
-            index="07"
+            icon={Mail}
             eyebrow="Contact"
             title="Let's Work Together"
             subtitle="Have a project in mind or want to talk? I'd love to hear from you."

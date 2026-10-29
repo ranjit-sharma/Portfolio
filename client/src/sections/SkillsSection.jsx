@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { Code2 } from 'lucide-react';
 import {
   TbLayout,
   TbServer,
@@ -201,7 +202,7 @@ export default function SkillsSection() {
       <div className="container">
         <div style={{ maxWidth: 1040, margin: '0 auto' }}>
           <SectionHeading
-            index="03"
+            icon={Code2}
             eyebrow="Skills"
             title="Technical Toolkit"
             subtitle="Technologies and tools I work with regularly"

@@ -2,9 +2,9 @@ import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useInView } from '../../hooks/useInView';
 
 /**
- * Section heading with a numbered eyebrow. Styles live in index.css (.section-heading*).
+ * Section heading with a numbered or icon eyebrow. Styles live in index.css (.section-heading*).
  */
-export function SectionHeading({ eyebrow, title, subtitle, centered = false, index }) {
+export function SectionHeading({ eyebrow, title, subtitle, centered = false, index, icon: Icon }) {
   const { ref, inView } = useInView();
 
   return (
@@ -17,7 +17,13 @@ export function SectionHeading({ eyebrow, title, subtitle, centered = false, ind
     >
       {eyebrow && (
         <span className="section-eyebrow">
-          {index && <span className="section-index">{index}</span>}
+          {Icon ? (
+            <span className="section-icon">
+              <Icon size={16} aria-hidden="true" />
+            </span>
+          ) : index ? (
+            <span className="section-index">{index}</span>
+          ) : null}
           {eyebrow}
         </span>
       )}

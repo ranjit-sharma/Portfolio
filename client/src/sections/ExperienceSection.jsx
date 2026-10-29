@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Clock, Award, ExternalLink, X } from 'lucide-react';
+import { MapPin, Clock, Award, ExternalLink, X, Briefcase } from 'lucide-react';
 import { SiGithub } from 'react-icons/si';
 import { useInView } from '../hooks/useInView';
 import { SectionHeading, SkeletonCard } from '../components/ui/index';
@@ -109,7 +109,7 @@ export default function ExperienceSection() {
 
       <div className="container">
         <SectionHeading
-          index="04"
+          icon={Briefcase}
           eyebrow="Experience"
           title="Work & Internships"
           subtitle="Hands-on engineering experience building real mission-critical systems"

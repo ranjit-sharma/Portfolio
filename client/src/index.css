@@ -422,6 +422,18 @@ textarea::placeholder {
   height: 1px;
   background: var(--accent-border);
 }
+.section-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--accent);
+}
+.section-icon::after {
+  content: '';
+  width: 28px;
+  height: 1px;
+  background: var(--accent-border);
+}
 .section-title {
   margin: 0 0 0.75rem;
   font-size: clamp(1.75rem, 3vw, 2.5rem);

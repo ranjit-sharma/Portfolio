@@ -468,7 +468,7 @@ export default function EducationSection() {
       <div className="container">
         <div style={{ maxWidth: 1040, margin: '0 auto' }}>
           <SectionHeading
-            index="02"
+            icon={GraduationCap}
             eyebrow="Education"
             title="Learning Path"
             subtitle="Where I built my foundations in computer science"

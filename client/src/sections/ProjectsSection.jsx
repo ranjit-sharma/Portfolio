@@ -777,7 +777,7 @@ export default function ProjectsSection() {
 
       <div className="container">
         <SectionHeading
-          index="05"
+          icon={FolderGit2}
           eyebrow="Projects"
           title="Engineered Systems"
           subtitle="Full-stack systems and applications engineered from concept to production"

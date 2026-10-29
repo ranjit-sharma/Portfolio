@@ -4,7 +4,7 @@ import { useInView } from '../hooks/useInView';
 import { SectionHeading, SkillIcon, RSLogo } from '../components/ui/index';
 import api from '../services/api';
 import { getAssetUrl } from '../utils/assetUrl';
-import { MapPin, GraduationCap, Languages } from 'lucide-react';
+import { MapPin, GraduationCap, Languages, User } from 'lucide-react';
 
 const HIGHLIGHTS = [
   {
@@ -270,7 +270,7 @@ export default function AboutSection() {
 
       <div className="container">
         <SectionHeading
-          index="01"
+          icon={User}
           eyebrow="About"
           title="Building from idea to deployment"
           subtitle="A student developer passionate about the full stack"
