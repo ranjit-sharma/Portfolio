@@ -35,6 +35,8 @@ export default function Footer() {
   const scrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
 
+  const isAvailable = profile ? (profile.available ?? true) : true;
+
   const socials = [
     profile?.githubUrl?.trim() && {
       label: 'GitHub',
@@ -318,9 +320,30 @@ export default function Footer() {
               <span>{profile?.name || 'Ranjit Sharma'}</span>
             </div>
             <p className="ft-tagline">Full-Stack Developer. Building reliable, modern web experiences.</p>
-            <span className="ft-status">
-              <span className="ft-status-dot" />
-              Open to opportunities
+            <span
+              className="ft-status"
+              style={
+                isAvailable
+                  ? undefined
+                  : {
+                      color: 'var(--text-muted)',
+                      background: 'var(--bg-elevated)',
+                      borderColor: 'var(--border)',
+                    }
+              }
+            >
+              <span
+                className="ft-status-dot"
+                style={
+                  isAvailable
+                    ? undefined
+                    : { background: 'var(--text-muted)', animation: 'none' }
+                }
+              />
+              {profile?.availabilityNote?.trim() ||
+                (isAvailable
+                  ? 'Open to opportunities'
+                  : 'Not currently open to opportunities')}
             </span>
           </div>
 

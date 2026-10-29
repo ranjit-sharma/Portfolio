@@ -543,7 +543,7 @@ export default function AdminSettings() {
             <div>
               <h2 style={{ fontWeight: 700, fontSize: '1rem', margin: 0 }}>Availability Status & Hero Badge</h2>
               <p style={{ margin: '0.25rem 0 0', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                Control whether you are marked open for work, and customize the text shown on your Hero badge, About section, and Contact section.
+                Control whether you are marked open for work, and customize the text shown on your Hero badge, About section, Contact section, and Footer.
               </p>
             </div>
             <span
@@ -608,7 +608,7 @@ export default function AdminSettings() {
           {/* Hero Badge & Status Text Input */}
           <div style={{ marginBottom: '1rem' }}>
             <label style={labelSt}>
-              Hero Badge & Status Text (shown in Hero, About, and Contact sections)
+              Hero Badge & Status Text (shown in Hero, About, Contact, and Footer sections)
             </label>
             <input
               style={inputSt}
