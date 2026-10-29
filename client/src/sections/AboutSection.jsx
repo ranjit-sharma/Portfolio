@@ -48,10 +48,10 @@ export default function AboutSection() {
       : HIGHLIGHTS;
 
   const facts = [
-    { Icon: MapPin, label: 'Location', value: profile?.location || 'Bhubaneswar, India' },
+    profile?.location?.trim() && { Icon: MapPin, label: 'Location', value: profile.location.trim() },
     { Icon: GraduationCap, label: 'Education', value: 'B.Tech CS · 2027' },
-    { Icon: Languages, label: 'Languages', value: profile?.languages || 'English, Hindi, Odia' },
-  ];
+    profile?.languages?.trim() && { Icon: Languages, label: 'Languages', value: profile.languages.trim() },
+  ].filter(Boolean);
 
   const reveal = (hidden, delay = 0) => ({
     initial: hidden,

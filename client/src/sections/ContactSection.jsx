@@ -7,8 +7,6 @@ import { SectionHeading, Button, Spinner } from '../components/ui/index';
 import api from '../services/api';
 
 const INITIAL_FORM = { name: '', email: '', subject: '', message: '' };
-const DEFAULT_EMAIL = 'ctrl.ranjit@gmail.com';
-
 const FIELDS = {
   name: { label: 'Name', type: 'text', placeholder: 'Your name', autoComplete: 'name' },
   email: { label: 'Email', type: 'email', placeholder: 'you@example.com', autoComplete: 'email' },
@@ -63,8 +61,8 @@ export default function ContactSection() {
     setStatus('loading');
     setErrors({});
 
-    // Target email provided by the admin in Settings (profile.email)
-    const targetEmail = (profile?.email?.trim() || DEFAULT_EMAIL).toLowerCase();
+    // Target email provided by the admin in Settings (profile.email only - no fallback)
+    const targetEmail = profile?.email?.trim()?.toLowerCase();
 
     // 1. Submit to backend API (saves message to MongoDB for admin inbox & triggers backend notification)
     let backendSuccess = false;
@@ -77,33 +75,35 @@ export default function ContactSection() {
       console.warn('Backend /contact submission error:', backendErr);
     }
 
-    // 2. Submit via FormSubmit AJAX endpoint directly to the admin settings email
+    // 2. Submit via FormSubmit AJAX endpoint directly to the admin settings email (only if profile email exists)
     let fsSuccess = false;
-    try {
-      const fsRes = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(targetEmail)}`, {
-        method: 'POST',
-        signal: AbortSignal.timeout(15000),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          subject: form.subject,
-          message: form.message,
-          _subject: `New Portfolio Message from ${form.name}: ${form.subject}`,
-          _template: 'table',
-          _captcha: 'false',
-        }),
-      });
+    if (targetEmail) {
+      try {
+        const fsRes = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(targetEmail)}`, {
+          method: 'POST',
+          signal: AbortSignal.timeout(15000),
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify({
+            name: form.name,
+            email: form.email,
+            subject: form.subject,
+            message: form.message,
+            _subject: `New Portfolio Message from ${form.name}: ${form.subject}`,
+            _template: 'table',
+            _captcha: 'false',
+          }),
+        });
 
-      const fsData = await fsRes.json().catch(() => ({}));
-      if (fsRes.ok && (String(fsData.success) === 'true' || fsData.message?.includes('Activation'))) {
-        fsSuccess = true;
+        const fsData = await fsRes.json().catch(() => ({}));
+        if (fsRes.ok && (String(fsData.success) === 'true' || fsData.message?.includes('Activation'))) {
+          fsSuccess = true;
+        }
+      } catch (fsErr) {
+        console.warn('Client FormSubmit error:', fsErr);
       }
-    } catch (fsErr) {
-      console.warn('Client FormSubmit error:', fsErr);
     }
 
     // If either the database inbox save or the email dispatch succeeded, confirm success
@@ -117,23 +117,20 @@ export default function ContactSection() {
     }
   };
 
-    const email = profile?.email || 'ctrl.ranjit@gmail.com';
-  const location = profile?.location || 'Bhubaneswar, Odisha, India';
-
   const contactItems = [
-    {
+    profile?.email?.trim() && {
       icon: <Mail size={18} strokeWidth={2.2} />,
       label: 'Email',
-      value: email,
-      href: `mailto:${email}`,
+      value: profile.email.trim(),
+      href: `mailto:${profile.email.trim()}`,
       hint: 'Direct inquiries & opportunities',
     },
-    {
+    profile?.location?.trim() && {
       icon: <MapPin size={18} strokeWidth={2.2} />,
       label: 'Location',
-      value: location,
+      value: profile.location.trim(),
     },
-  ];
+  ].filter(Boolean);
 
   const socials = [
     profile?.linkedinUrl?.trim() && {

@@ -376,9 +376,9 @@ export default function HeroSection() {
                       </svg>
                     ),
                   },
-                  (profile?.email?.trim() || (!profile && 'ctrl.ranjit@gmail.com')) && {
+                  profile?.email?.trim() && {
                     label: 'Email',
-                    href: `mailto:${profile?.email?.trim() || 'ctrl.ranjit@gmail.com'}`,
+                    href: `mailto:${profile.email.trim()}`,
                     icon: <Mail size={19} strokeWidth={2.1} />,
                   },
                   profile?.leetcodeUrl?.trim() && {
@@ -427,30 +427,34 @@ export default function HeroSection() {
                 ))}
               </div>
 
-              {/* Vertical Divider */}
-              <div
-                style={{
-                  width: 1,
-                  height: 24,
-                  background: 'var(--border)',
-                  margin: '0 0.25rem',
-                }}
-              />
+              {profile?.location?.trim() && (
+                <>
+                  {/* Vertical Divider */}
+                  <div
+                    style={{
+                      width: 1,
+                      height: 24,
+                      background: 'var(--border)',
+                      margin: '0 0.25rem',
+                    }}
+                  />
 
-              {/* Location Tag */}
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.45rem',
-                  color: 'var(--text-secondary)',
-                  fontSize: '0.94rem',
-                  fontWeight: 500,
-                }}
-              >
-                <MapPin size={17} strokeWidth={2.2} style={{ color: 'var(--accent)' }} />
-                <span>{profile?.location || 'Bhubaneswar, India'}</span>
-              </div>
+                  {/* Location Tag */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.45rem',
+                      color: 'var(--text-secondary)',
+                      fontSize: '0.94rem',
+                      fontWeight: 500,
+                    }}
+                  >
+                    <MapPin size={17} strokeWidth={2.2} style={{ color: 'var(--accent)' }} />
+                    <span>{profile.location.trim()}</span>
+                  </div>
+                </>
+              )}
             </motion.div>
           </div>
 

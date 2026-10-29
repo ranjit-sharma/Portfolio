@@ -17,8 +17,8 @@ const submitContact = asyncHandler(async (req, res) => {
     ipAddress: req.ip,
   });
 
-  // 2. Look up the admin email from Profile settings
-  let adminEmail = process.env.CONTACT_RECEIVER_EMAIL || 'ctrl.ranjit@gmail.com';
+  // 2. Look up the admin email from Profile settings (only use profile email, no fallback)
+  let adminEmail = null;
   try {
     const profile = await Profile.findOne().select('email');
     if (profile && profile.email && profile.email.trim()) {
@@ -28,11 +28,13 @@ const submitContact = asyncHandler(async (req, res) => {
     console.warn('Could not fetch profile email:', err.message);
   }
 
-  // 3. Attempt email delivery to the admin's setting email
-  try {
-    await emailService.sendContactEmail({ name, email, subject, message, toEmail: adminEmail });
-  } catch (err) {
-    console.warn('Email delivery skipped or failed:', err.message);
+  // 3. Attempt email delivery only if profile email is set
+  if (adminEmail) {
+    try {
+      await emailService.sendContactEmail({ name, email, subject, message, toEmail: adminEmail });
+    } catch (err) {
+      console.warn('Email delivery skipped or failed:', err.message);
+    }
   }
 
   return apiSuccess(res, { id: doc._id }, 'Message received. Thank you for reaching out!', 201);

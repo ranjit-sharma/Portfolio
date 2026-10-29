@@ -32,8 +32,11 @@ const getTransporter = () => {
 };
 
 const sendContactEmail = async ({ name, email, subject, message, toEmail }) => {
-  // Destination email: priority given to toEmail (admin settings email), then env, then fallback
-  const receiverEmail = toEmail || process.env.CONTACT_RECEIVER_EMAIL || process.env.SMTP_USER || 'ctrl.ranjit@gmail.com';
+  // Destination email: ONLY use profile email. If not set, do not send to any fallback email.
+  const receiverEmail = toEmail ? toEmail.trim() : null;
+  if (!receiverEmail) {
+    return { success: false, reason: 'no_recipient' };
+  }
 
   const t = getTransporter();
   if (t) {
