@@ -1032,7 +1032,19 @@ textarea::placeholder {
   z-index: 0;
 }
 
-@media (max-width: 768px) {
+/* Tablet view: placed 0.5 inch down from the navbar */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .hero-marquee-wrapper {
+    display: block !important;
+    top: calc(var(--navbar-height) + 0.5in) !important;
+  }
+  .hero-marquee-text {
+    font-size: clamp(3.2rem, 9vw, 5.5rem);
+  }
+}
+
+/* Mobile view: keep hidden */
+@media (max-width: 640px) {
   .hero-marquee-wrapper {
     display: none !important;
   }
