@@ -9,7 +9,17 @@ import {
   ExternalLink,
   Trash2,
   Sparkles,
+  Plus,
+  Terminal,
 } from 'lucide-react';
+
+const DEFAULT_HERO_ROLES = [
+  'Software Developer',
+  'Full-Stack Developer',
+  'MERN Stack Engineer',
+  'Backend Developer',
+  'React Developer',
+];
 
 const DEFAULT_HIGHLIGHTS = [
   {
@@ -509,6 +519,99 @@ export default function AdminSettings() {
                       placeholder={`Description for highlight 0${idx + 1}`}
                     />
                   </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Hero Rotating Roles (Typing Effect) */}
+        <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '1.5rem', boxShadow: 'var(--shadow-sm)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
+            <div>
+              <h2 style={{ fontWeight: 700, fontSize: '1rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Terminal size={18} style={{ color: 'var(--accent)' }} />
+                Hero Dynamic Roles (Typing Effect)
+              </h2>
+              <p style={{ margin: '0.25rem 0 0', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                Edit the rotating titles shown below your name in the Hero section (e.g. "MERN Stack Engineer", "Full-Stack Developer"). You can add as many as you need.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                const current = Array.isArray(profile?.heroRoles) && profile.heroRoles.length > 0
+                  ? profile.heroRoles
+                  : DEFAULT_HERO_ROLES;
+                set('heroRoles', [...current, '']);
+              }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                padding: '0.4rem 0.85rem',
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                color: 'var(--accent)',
+                background: 'var(--accent-dim)',
+                border: '1px solid var(--accent-border)',
+                borderRadius: 'var(--radius-md)',
+                cursor: 'pointer',
+              }}
+            >
+              <Plus size={15} /> Add Role
+            </button>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '1rem' }}>
+            {((Array.isArray(profile?.heroRoles) && profile.heroRoles.length > 0)
+              ? profile.heroRoles
+              : DEFAULT_HERO_ROLES
+            ).map((role, idx) => {
+              const currentRoles = (Array.isArray(profile?.heroRoles) && profile.heroRoles.length > 0)
+                ? profile.heroRoles
+                : DEFAULT_HERO_ROLES;
+
+              return (
+                <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                  <span style={{ fontSize: '0.78rem', fontFamily: 'JetBrains Mono, monospace', color: 'var(--text-muted)', width: 24, textAlign: 'right', flexShrink: 0 }}>
+                    {idx + 1}.
+                  </span>
+                  <input
+                    style={inputSt}
+                    value={role}
+                    onChange={(e) => {
+                      const updated = [...currentRoles];
+                      updated[idx] = e.target.value;
+                      set('heroRoles', updated);
+                    }}
+                    placeholder={`Role ${idx + 1} (e.g. MERN Stack Engineer)`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const updated = currentRoles.filter((_, i) => i !== idx);
+                      set('heroRoles', updated.length > 0 ? updated : ['']);
+                    }}
+                    disabled={currentRoles.length <= 1}
+                    aria-label="Remove role"
+                    style={{
+                      width: 36,
+                      height: 36,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 'var(--radius-md)',
+                      background: 'rgba(239, 68, 68, 0.08)',
+                      border: '1px solid rgba(239, 68, 68, 0.25)',
+                      color: currentRoles.length <= 1 ? 'var(--text-muted)' : '#f87171',
+                      cursor: currentRoles.length <= 1 ? 'not-allowed' : 'pointer',
+                      opacity: currentRoles.length <= 1 ? 0.4 : 1,
+                      flexShrink: 0,
+                    }}
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </div>
               );
             })}

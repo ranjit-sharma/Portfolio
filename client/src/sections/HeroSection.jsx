@@ -237,7 +237,13 @@ export default function HeroSection() {
                 minHeight: '2em',
               }}
             >
-              <TypingEffect words={ROLES} />
+              <TypingEffect
+                words={
+                  Array.isArray(profile?.heroRoles) && profile.heroRoles.filter((r) => r && r.trim()).length > 0
+                    ? profile.heroRoles.filter((r) => r && r.trim())
+                    : ROLES
+                }
+              />
             </motion.div>
 
             {/* Description */}

@@ -421,10 +421,23 @@ export default function EducationSection() {
           border-radius: 8px;
           padding: 0.25rem 0.55rem;
         }
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
           .edu-grid {
             grid-template-columns: minmax(0, 1fr);
           }
+          .edu-school {
+            padding: 1.15rem;
+          }
+          .edu-school .edu-head {
+            flex-wrap: wrap;
+            gap: 0.75rem;
+          }
+          .edu-years {
+            margin-left: 0;
+            align-self: flex-start;
+          }
+        }
+        @media (max-width: 768px) {
           .edu-degree {
             padding: 1.25rem;
           }

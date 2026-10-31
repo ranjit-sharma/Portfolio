@@ -20,6 +20,16 @@ const profileSchema = new mongoose.Schema(
     available: { type: Boolean, default: false },
     availabilityNote: { type: String, default: '' },
     aboutEducation: { type: String, default: '' },
+    heroRoles: {
+      type: [String],
+      default: [
+        'Software Developer',
+        'Full-Stack Developer',
+        'MERN Stack Engineer',
+        'Backend Developer',
+        'React Developer',
+      ],
+    },
     views: { type: Number, default: 0 },
     // Education settings (editable via Admin)
     educationCgpa: { type: String, default: '7.73' },
